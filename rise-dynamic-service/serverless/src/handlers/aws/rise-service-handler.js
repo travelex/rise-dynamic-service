@@ -27,7 +27,7 @@ module.exports.rise = function (event, context, callback) {
         logger.debug(`Entered handler with request   ${JSON.stringify(event)}`);
         logger.debug("Entered handler with request " + JSON.stringify(event));
         //try {
-        apiProcessor[event.httpMethod.toLowerCase()].process(event, context, cacheObj)
+            apiProcessors[event.httpMethod.toLowerCase()].process(event, context, cacheObj)
             .then(body => {
                 logger.debug(body)
                 logger.debug("Exiting with response ", JSON.stringify(body));
@@ -36,6 +36,7 @@ module.exports.rise = function (event, context, callback) {
                     body: JSON.stringify(body)
                 })
             }).catch(error => {
+                logger.error("Exception caught ", error)
                 logger.error("Exception caught ", error)
                 callback(null, {
                     statusCode: error.httpStatusCode || 500,

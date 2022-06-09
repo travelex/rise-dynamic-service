@@ -11,36 +11,28 @@ RISE:
       - node_modules/rise-service/**
   events:
     - http:
-        path: status/{entity}
-        method: post
+        path: stats/{entity}
+        method: get
         async: false
     #    private: true 
     - http:
         path: referenceData/{entity}
         method: post
         async: false
-        cors:
-            origin: "*"
-            headers:
-              - Content-Type
-              - Access-Control-Allow-Headers
-              - Access-Control-Request-Headers
-              - Access-Control-Request-Method
-              - Access-Control-Allow-Origin
-            allowCredentials: false
-        #    authorizer:
-        #    type: CUSTOM
-        #    authorizerId:
-        #        'Fn::ImportValue': auth-ui-${opt:stage}-authorizer
+        # private: true 
+    - http:
+        path: referenceData/{entity}
+        method: get
+        async: false
+        # private: true 
+    - http:
+        path: referenceData/{entity}
+        method: put
+        async: false
         # private: true 
     - http:
         path: search/{entity}
-        method: post
+        method: get
         async: false
         # private: true 
-    # - http:
-    #     path: search/mentee
-    #     method: post
-    #     async: false
-    #     # private: true 
     
