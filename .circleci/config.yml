@@ -297,16 +297,18 @@ jobs:
 workflows:
   version: 2
   build:
-    jobs:    
-     - sts     
+    jobs:         
+      - sts
       - s3-download:
           requires:
             - sts
           filters:
             branches:
               only:
-                - feature/dit
+                - develop
                 - master
+                - feature/dit
+      - sts_dmz
 
       - lambda-job:
           name: rise-dynamic-service
@@ -315,8 +317,11 @@ workflows:
           filters:
             branches:
               only:
-                - feature/dit
+                - develop
                 - master
+                - feature/dit
+
+
 
 
       
