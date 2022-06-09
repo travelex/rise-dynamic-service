@@ -2,8 +2,20 @@
 const path = require('path');
 //const LruCache = require("lru-cache");
 const winston_wrapper = require('winston-wrapper');
-const apiProcessor = require('rise-service').apiProcessor;
+//const apiProcessor = require('rise-service').apiProcessor;
 const logger = winston_wrapper.getLogger(path.basename(__filename))
+
+const PostApiProcessor = require('rise-service').PostApiProcessor;
+const GetApiProcessor = require('rise-service').GetApiProcessor;
+const PutApiProcessor = require('rise-service').PutApiProcessor;
+const DeleteApiProcessor = require('rise-service').DeleteApiProcessor;
+
+const apiProcessors = {
+    post: PostApiProcessor,
+    get: GetApiProcessor,
+    put: PutApiProcessor,
+    delete: DeleteApiProcessor
+}
 
 //const options = { maxAge: process.env.CacheTTL * 60 * 60 }
 //const cacheObj = new LruCache(options);
@@ -11,9 +23,11 @@ const cacheObj = null;
 
 module.exports.rise = function (event, context, callback) {
     winston_wrapper.serverlessFunction(event, context, () => {
+        logger.info(`Http Method: ${event.httpMethod.toLowerCase()}`);
+        logger.debug(`Entered handler with request   ${JSON.stringify(event)}`);
         logger.debug("Entered handler with request " + JSON.stringify(event));
         //try {
-        apiProcessor.process(event, context, cacheObj)
+        apiProcessor[event.httpMethod.toLowerCase()].process(event, context, cacheObj)
             .then(body => {
                 logger.debug(body)
                 logger.debug("Exiting with response ", JSON.stringify(body));
