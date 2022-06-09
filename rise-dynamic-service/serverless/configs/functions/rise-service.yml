@@ -11,12 +11,12 @@ RISE:
       - node_modules/rise-service/**
   events:
     - http:
-        path: status
+        path: status/{entity}
         method: post
         async: false
     #    private: true 
     - http:
-        path: process
+        path: referenceData/{entity}
         method: post
         async: false
         cors:
@@ -34,7 +34,13 @@ RISE:
         #        'Fn::ImportValue': auth-ui-${opt:stage}-authorizer
         # private: true 
     - http:
-        path: search
+        path: search/{entity}
         method: post
         async: false
         # private: true 
+    # - http:
+    #     path: search/mentee
+    #     method: post
+    #     async: false
+    #     # private: true 
+    

@@ -77,4 +77,4 @@ functions:
 
 
 resources:
-   - ${file(./configs/resources/log-group-and-subscription.yml)}
+  - ${file(./configs/resources/log-group-and-subscription.yml)}
