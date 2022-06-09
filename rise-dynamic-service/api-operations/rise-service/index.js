@@ -1,3 +1,3 @@
 /* eslint-disable no-unused-vars */
 
-module.exports.apiProcessor = require('./src/api/WriterApiProcessor');
+module.exports.PostApiProcessor = require('./src/api/WriterApiProcessor');
