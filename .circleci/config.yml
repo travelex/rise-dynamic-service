@@ -25,20 +25,6 @@ references:
     fingerprints:
       - "53:05:2b:e4:95:33:13:90:09:5b:90:65:02:dc:b3:e3" # salman private SSH key - jurajseffer keys will be replaced after all developers are migrated to latest branch
 
-  load_bash_env: &load_bash_env
-      name: Export shared environment variables for risk-compliance or staging
-      command: |
-        cat ~/.env >> $BASH_ENV
-        echo "export APP_PARENT=core" >> ${BASH_ENV}
-        echo "export APP_NAME=risk-compliance" >> ${BASH_ENV}
-        echo 'export AWS_REGION="eu-west-1"' >> ${BASH_ENV}
-        echo 'export PACKER_LISTN_PORT="5986"' >> ${BASH_ENV}
-        echo 'export ANSIBLE_HDIR="$CIRCLE_WORKING_DIRECTORY/ansible"' >> ${BASH_ENV}
-        echo 'export APP_CONFIG_HOME="$CIRCLE_WORKING_DIRECTORY/ansible/config/$APP_NAME"' >> ${BASH_ENV}
-        echo 'export CONFIG_HOME="$CIRCLE_WORKING_DIRECTORY/ansible/config"' >> ${BASH_ENV}
-        echo 'export GIT_SHA="$CIRCLE_SHA1"' >> ${BASH_ENV}
-        cat ${BASH_ENV}
-
   setup_env: &setup_env
     name: Shared environment setup
     command: |
@@ -54,35 +40,33 @@ references:
       ls -la ~/.ssh
 
 jobs:
-  sts_sls:
+  setup:
     docker:
-      - image: cimg/python:3.7
+      - image: circleci/python:3.7
     steps:
       - checkout
       - add_ssh_keys: *add_custom_ssh_keys
       - run:
           name: Dependencies are installed
-          command: pip install awscli
+          command: sudo pip install awscli
       - run:
           name: Initializing AWS credentials and environment
           command: |
-            echo "export APP_PARENT=core" >> .extra_env
-            echo "export APP_NAME=risk-compliance" >> .extra_env
-            echo 'export AWS_DEFAULT_REGION=$AWS_REGION' >> .extra_env
+            echo "export APP_PARENT=ws" >> .extra_env
+            echo "export APP_NAME=middleware" >> .extra_env
+            echo 'export AWS_DEFAULT_REGION="eu-west-1"' >> .extra_env
             echo 'export ANSIBLE_HDIR="$CIRCLE_WORKING_DIRECTORY/ansible"' >> .extra_env
             echo 'export APP_CONFIG_HOME="$CIRCLE_WORKING_DIRECTORY/ansible/config/$APP_NAME"' >> .extra_env
             if [ "${CIRCLE_BRANCH}" = "master" ]; then
-              export AWS_ACCESS_KEY_ID=$prod_circleci_app_bootstrap_access_key_compliance
-              export AWS_SECRET_ACCESS_KEY=$prod_circleci_app_bootstrap_secret_key_compliance
-              export AWS_REGION=$AWS_REGION
-              export IAM_ROLE=$PROD_IAM_LAMBDA_ROLE_SLS_COMPLIANCE
+              export AWS_ACCESS_KEY_ID=$PROD_IAM_ID
+              export AWS_SECRET_ACCESS_KEY=$PROD_IAM_KEY
+              export IAM_ROLE=$PROD_IAM_ROLE
               AWS_ACCOUNT_TYPE="prod"
               APP_ENVIRONMENT="production"
             else
-              export AWS_ACCESS_KEY_ID=$nonprod_circleci_app_bootstrap_access_key_compliance
-              export AWS_SECRET_ACCESS_KEY=$nonprod_circleci_app_bootstrap_secret_key_compliance
-              export AWS_REGION=$AWS_REGION
-              export IAM_ROLE=$NONPROD_IAM_LAMBDA_ROLE_SLS_COMPLIANCE
+              export AWS_ACCESS_KEY_ID=$NONPROD_IAM_ID
+              export AWS_SECRET_ACCESS_KEY=$NONPROD_IAM_KEY
+              export IAM_ROLE=$NONPROD_IAM_ROLE
               AWS_ACCOUNT_TYPE="nonprod"
               BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
               BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
@@ -103,61 +87,12 @@ jobs:
           paths:
             - .
 
-  sts_tf:
-    docker:
-      - image: governmentpaas/awscli
-    steps:
-      - run: apk add --no-cache git perl
-      - checkout
-      - run: mkdir -p /workspace/.aws
-      - run:
-          name: Create AWS config file with temp credentials
-          command: |
-            if [ "${CIRCLE_BRANCH}" = "master" ]; then
-              export AWS_ACCESS_KEY_ID=$prod_circleci_app_bootstrap_access_key_compliance
-              export AWS_SECRET_ACCESS_KEY=$prod_circleci_app_bootstrap_secret_key_compliance
-              export AWS_REGION=$AWS_REGION
-              # for production, sts to the _prod_ account
-              export IAM_ROLE=$PROD_IAM_LAMBDA_ROLE_TF_COMPLIANCE
-              APP_ENVIRONMENT="prod"
-              echo "inside if"
-            else
-              export AWS_ACCESS_KEY_ID=$nonprod_circleci_app_bootstrap_access_key_compliance
-              export AWS_SECRET_ACCESS_KEY=$nonprod_circleci_app_bootstrap_secret_key_compliance
-              export AWS_REGION=$AWS_REGION
-              # for non-production, sts to the _nonprod_ account
-              export IAM_ROLE=$NONPROD_IAM_LAMBDA_ROLE_TF_COMPLIANCE
-              APP_ENVIRONMENT="nonprod"
-              echo "inside else"
-            fi
-            echo $APP_ENVIRONMENT
-            aws sts assume-role --role-session-name circle --role-arn $IAM_ROLE | jq -r '.Credentials | "[default]\naws_access_key_id = \(.AccessKeyId)\naws_secret_access_key = \(.SecretAccessKey)\naws_session_token = \(.SessionToken)\nregion = eu-west-1"' > /workspace/.aws/credentials
-      - run:
-          name: put variables into workspace so that it can be used by all jobs
-          command: |
-            BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
-            ENVIRONMENT=$(echo -e 'feature/ dev\nrelease/ uat\nmaster production' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
-            AWS_ACCOUNT_TYPE=$(echo -e 'feature/ nonprod\nrelease/ nonprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
-            echo "export ENVIRONMENT=${ENVIRONMENT}" >> /workspace/.env
-            echo "export AWS_REGION=${AWS_REGION}" >> /workspace/.env
-            echo "export AWS_ACCOUNT_TYPE=${AWS_ACCOUNT_TYPE}" >> /workspace/.env
-            echo "export APP_ENVIRONMENT=${AWS_ACCOUNT_TYPE}"  >> /workspace/.env
-            cat /workspace/.env
-            echo "APP_ENVIRONMENT is ${APP_ENVIRONMENT}"
-            echo "ENVIRONMENT is ${ENVIRONMENT}"
-            echo "AWS_ACCOUNT_TYPE is ${AWS_ACCOUNT_TYPE}"
-      - persist_to_workspace:
-          root: /workspace
-          paths:
-            - .aws/credentials
-            - .env
-
   s3-download:
     docker:
       - image: 173523405217.dkr.ecr.eu-west-1.amazonaws.com/travelex-infra:0.2
         aws_auth:
-          aws_access_key_id: $nonprod_circleci_app_bootstrap_access_key_compliance
-          aws_secret_access_key: $nonprod_circleci_app_bootstrap_secret_key_compliance
+          aws_access_key_id: $NONPROD_IAM_ID
+          aws_secret_access_key: $NONPROD_IAM_KEY
     steps:
       - checkout
       - *attach_workspace
@@ -167,9 +102,9 @@ jobs:
           name: copy_terraform_output_to_s3_bucket
           command: |
             pwd
-            pip install awscli
-            ls -lart
-            aws s3 cp s3://tvx-risk-compliance-${APP_ENVIRONMENT}-application-config/terraform_outputs.json terraform/applications/
+            pip install awscli            
+            ls -lart            
+            aws s3 cp s3://tvx-${APP_NAME}-${APP_ENVIRONMENT}-terraformoutput/terraform_outputs.json terraform/applications/
             cd terraform/applications/
             ls -lart
             pwd
@@ -180,7 +115,7 @@ jobs:
 
   lambda-job:
     docker:
-      - image: cimg/node:14.17.0
+      - image: circleci/node:14.17-stretch
     steps:
       - *attach_workspace
       - add_ssh_keys: *add_node_ssh_keys
@@ -198,133 +133,28 @@ jobs:
             make build test deploy
       - setup_remote_docker:
           name: Spining off remote docker
-
-
-  tf-14-plan:
-    docker:
-      - image: 173523405217.dkr.ecr.eu-west-1.amazonaws.com/travelex-infra:0.8
-        aws_auth:
-          aws_access_key_id: $nonprod_circleci_app_bootstrap_access_key_compliance
-          aws_secret_access_key: $nonprod_circleci_app_bootstrap_secret_key_compliance
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
-      - add_ssh_keys: *add_custom_ssh_keys
-      - run: *load_bash_env
-      - run:
-          name: Trigger main Ansible Playbook for Terraform 0.14.5
-          working_directory: ansible
-          command: |
-            . ~/.env
-            pip3 install boto
-            ansible --version
-            terraform --version
-            python --version
-            pip3 install --upgrade boto3
-            pip3 show boto3
-            ls -larth
-            ls -l ~/
-            echo ${AWS_ACCOUNT}
-            export TF_VAR_deployed_at=$(date +%s)
-            #echo $nonprod_circleci_app_bootstrap_tvx_org_access_key
-            ansible-playbook -i hosts site_tf14.yml --list-hosts -vvv
-            COMMIT_REGION=`git log -1 --pretty=%B | perl -nle 'print $1 if /\<(.*)\>/'`
-            if [[ $COMMIT_REGION == "" ]]; then
-               TF_REGION="eu-west-1"
-            else
-               TF_REGION=$COMMIT_REGION
-            fi
-  
-            TAG_NAMES=`git log -1 --pretty=%B | perl -nle 'print $1 if /\((.*)\)/'`
-            echo $TAG_NAMES
-            if [[ "${TAG_NAMES}" != "" ]]; then
-               echo $TAG_NAMES
-               echo "running playbook for only few tags"
-               ansible-playbook -i  hosts -e "tf_region=$TF_REGION app_env=$ENVIRONMENT"  site_tf14.yml --tags ${TAG_NAMES} -vvv
-               echo !!
-            else
-               ansible-playbook -i  hosts -e "tf_region=$TF_REGION app_env=$ENVIRONMENT"  site_tf14.yml -vvv
-            fi
-          no_output_timeout: 1h
-
-  tf-14-apply:
-    docker:
-      - image: 173523405217.dkr.ecr.eu-west-1.amazonaws.com/travelex-infra:0.8
-        aws_auth:
-          aws_access_key_id: $nonprod_circleci_app_bootstrap_access_key_compliance
-          aws_secret_access_key: $nonprod_circleci_app_bootstrap_secret_key_compliance
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
-      - add_ssh_keys: *add_custom_ssh_keys
-      - run: *load_bash_env
-      - run:
-          name: Trigger main Ansible Playbook for Terraform 0.14.5
-          working_directory: ansible
-          command: |
-            . ~/.env
-            pip3 install boto
-            ansible --version
-            terraform --version
-            python --version
-            pip3 install --upgrade boto3
-            aws --version
-            ls -larth
-            echo ${AWS_ACCOUNT}
-            export TF_VAR_deployed_at=$(date +%s)
-            ansible-playbook -i  hosts site_tf14.yml --list-hosts -vvv
-            echo $nonprod_circleci_app_bootstrap_tvx_org_access_key
-            COMMIT_REGION=`git log -1 --pretty=%B | perl -nle 'print $1 if /\<(.*)\>/'`
-            echo $COMMIT_REGION
-            if [[ $COMMIT_REGION == "" ]]; then
-                TF_REGION="eu-west-1"
-            else
-               TF_REGION=$COMMIT_REGION
-            fi
-            TAG_NAMES=`git log -1 --pretty=%B | perl -nle 'print $1 if /\((.*)\)/'`
-            echo $TAG_NAMES
-            if [[ "${TAG_NAMES}" != "" ]]; then
-                echo $TAG_NAMES
-                echo "running playbook for only few tags"
-                ansible-playbook -i  hosts -e "tf_region=$TF_REGION check_mode=no app_env=$ENVIRONMENT" site_tf14.yml --tags ${TAG_NAMES} -vvv
-                echo !!
-            else
-               ansible-playbook -i  hosts -e "tf_region=$TF_REGION check_mode=no app_env=$ENVIRONMENT" site_tf14.yml -vvv
-            fi
-          no_output_timeout: 1h
+      # - run:
+      #     name: Pivio yaml pushing
+      #     command: |
+      #       echo $(pwd)
+      #       echo $(ls)
+      #       docker create -v /source --name configs alpine:3.4 /bin/true
+      #       docker cp ${CIRCLE_STAGE}/pivio.yaml configs:/source
+      #       docker pull leanix/pivio-client
+      #       docker run --rm --volumes-from configs leanix/pivio-client npm-license-checker
+      #       docker run --rm --volumes-from configs leanix/pivio-client pivio -serviceurl "https://app.leanix.net/services/integrations/v2/pivio/document" -verbose -addfield "api_token=${PIVIO_LEANIX_API_KEY}"
 
 workflows:
-  risk-compliance:
+  middleware:
     jobs:
-      - sts_sls
+      - setup:
+          filters: *branch_filters
       - s3-download:
           requires:
-            - sts_sls
+            - setup
           filters: *branch_filters
       - lambda-job:
-          name: experian-adapter-service
+          name: rise-dynamic-service
           requires:
             - s3-download
-          filters: *branch_filters
-      - lambda-job:
-          name: experian-adapter-audit-log
-          requires:
-            - s3-download
-          filters: *branch_filters
-      - sts_tf
-      - tf-14-plan:
-          requires:
-            - sts_tf
-          filters: *branch_filters
-      - tf-14-approval:
-          type: approval
-          requires:
-            - tf-14-plan
-          filters: *branch_filters
-      - tf-14-apply:
-          requires:
-            - tf-14-plan
-            - tf-14-approval
           filters: *branch_filters

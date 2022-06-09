@@ -4,7 +4,6 @@
   "description": "Serverless data api",
   "main": "index.js",
   "dependencies": {
-    "address-lookup": "file:../api-operations/address-lookup-service",
     "rise-service": "file:../api-operations/rise-service",
     "lru-cache": "^7.8.1",
     "winston-wrapper": "https://github.com/travelex/winston-wrapper.git#1.0.23"
