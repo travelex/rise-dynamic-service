@@ -38,7 +38,8 @@
     "serverless-offline": "^8.8.0",
     "soap": "0.42.0",
     "winston-wrapper": "https://github.com/travelex/winston-wrapper.git#1.0.23",
-    "xml-js": "^1.6.11"
+    "xml-js": "^1.6.11",
+    "tvxcloud-storage": "git+ssh://github.com/travelex/tvxcloud-storage.git"
   },
   "license": "ISC",
   "devDependencies": {

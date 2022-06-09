@@ -8,9 +8,7 @@ const logger = require('winston-wrapper').getLogger(path.basename(__filename));
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 
-const {
-	factory
-} = require('tvxcloud-storage');
+const { factory } = require('tvxcloud-storage');
 
 const storage = factory.storageProvider({});
 
