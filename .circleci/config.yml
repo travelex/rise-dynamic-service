@@ -255,10 +255,10 @@ jobs:
             aws s3 ls
   
             BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
-            ENVIRONMENT=$(echo -e 'feature/dit dev\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
-            AWS_ACCOUNT_TYPE=$(echo -e 'feature/dit nonprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
+            ENVIRONMENT=$(echo -e 'feature/ dev\nplay/ play\ndevelopment sit\nrelease/ uat\nhotfix/ preprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
+            AWS_ACCOUNT_TYPE=$(echo -e 'feature/ nonprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
             
-            aws s3 cp s3://tvx-hackathon-mentorship-dev-app-config/terraform_outputs.json terraform/applications/            
+            aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json terraform/applications/            
             cd terraform/applications/
             ls -larth
             pwd
