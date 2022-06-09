@@ -14,7 +14,7 @@ RISE:
         path: status
         method: post
         async: false
-        private: true 
+    #    private: true 
     - http:
         path: process
         method: post
@@ -28,8 +28,8 @@ RISE:
               - Access-Control-Request-Method
               - Access-Control-Allow-Origin
             allowCredentials: false
-            authorizer:
-            type: CUSTOM
+        #    authorizer:
+        #    type: CUSTOM
         #    authorizerId:
         #        'Fn::ImportValue': auth-ui-${opt:stage}-authorizer
         # private: true 
