@@ -40,8 +40,8 @@ process
  * STEPS:
  * 1. Check if request has FulfilementType, if not, reject
  * 2. Check BasketItems, if preCheckRequired|| authProcheck required
- * 3. if authprocheck required, check if kyc required, if not- retrun 
- * 4.KYC check
+ * 3. if authprocheck required, check if required, if not- retrun 
+ * 4. check
  * 
  */
 

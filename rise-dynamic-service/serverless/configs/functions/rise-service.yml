@@ -1,6 +1,6 @@
-KYC:
+RISE:
   name: ${self:provider.stage}-rise-service
-  description: eKYC ${self:provider.stage} 
+  description: rise ${self:provider.stage} 
   handler: src/handlers/${self:provider.name}/rise-service-handler.rise
   disableLogs: true #To disable default log group creation by serverless
   timeout: 30

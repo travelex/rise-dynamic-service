@@ -39,7 +39,6 @@ provider:
     restApiRootResourceId: ${self:custom.fromTerraform.risk_compliance_rest_api_root_resource_id}
 
 functions: 
-  - ${file(./configs/functions/address-lookup-service.yml)}  
   - ${file(./configs/functions/rise-service.yml)}
 
 
