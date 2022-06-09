@@ -38,16 +38,6 @@ process
     });
 
 
-/**
- * STEPS:
- * 1. Check if request has FulfilementType, if not, reject
- * 2. Check BasketItems, if preCheckRequired|| authProcheck required
- * 3. if authprocheck required, check if required, if not- retrun 
- * 4. check
- * 
- */
-
-
 class WriterApiProcessor {
 
     /**
@@ -55,9 +45,9 @@ class WriterApiProcessor {
      * @param {JSON} event Lambda event containing header and body
      * @param {JSON} context Lambda context
      * @description It performs "below" steps":
-     * a) Receive db write request and parse it
-     * b) Transform the request to Business object
-     * c) Calls the service based on type and format
+     * a) Receives event
+     * b) Creates the filename to process
+     * c) Processes the file and returns response
      */
     async process(event, context, cacheObj) {
         return new Promise(async (resolve, reject) => {
@@ -65,24 +55,10 @@ class WriterApiProcessor {
                 _auditLog = new AuditLogger.Builder(logger, 'rise-service', options);
                 try {
                     logger.info('Dynamic service request received');
-                    //logger.debug('event', event);
-                    const { path, pathParameters, queryStringParameters } = event;
-                    logger.debug('path', path);
-                    logger.debug('pathParameters', pathParameters);
-                    logger.debug('queryStringParameters', queryStringParameters);
-
-                    const rootFolder = path.split('/')[1];
-                    const entity = pathParameters.entity;
-                    const operation = queryStringParameters.criteria;
-                    let fileName = entity + '-' + operation;
-                    logger.debug('fileName:', fileName);
-                    const filePath = rootFolder + '/' + fileName;
-                    logger.debug('filePath:', filePath);
-
-                    let responseOb = dynamicService.applyRules(filePath);
-
-                    let response = responseOb;
-
+                    logger.debug('Event Received', JSON.stringify(event));
+                   
+                    const filePath = this.getFilePath(event);
+                    const response = dynamicService.applyRules(filePath);
 
                     _auditLog.withWorkFlowInfo('Dynamic Service request completed successfully')
                         .withCompleted(true).withEvent(response).build().generateAuditlog();
@@ -103,6 +79,33 @@ class WriterApiProcessor {
                 }
             });
         });
+    }
+
+    /**
+     * 
+     * @param {*} event 
+     * @description "Creates the file path based on event path parameters and querystring parameters"
+     */
+    getFilePath(event){
+        try {
+            const { path, pathParameters, queryStringParameters } = event;
+            logger.debug('path', path);
+            logger.debug('pathParameters', pathParameters);
+            logger.debug('queryStringParameters', queryStringParameters);
+    
+            const rootFolder = path.split('/')[1];
+            const entity = pathParameters.entity;
+            const operation = queryStringParameters.criteria;
+            let fileName = entity + '-' + operation;
+            logger.debug('fileName:', fileName);
+            const filePath = rootFolder + '/' + fileName;
+            logger.debug('filePath:', filePath);
+            return filePath;
+        } catch (exception){
+            logger.error(`Exception while creating File Path: ${JSON.stringify(exception)}`);
+            throw exception;
+        }
+      
     }
 
 }
