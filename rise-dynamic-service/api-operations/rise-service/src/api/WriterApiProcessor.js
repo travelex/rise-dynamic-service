@@ -52,7 +52,7 @@ class WriterApiProcessor {
     async process(event, context, cacheObj) {
         return new Promise(async (resolve, reject) => {
             winstonWrapper.serverlessFunction(event, context, async () => {
-                _auditLog = new AuditLogger.Builder(logger, 'rise-service', options);
+                _auditLog = new AuditLogger.Builder(logger, 'rise-dynamic-service', options);
                 try {
                     logger.info('Dynamic service request received');
                     logger.debug('Event Received', JSON.stringify(event));

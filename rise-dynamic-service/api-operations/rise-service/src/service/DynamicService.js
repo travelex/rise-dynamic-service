@@ -39,46 +39,15 @@ class DynamicService {
 				const opts = { prependPaths: [childNodeModulePath], logFilter: () => false };
 				let ruleObject = await reqFromMem.requireFromString(readStream.toString('utf-8'), __dirname + `/${filePath}`, opts);
 				logger.debug('Evaluating  rule');
-				// let ruleObject = await this.evalStream(readStream.toString());
 
 				logger.debug('Apply  rule');
 				let ruleResponse = await ruleObject.apply();
 				logger.debug(`Response from  Rules files: ${ruleResponse}`);
-				// requestBo.auditLogger.withConfig(requestBo.config)
-				// 	.withSource(requestBo.source);
 
 				let jsonresponse = util.parseElement(ruleResponse);
 				logger.debug(`Response received from Rule ${filePath} in JSON: ${JSON.stringify(jsonresponse)}`);
 				logger.info('Rule validated successfully');
 				return jsonresponse;
-
-				// if (jsonresponse.status === 0) { // 0 for FAILED
-				// 	logger.error(`Response from Rule ${fileName}: ${JSON.stringify(ruleResponse)}`);
-				// 	logger.info(`Rule ${fileName} failed, moving input file to error location`);
-				// 	await this.moveToError(requestBo);
-				// 	return jsonresponse;
-
-				// } else if (jsonresponse.status === 2) { // 2 for SKIPPED
-				// 	// This is a business check to skip those records such as order/document header/trailer
-				// 	logger.info('skipped, as per business functionality');
-				// 	if (JSON.stringify(requestBo.config.metadata) && !(requestBo.inputFileName.includes('.eif'))) {
-				// 		logger.debug(`Multi file`);
-				// 		requestBo.auditLogger.withError();
-				// 		requestBo.auditLogger.withNotificationType();
-				// 		requestBo.auditLogger.withWorkFlowInfo(jsonresponse.message || 'Skipped as per business functionality')
-				// 			.withError().build().generateAuditlog();
-				// 	} else {
-				// 		requestBo.auditLogger.withError();
-				// 		requestBo.auditLogger.withNotificationType();
-				// 		requestBo.auditLogger.withWorkFlowInfo(jsonresponse.message || 'Skipped as per business functionality')
-				// 			.withCompleted(true).withError().build().generateAuditlog();
-				// 	}
-
-				// 	return jsonresponse;
-				// }
-				// }
-
-				//requestBo.isPreprocessorExecuted = true;
 
 			} else {
 				logger.error('No Rules defined');
