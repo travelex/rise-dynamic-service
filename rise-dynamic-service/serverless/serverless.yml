@@ -43,7 +43,7 @@ provider:
   environment: ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
   logs:
     restApi: "${self:custom.fromTerraform.middleware_private_api_gateway_logs_enabled}"
-  #iamManagedPolicies: ${self:custom.fromTerraform.middleware_lambda_iam_execution_vpc_policy_arns}
+  iamManagedPolicies: ${self:custom.fromTerraform.middleware_lambda_iam_policy_arns}
   iamRoleStatements:
     - Effect: Allow
       Action:
