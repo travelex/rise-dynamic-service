@@ -4,9 +4,9 @@
   "description": "Serverless data api",
   "main": "index.js",
   "dependencies": {
-    "address-lookup": "file:../api-operations/address-lookup-service",
-    "rise-service": "file:../api-operations/rise-service",
     "lru-cache": "^7.8.1",
+    "rise-service": "file:../api-operations/rise-service",
+    "serverless-offline": "^8.8.0",
     "winston-wrapper": "https://github.com/travelex/winston-wrapper.git#1.0.23"
   },
   "directories": {
@@ -17,8 +17,8 @@
     "serverless": "^3.15.2",
     "serverless-aws-alias": "^1.7.1",
     "serverless-dynamodb-local": "^0.2.35",
-    "serverless-prune-plugin": "^1.3.2",
-    "serverless-plugin-existing-s3": "^2.4.0"
+    "serverless-plugin-existing-s3": "^2.4.0",
+    "serverless-prune-plugin": "^2.0.1"
   },
   "scripts": {
     "unit-test": "mocha ../api-operations/*/unit-test/*.js",

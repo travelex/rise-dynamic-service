@@ -10,7 +10,7 @@ plugins:
     - serverless-offline 
 
 custom:
-  fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
+  # fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
   prune:
     automatic: true
     number: 1
@@ -19,27 +19,26 @@ provider:
   name: aws
   runtime: nodejs14.x
   memorySize: 512
-  region: ${self:custom.fromTerraform.region}
+  region: eu-west-1 #${self:custom.fromTerraform.region}
   stage: ${opt:stage}
   stackName: sls-${self:provider.stage}-${self:service}-stack
-  stackTags: ${self:custom.fromTerraform.pe_common_tags}
-  lambdaHashingVersion: "20201221"
-  environment: ${file(./configs/providers/${self:provider.name}/${opt:stage}/env.yml)}
-  deploymentBucket: ${self:custom.fromTerraform.application_bucketname}
-  iam:
-    role: ${self:custom.fromTerraform.risk_compliance_lambda_execution_role}      
-  vpc:
-    securityGroupIds:
-      - ${self:custom.fromTerraform.risk_compliance_lambda_sg_id}
-    subnetIds:
-      - ${self:custom.fromTerraform.subnet_private_0}
-      - ${self:custom.fromTerraform.subnet_private_1}
-  apiGateway:
-    restApiId: ${self:custom.fromTerraform.risk_compliance_rest_api_id}
-    restApiRootResourceId: ${self:custom.fromTerraform.risk_compliance_rest_api_root_resource_id}
+  # stackTags: ${self:custom.fromTerraform.pe_common_tags}
+  # lambdaHashingVersion: "20201221"
+  # environment: ${file(./configs/providers/${self:provider.name}/${opt:stage}/env.yml)}
+  # deploymentBucket: ${self:custom.fromTerraform.application_bucketname}
+  # iam:
+  #   role: ${self:custom.fromTerraform.risk_compliance_lambda_execution_role}      
+  # vpc:
+  #   securityGroupIds:
+  #     - ${self:custom.fromTerraform.risk_compliance_lambda_sg_id}
+  #   subnetIds:
+  #     - ${self:custom.fromTerraform.subnet_private_0}
+  #     - ${self:custom.fromTerraform.subnet_private_1}
+  # apiGateway:
+  #   restApiId: ${self:custom.fromTerraform.risk_compliance_rest_api_id}
+  #   restApiRootResourceId: ${self:custom.fromTerraform.risk_compliance_rest_api_root_resource_id}
 
 functions: 
-  - ${file(./configs/functions/address-lookup-service.yml)}  
   - ${file(./configs/functions/rise-service.yml)}
 
 

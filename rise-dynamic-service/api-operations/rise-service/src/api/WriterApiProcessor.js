@@ -8,11 +8,13 @@
 const path = require('path');
 const winstonWrapper = require('winston-wrapper');
 let logger = winstonWrapper.getLogger(path.basename(__filename));
-
 let AuditLogger = require('winston-wrapper/AuditLogger');
 
 //const service = require('../service');
 const utils = require('../utils/Utils');
+const ExceptionType = require('../model/ExceptionType');
+const ExceptionCategory = require('../model/ExceptionCategory');
+const dynamicService = require('../service/DynamicService');
 
 
 const options = {
@@ -62,14 +64,27 @@ class WriterApiProcessor {
             winstonWrapper.serverlessFunction(event, context, async () => {
                 _auditLog = new AuditLogger.Builder(logger, 'rise-service', options);
                 try {
-                    logger.info('Experian adapter request received');
-                    let request = utils.parseElement(event);
-                    let response = 'response';
-                    
-                    //console.log(`*****************   ${response}`);
-    
-                 
-                    _auditLog.withWorkFlowInfo('ICE adapter request completed successfully')
+                    logger.info('Dynamic service request received');
+                    //logger.debug('event', event);
+                    const { path, pathParameters, queryStringParameters } = event;
+                    logger.debug('path', path);
+                    logger.debug('pathParameters', pathParameters);
+                    logger.debug('queryStringParameters', queryStringParameters);
+
+                    const rootFolder = path.split('/')[1];
+                    const entity = pathParameters.entity;
+                    const operation = queryStringParameters.criteria;
+                    let fileName = entity + '-' + operation;
+                    logger.debug('fileName:', fileName);
+                    const filePath = rootFolder + '/' + fileName;
+                    logger.debug('filePath:', filePath);
+
+                    let responseOb = dynamicService.applyRules(filePath);
+
+                    let response = responseOb;
+
+
+                    _auditLog.withWorkFlowInfo('Dynamic Service request completed successfully')
                         .withCompleted(true).withEvent(response).build().generateAuditlog();
 
                     resolve(response);
@@ -77,8 +92,8 @@ class WriterApiProcessor {
                 } catch (exception) {
                     logger.error(exception);
                     let error = utils.genericException(exception, ExceptionType.ERROR_PROCESSING_REQUEST, ExceptionCategory.SYSTEM_ERROR, exception.message);
-                    _auditLog.withJobName('rts-ice-integration')
-                        .withOriginDomain('cnr')
+                    _auditLog.withJobName('rise-dynamic-service')
+                        .withOriginDomain('')
                         .withInputFileName(event.headers.correlationId)
                         .withCorrelationId(event.headers.correlationId)
                         .withError(error.toString())
