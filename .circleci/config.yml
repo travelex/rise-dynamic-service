@@ -1,125 +1,283 @@
 ---
 version: 2.1
+parameters:
+  ENV_TYPE:
+    type: string
+    default: "main"
+  TAGS:
+    type: string
+    default: "default"
+  REGION:
+    type: string
+    default: "default"
 
-references:
-  branch_filters: &branch_filters
-    branches:
-      only:
-        - /feature\/.*/
-        - /play\/.*/
-        - development
-        - /release\/.*/
-        - /hotfix\/.*/
-        - master
-
-  attach_workspace: &attach_workspace
+attach_workspace: &attach_workspace
     attach_workspace:
-      at: .
+      at: ~/
 
-  # This is required to checkout other private repositories
-  add_custom_ssh_keys: &add_custom_ssh_keys
+add_ssh_keys_infra_modules: &add_ssh_keys_infra_modules
     fingerprints:
-      - "7a:0d:f9:08:c0:b2:54:9c:97:8a:f8:0f:9d:d7:2a:1d" # travelex/it-infra-modules key
-
-  add_node_ssh_keys: &add_node_ssh_keys
-    fingerprints:
-      - "53:05:2b:e4:95:33:13:90:09:5b:90:65:02:dc:b3:e3" # salman private SSH key - jurajseffer keys will be replaced after all developers are migrated to latest branch
-
-  setup_env: &setup_env
-    name: Shared environment setup
+      - "7a:0d:f9:08:c0:b2:54:9c:97:8a:f8:0f:9d:d7:2a:1d"
+infra_modules_checkout: &infra_modules_checkout
+    name: Clone it-infra-modules repository to get generic ansible roles
     command: |
-      cat .extra_env
-      cat .extra_env >> $BASH_ENV
-      mkdir -p ~/.aws
-      cp .aws/* ~/.aws/
-      # the following commands are normally ran by checkout step but we may only run checkout once
-      mkdir -p ~/.ssh
-      echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-      git config --global url."ssh://git@github.com".insteadOf https://github.com
-      git config --global gc.auto 0 || true
-      ls -la ~/.ssh
+      GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@github.com:travelex/it-infra-modules.git ~/it-infra-modules
+      ls -s ~/it-infra-modules 
+
+load_bash_env: &load_bash_env
+    name: Export shared environment variables for ingress
+    command: |
+      cat ~/.env >> $BASH_ENV
+      echo "export APP_PARENT=hackathon" >> ${BASH_ENV}        
+      echo "export APP_NAME=mentorship-ui" >> ${BASH_ENV}
+      echo 'export AWS_REGION="eu-west-1"' >> ${BASH_ENV}
+      echo 'export ANSIBLE_HDIR="$CIRCLE_WORKING_DIRECTORY/ansible"' >> ${BASH_ENV}
+      echo 'export GIT_SHA="$CIRCLE_SHA1"' >> ${BASH_ENV}
+      cat ${BASH_ENV}
 
 jobs:
-  setup:
+  sts:
     docker:
-      - image: circleci/python:3.7
+      - image: governmentpaas/awscli
+    steps:
+      - run: apk add --no-cache git perl
+      - checkout
+      - run: mkdir -p /workspace/.aws
+      - run:
+          name: Create AWS config file with temp credentials
+          command: |
+           
+            export AWS_ACCESS_KEY_ID=$nonprod_circleci_app_bootstrap_access_key
+            export AWS_SECRET_ACCESS_KEY=$nonprod_circleci_app_bootstrap_secret_key
+            export AWS_REGION=$AWS_REGION
+            export IAM_ROLE=$NONPROD_IAM_ROLE
+            
+
+            if [ "${CIRCLE_BRANCH}" = "master" ]; then             
+              
+              export IAM_ROLE=$PROD_IAM_ROLE
+              export AWS_ACCESS_KEY_ID=$prod_circleci_app_bootstrap_access_key
+              export AWS_SECRET_ACCESS_KEY=$prod_circleci_app_bootstrap_secret_key
+              export AWS_REGION=$AWS_REGION
+            
+
+              echo "inside if"
+            fi
+            aws sts assume-role --role-session-name circle --role-arn $IAM_ROLE | jq -r '.Credentials | "[default]\naws_access_key_id = \(.AccessKeyId)\naws_secret_access_key = \(.SecretAccessKey)\naws_session_token = \(.SessionToken)\nregion = eu-west-1"' > /workspace/.aws/credentials
+      - run:
+          name: put variables into workspace so that it can be used by all jobs
+          command: |
+            BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
+            ENVIRONMENT=$(echo -e 'develop dev\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
+            AWS_ACCOUNT_TYPE=$(echo -e 'develop nonprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
+
+            echo "export APP_ENVIRONMENT=${ENVIRONMENT}" >> /workspace/.env
+            echo "export ENVIRONMENT=${ENVIRONMENT}" >> /workspace/.env
+            echo "export AWS_REGION=${AWS_REGION}" >> /workspace/.env
+            echo "export AWS_ACCOUNT_TYPE=${AWS_ACCOUNT_TYPE}" >> /workspace/.env
+                        
+            cat /workspace/.env
+            echo "APP_ENVIRONMENT is ${APP_ENVIRONMENT}"
+            echo "ENVIRONMENT is ${ENVIRONMENT}"
+            echo "AWS_ACCOUNT_TYPE is ${AWS_ACCOUNT_TYPE}"
+
+            if [[ "<< pipeline.parameters.ENV_TYPE >>"  == "bcp" ]]; then
+               tf_vars_prefix="bcp" 
+               echo $tf_vars_prefix
+            else
+               tf_vars_prefix="main"
+                echo $tf_vars_prefix
+               
+            fi
+            
+            echo "tf_vars_prefix=${tf_vars_prefix}" >> /workspace/.env
+            echo "tf_vars_prefix is $tf_vars_prefix"
+
+            if [[ "<< pipeline.parameters.TAGS >>"  == "all" ]]; then
+               TAG_NAMES="all" 
+            else
+               TAG_NAMES="<< pipeline.parameters.TAGS >>"
+               if [[ "<< pipeline.parameters.TAGS >>"  == "default" ]]; then
+                  TAG_NAMES=`git log -1 --pretty=%B | perl -nle 'print $1 if /\((.*)\)/'`
+                  echo $TAG_NAMES                  
+               fi
+            fi
+
+            echo "TAG_NAMES=${TAG_NAMES}" >> /workspace/.env
+            echo "TAG_NAMES is $TAG_NAMES"
+            
+      - persist_to_workspace:
+          root: /workspace
+          paths:
+            - .aws/credentials
+            - .env
+  
+  sts_dmz:
+    docker:
+      - image: governmentpaas/awscli
+    steps:
+      - run: apk add --no-cache git perl
+      - checkout
+      - run: mkdir -p /workspace/.aws
+      - run:
+          name: Create AWS config file with temp credentials
+          command: |
+           
+            export AWS_ACCESS_KEY_ID=$nonprod_circleci_app_bootstrap_access_key_dmz
+            export AWS_SECRET_ACCESS_KEY=$nonprod_circleci_app_bootstrap_secret_key_dmz
+            export AWS_REGION=$AWS_REGION
+            export IAM_ROLE=$NONPROD_IAM_ROLE_DMZ
+            APP_ENVIRONMENT="dev"
+
+            if [ "${CIRCLE_BRANCH}" = "master" ]; then             
+              
+              export IAM_ROLE=$PROD_IAM_ROLE_DMZ
+              export AWS_ACCESS_KEY_ID=$prod_circleci_app_bootstrap_access_key_dmz
+              export AWS_SECRET_ACCESS_KEY=$prod_circleci_app_bootstrap_secret_key_dmz
+              export AWS_REGION=$AWS_REGION
+              APP_ENVIRONMENT="prod"
+
+              echo "inside if"
+            fi
+            aws sts assume-role --role-session-name circle --role-arn $IAM_ROLE | jq -r '.Credentials | "[default]\naws_access_key_id = \(.AccessKeyId)\naws_secret_access_key = \(.SecretAccessKey)\naws_session_token = \(.SessionToken)\nregion = eu-west-1"' > /workspace/.aws/credentials
+      - run:
+          name: put variables into workspace so that it can be used by all jobs
+          command: |
+            BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
+            ENVIRONMENT=$(echo -e 'develop dev\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
+            AWS_ACCOUNT_TYPE=$(echo -e 'develop nonprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
+
+            echo "export APP_ENVIRONMENT=${AWS_ACCOUNT_TYPE}" >> /workspace/.env
+            echo "export ENVIRONMENT=${ENVIRONMENT}" >> /workspace/.env
+            echo "export AWS_REGION=${AWS_REGION}" >> /workspace/.env
+            echo "export AWS_ACCOUNT_TYPE=${AWS_ACCOUNT_TYPE}" >> /workspace/.env
+                        
+            cat /workspace/.env
+            echo "APP_ENVIRONMENT is ${APP_ENVIRONMENT}"
+            echo "ENVIRONMENT is ${ENVIRONMENT}"
+            echo "AWS_ACCOUNT_TYPE is ${AWS_ACCOUNT_TYPE}"
+
+            if [[ "<< pipeline.parameters.ENV_TYPE >>"  == "bcp" ]]; then
+               tf_vars_prefix="bcp" 
+               echo $tf_vars_prefix
+            else
+               tf_vars_prefix="main"
+                echo $tf_vars_prefix
+               
+            fi
+            
+            echo "tf_vars_prefix=${tf_vars_prefix}" >> /workspace/.env
+            echo "tf_vars_prefix is $tf_vars_prefix"
+
+            if [[ "<< pipeline.parameters.TAGS >>"  == "all" ]]; then
+               TAG_NAMES="all" 
+            else
+               TAG_NAMES="<< pipeline.parameters.TAGS >>"
+               if [[ "<< pipeline.parameters.TAGS >>"  == "default" ]]; then
+                  TAG_NAMES=`git log -1 --pretty=%B | perl -nle 'print $1 if /\((.*)\)/'`
+                  echo $TAG_NAMES                  
+               fi
+            fi
+
+            echo "TAG_NAMES=${TAG_NAMES}" >> /workspace/.env
+            echo "TAG_NAMES is $TAG_NAMES"
+            
+      - persist_to_workspace:
+          root: /workspace
+          paths:
+            - .aws/credentials
+            - .env
+
+  get_artifacts:
+    docker:
+      - image: amazonlinux:1
     steps:
       - checkout
-      - add_ssh_keys: *add_custom_ssh_keys
       - run:
-          name: Dependencies are installed
-          command: sudo pip install awscli
-      - run:
-          name: Initializing AWS credentials and environment
+          name: Generate Lambda payloads
+          working_directory: lambda
           command: |
-            echo "export APP_PARENT=ws" >> .extra_env
-            echo "export APP_NAME=middleware" >> .extra_env
-            echo 'export AWS_DEFAULT_REGION="eu-west-1"' >> .extra_env
-            echo 'export ANSIBLE_HDIR="$CIRCLE_WORKING_DIRECTORY/ansible"' >> .extra_env
-            echo 'export APP_CONFIG_HOME="$CIRCLE_WORKING_DIRECTORY/ansible/config/$APP_NAME"' >> .extra_env
-            if [ "${CIRCLE_BRANCH}" = "master" ]; then
-              export AWS_ACCESS_KEY_ID=$PROD_IAM_ID
-              export AWS_SECRET_ACCESS_KEY=$PROD_IAM_KEY
-              export IAM_ROLE=$PROD_IAM_ROLE
-              AWS_ACCOUNT_TYPE="prod"
-              APP_ENVIRONMENT="production"
-            else
-              export AWS_ACCESS_KEY_ID=$NONPROD_IAM_ID
-              export AWS_SECRET_ACCESS_KEY=$NONPROD_IAM_KEY
-              export IAM_ROLE=$NONPROD_IAM_ROLE
-              AWS_ACCOUNT_TYPE="nonprod"
-              BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
-              BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
-              APP_ENVIRONMENT=$(echo -e 'feature/ dev\nplay/ play\ndevelopment sit\nrelease/ uat\nhotfix/ preprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
-              if [ -z "${APP_ENVIRONMENT}" ]; then
-                echo "Your branch name ${CIRCLE_BRANCH} didn't match any environment. This step should not have run. Consult README.md."
-                exit 44
-              fi
-            fi
-            echo "export AWS_ACCOUNT_TYPE=${AWS_ACCOUNT_TYPE}" >> .extra_env
-            echo "export APP_ENVIRONMENT=${APP_ENVIRONMENT}" >> .extra_env
-            echo "Custom environment values:"
-            echo "Using AWS account as: $AWS_ACCOUNT_TYPE, and application environment as: $APP_ENVIRONMENT."
-            mkdir -p .aws
-            aws sts assume-role --role-session-name circle --role-arn $IAM_ROLE | jq -r '.Credentials | "[default]\naws_access_key_id = \(.AccessKeyId)\naws_secret_access_key = \(.SecretAccessKey)\naws_session_token = \(.SessionToken)\naws_security_token = \(.SessionToken)\nregion = eu-west-1"' > .aws/credentials
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
+            yum install -y zip
+            #zip volume-backup.zip volume-backup.py
+            yum -y update
+            curl --silent --location https://rpm.nodesource.com/setup_10.x | bash -
+            yum -y install nodejs
+            npm install aws-sdk
+            cd import_security_hub_findings
+            curl --silent --location https://rpm.nodesource.com/setup_10.x | bash -
+            yum -y install nodejs
+            npm install aws-sdk
+            zip -r ../SSMExportPatchComplianceToSecurityHub.zip .
+            ls -lart ../
 
+            
+
+#      - *attach_workspace
+#      - add_ssh_keys: *add_ssh_keys_infra_modules
+#      - run: *infra_modules_checkout
+
+      - persist_to_workspace:
+          root: lambda
+          paths:
+            - SSMExportPatchComplianceToSecurityHub.zip
+
+  tf_validate:
+    docker:
+      - image: cimg/go:1.16
+    steps:
+      - checkout
+      - run:
+          name: do terraform validate using tfexec
+          working_directory: terraform
+          command: |
+            go version
+            go get -u github.com/tfsec/tfsec/cmd/tfsec            
+            tfsec .
+            
   s3-download:
     docker:
       - image: 173523405217.dkr.ecr.eu-west-1.amazonaws.com/travelex-infra:0.2
         aws_auth:
-          aws_access_key_id: $NONPROD_IAM_ID
-          aws_secret_access_key: $NONPROD_IAM_KEY
+          aws_access_key_id: $nonprod_circleci_app_bootstrap_access_key
+          aws_secret_access_key: $nonprod_circleci_app_bootstrap_secret_key
     steps:
       - checkout
-      - *attach_workspace
-      - add_ssh_keys: *add_custom_ssh_keys
-      - run: *setup_env
+      - attach_workspace:
+          at: ~/      
+      - add_ssh_keys: *add_ssh_keys_infra_modules
+      #- run: *setup_env
       - run:
           name: copy_terraform_output_to_s3_bucket
           command: |
             pwd
-            pip install awscli            
-            ls -lart            
-            aws s3 cp s3://tvx-${APP_NAME}-${APP_ENVIRONMENT}-terraformoutput/terraform_outputs.json terraform/applications/
+            pip install awscli
+            ls -larth
+            aws s3 ls
+  
+            BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
+            ENVIRONMENT=$(echo -e 'develop dev\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
+            AWS_ACCOUNT_TYPE=$(echo -e 'develop nonprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
+            
+            aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json terraform/applications/            
             cd terraform/applications/
-            ls -lart
+            ls -larth
             pwd
       - persist_to_workspace:
           root: /root/project/
           paths:
             - "terraform/applications/terraform_outputs.json"
 
+  
+
   lambda-job:
     docker:
-      - image: circleci/node:14.17-stretch
+      - image: circleci/node:12.22
     steps:
-      - *attach_workspace
-      - add_ssh_keys: *add_node_ssh_keys
-      - run: *setup_env
+      - checkout
+      - attach_workspace:
+          at: ~/      
+      - add_ssh_keys: *add_ssh_keys_infra_modules
+      - run: *load_bash_env
       - run:
           name: Serverless dependencies are installed
           command: |
@@ -133,28 +291,46 @@ jobs:
             make build test deploy
       - setup_remote_docker:
           name: Spining off remote docker
-      # - run:
-      #     name: Pivio yaml pushing
-      #     command: |
-      #       echo $(pwd)
-      #       echo $(ls)
-      #       docker create -v /source --name configs alpine:3.4 /bin/true
-      #       docker cp ${CIRCLE_STAGE}/pivio.yaml configs:/source
-      #       docker pull leanix/pivio-client
-      #       docker run --rm --volumes-from configs leanix/pivio-client npm-license-checker
-      #       docker run --rm --volumes-from configs leanix/pivio-client pivio -serviceurl "https://app.leanix.net/services/integrations/v2/pivio/document" -verbose -addfield "api_token=${PIVIO_LEANIX_API_KEY}"
+
+
 
 workflows:
-  middleware:
-    jobs:
-      - setup:
-          filters: *branch_filters
+  version: 2
+  build:
+    jobs:         
       - s3-download:
           requires:
-            - setup
-          filters: *branch_filters
+            - sts
+          filters:
+            branches:
+              only:
+                - feature/dit
+                - master
+
       - lambda-job:
           name: rise-dynamic-service
           requires:
             - s3-download
-          filters: *branch_filters
+          filters:
+            branches:
+              only:
+                - feature/dit
+                - master
+
+
+      
+       
+# workflows:
+#   middleware:
+#     jobs:
+#       - setup:
+#           filters: *branch_filters
+#       - s3-download:
+#           requires:
+#             - setup
+#           filters: *branch_filters
+#       - lambda-job:
+#           name: rise-dynamic-service
+#           requires:
+#             - s3-download
+#           filters: *branch_filters
