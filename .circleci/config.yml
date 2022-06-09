@@ -297,7 +297,8 @@ jobs:
 workflows:
   version: 2
   build:
-    jobs:         
+    jobs:    
+     - sts     
       - s3-download:
           requires:
             - sts
