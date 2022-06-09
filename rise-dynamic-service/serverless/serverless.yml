@@ -7,7 +7,7 @@ plugins:
   modules:
     - serverless-prune-plugin    
     - serverless-plugin-existing-s3
-    - serverless-offline 
+    #- serverless-offline 
 
 custom:
   fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
