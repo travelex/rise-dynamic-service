@@ -1,6 +1,6 @@
-KYC:
+RISE:
   name: ${self:provider.stage}-rise-service
-  description: eKYC ${self:provider.stage} 
+  description: rise ${self:provider.stage} 
   handler: src/handlers/${self:provider.name}/rise-service-handler.rise
   disableLogs: true #To disable default log group creation by serverless
   timeout: 30
@@ -14,7 +14,7 @@ KYC:
         path: status/{entity}
         method: post
         async: false
-        # private: true 
+    #    private: true 
     - http:
         path: referenceData/{entity}
         method: post
@@ -28,8 +28,8 @@ KYC:
               - Access-Control-Request-Method
               - Access-Control-Allow-Origin
             allowCredentials: false
-            authorizer:
-            type: CUSTOM
+        #    authorizer:
+        #    type: CUSTOM
         #    authorizerId:
         #        'Fn::ImportValue': auth-ui-${opt:stage}-authorizer
         # private: true 
