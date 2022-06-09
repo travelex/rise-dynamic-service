@@ -1,0 +1,26 @@
+Resources:
+  AddressLookupLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/${self:provider.stage}-address-lookup-service
+      RetentionInDays: ${self:custom.fromTerraform.pe_log_group_retention_period}
+  AddressLookupNewSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties: 
+      DestinationArn: arn:aws:lambda:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:function:datadog-log-shipper-lambda-${self:provider.stage}
+      FilterPattern: ''
+      LogGroupName: 
+        Ref: AddressLookupLogGroup
+
+  KYCServiceLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/${self:provider.stage}-ekyc-service
+      RetentionInDays: ${self:custom.fromTerraform.pe_log_group_retention_period}
+  KYCServiceNewSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties: 
+      DestinationArn: arn:aws:lambda:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:function:datadog-log-shipper-lambda-${self:provider.stage}
+      FilterPattern: ''
+      LogGroupName: 
+        Ref: KYCServiceLogGroup
