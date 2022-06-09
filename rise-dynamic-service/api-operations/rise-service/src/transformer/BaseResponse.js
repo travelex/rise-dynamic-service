@@ -1,7 +1,7 @@
-const GenericException = require('generic-exception').GenericException;
+// const GenericException = require('generic-exception').GenericException;
 
-const ExceptionType = require('../model/ExceptionType');
-const ExceptionCategory = require('../model/ExceptionCategory');
+// const ExceptionType = require('../model/ExceptionType');
+// const ExceptionCategory = require('../model/ExceptionCategory');
 const utils = require('../utils/Utils');
 
 
