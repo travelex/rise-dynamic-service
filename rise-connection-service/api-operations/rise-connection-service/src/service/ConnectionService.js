@@ -52,7 +52,7 @@ class ConnectionService {
 		try {
 			let queryParams, response;
 			console.log(params.create_if_exist);
-			if (params.create_if_exist == "true") {
+			if (params.create_if_not_exist == true) {
 				queryParams = this.getInsertRecordsParams(params, body);
 				console.log(queryParams);
 				await dynamoDao.putRecords(params);
