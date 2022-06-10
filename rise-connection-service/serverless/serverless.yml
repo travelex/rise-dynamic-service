@@ -29,7 +29,7 @@ provider:
  # tags: ${self:custom.fromTerraform.common_tags}
   vpc:
     securityGroupIds:
-      - ""sg-0977564d060d554ed""
+      - "sg-0977564d060d554ed"
     subnetIds: 
       - "subnet-0b74c02a9275bb954"
       - "subnet-0ba5acc2b6e18714a"
