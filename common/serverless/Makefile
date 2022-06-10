@@ -5,11 +5,7 @@ install:
 		serverless-plugin-existing-s3 \
 		serverless-plugin-lambda-dead-letter \
 		serverless-python-requirements \
-		folder-hash \
-		@aws-sdk/client-s3 \
-		read-yaml-file \
-		shelljs \
-		cli-color \
+		aws-sdk
 
 configure:
 	echo "{}" | jq '. + {trackingDisabled: true}' > ~/.serverlessrc_tmp
