@@ -110,7 +110,7 @@ class ConnectionService {
 		if (params.status) {
 			queryObject = {
 				TableName: TABLE_NAME,
-				KeyConditionExpression: "email_id = :email_id and begins_with(type, :type) and status = :status",
+				KeyConditionExpression: "email_id = :email_id and begins_with(user_type, :type) and status = :status",
 				ExpressionAttributeValues: {
 					":email_id": { S: params.email_id },
 					":type": { S: params.type },
@@ -120,7 +120,7 @@ class ConnectionService {
 		} else {
 			queryObject = {
 				TableName: TABLE_NAME,
-				KeyConditionExpression: "email_id = :email_id and begins_with(type, :type)",
+				KeyConditionExpression: "email_id = :email_id and begins_with(user_type, :type)",
 				ExpressionAttributeValues: {
 					":email_id": { S: params.email_id },
 					":type": { S: params.type }
@@ -142,7 +142,7 @@ class ConnectionService {
 						PutRequest: {
 							Item: {
 								"email_id": params.mentee_email_id,
-								"type": `mentor-${params.mentor_email_id}-${guid}`,
+								"user_type": `mentor-${params.mentor_email_id}-${guid}`,
 								"category": "mentee",
 								"status": body.status,
 								"remark": body.remark,
@@ -158,7 +158,7 @@ class ConnectionService {
 						PutRequest: {
 							Item: {
 								"email_id": params.mentor_email_id,
-								"type": `mentee-${params.mentee_email_id}-${guid}`,
+								"user_type": `mentee-${params.mentee_email_id}-${guid}`,
 								"category": "mentor",
 								"status": body.status,
 								"remark": body.remark,
@@ -188,7 +188,7 @@ class ConnectionService {
 					"email_id": params.mentee_email_id
 				},
 				UpdateExpression: "set status = :status and remark = :remark",
-				ConditionExpression: 'begins_with(type, :type)',
+				ConditionExpression: 'begins_with(user_type, :type)',
 				ExpressionAttributeValues: {
 					':status': body.status,
 					':remark': body.remark,
@@ -201,7 +201,7 @@ class ConnectionService {
 					"email_id": params.mentor_email_id
 				},
 				UpdateExpression: "set status = :status and remark = :remark",
-				ConditionExpression: 'begins_with(type, :type)',
+				ConditionExpression: 'begins_with(user_type, :type)',
 				ExpressionAttributeValues: {
 					':status': params.status,
 					':remark': params.remark,
@@ -224,7 +224,7 @@ class ConnectionService {
 					"email_id": params.mentee_email_id
 				},
 				UpdateExpression: "set is_deleted = :isDeleted",
-				ConditionExpression: 'begins_with(type, :type)',
+				ConditionExpression: 'begins_with(user_type, :type)',
 				ExpressionAttributeValues: {
 					':isDeleted': 1,
 					':type': menteeType,
@@ -236,7 +236,7 @@ class ConnectionService {
 					"email_id": params.mentor_email_id
 				},
 				UpdateExpression: "set is_deleted = :isDeleted",
-				ConditionExpression: 'begins_with(type, :type)',
+				ConditionExpression: 'begins_with(user_type, :type)',
 				ExpressionAttributeValues: {
 					':isDeleted': 1,
 					':type': mentorType,

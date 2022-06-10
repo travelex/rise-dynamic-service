@@ -120,7 +120,7 @@ class DynamoDao {
 
     async putRecords(params) {
         try {
-            return await docClient.batchWriteItem(params).promise();
+            return await docClient.batchWrite(params).promise();
         } catch (error) {
             logger.error(`Exception occurred while inserting records :: , ${error}`);
             throw error;
