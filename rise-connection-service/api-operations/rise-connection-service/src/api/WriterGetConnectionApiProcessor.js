@@ -55,7 +55,7 @@ class WriterGetConnectionApiProcessor {
                 _auditLog = new AuditLogger.Builder(logger, 'rise-dynamic-service', options);
                 try {
                     logger.info('Dynamic service request received');
-                    logger.debug('Event Received', JSON.stringify(event));
+                    console.log('Event Received', JSON.stringify(event));
                     
                     let params = this.getParams(event);
                     const response = connectionService.getConnectionInfo(params);
@@ -115,14 +115,14 @@ class WriterGetConnectionApiProcessor {
      */
     getParams(event) {
         const { pathParameters, queryStringParameters } = event;
-        logger.debug('path', path);
-        logger.debug('pathParameters', pathParameters);
-        logger.debug('queryStringParameters', queryStringParameters);
+        console.log(`path ${path}`);
+        console.log(`pathParameters ${pathParameters}`);
+        console.log('queryStringParameters', queryStringParameters);
         let errorArray = [];
         let params = {
             "email_id": pathParameters.email_id ? pathParameters.email_id : errorArray.push["Invalid parameters"],
             "type": pathParameters.type ? pathParameters.type : errorArray.push["Invalid parameters"],
-            "status": queryStringParameters.status ? queryStringParameters.status : ''
+            "status": (queryStringParameters && queryStringParameters.status) ? queryStringParameters.status : ''
         }
         if (errorArray.length) {
             throw new Error({

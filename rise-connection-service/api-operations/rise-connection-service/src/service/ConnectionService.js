@@ -29,8 +29,11 @@ class ConnectionService {
 	 */
 	async getConnectionInfo(params) {
 		try {
+			console.log(params);
 			let queryParams = this.getFetchRecordsParams(params)
+			console.log(queryParams);
 			let response = await dynamoDao.getRecords(queryParams);
+			console.log(response);
 			if (response.length) {
 				return response;
 			} else {
@@ -48,15 +51,19 @@ class ConnectionService {
 	async putConnection(params, body) {
 		try {
 			let queryParams, response;
+			console.log(params.create_if_exist);
 			if (params.create_if_exist == "true") {
-				queryParams = this.getInsertRecordsParams(params, body)
+				queryParams = this.getInsertRecordsParams(params, body);
+				console.log(queryParams);
 				await dynamoDao.putRecords(params);
 				response = "Created";
 			} else {
-				queryParams = this.getUpdateRecordsParams(params, body)
+				queryParams = this.getUpdateRecordsParams(params, body);
+				console.log(queryParams);
 				if (queryParams.length) {
 					for (let object = 0; object < queryParams.length; object++) {
-						await dynamicDao.updateRecords(queryParams[object])
+						let result = await dynamicDao.updateRecords(queryParams[object]);
+						console.log(result);
 					}
 				}
 				response = "Updated";
@@ -84,7 +91,8 @@ class ConnectionService {
 			let queryParams = this.getDeleteQueryParams(params);
 			if (queryParams.length) {
 				for (let object = 0; object < queryParams.length; object++) {
-					await dynamoDao.deleteRecords(queryParams);
+					let result = await dynamoDao.deleteRecords(queryParams);
+					console.log(result);
 				}
 			}
 			return {

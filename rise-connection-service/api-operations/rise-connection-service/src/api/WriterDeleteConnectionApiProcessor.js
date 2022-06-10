@@ -55,7 +55,7 @@ class WriterDeleteConnectionApiProcessor {
                 _auditLog = new AuditLogger.Builder(logger, 'rise-dynamic-service', options);
                 try {
                     logger.info('Dynamic service request received');
-                    logger.debug('Event Received', JSON.stringify(event));
+                    console.log('Event Received', JSON.stringify(event));
 
                     let params = this.getParams(event);
                     const response = connectionService.deleteConnection(params);
@@ -89,17 +89,17 @@ class WriterDeleteConnectionApiProcessor {
     getFilePath(event){
         try {
             const { path, pathParameters, queryStringParameters } = event;
-            logger.debug('path', path);
-            logger.debug('pathParameters', pathParameters);
-            logger.debug('queryStringParameters', queryStringParameters);
+            console.log('path', path);
+            console.log('pathParameters', pathParameters);
+            console.log('queryStringParameters', queryStringParameters);
     
             const rootFolder = path.split('/')[1];
             const entity = pathParameters.entity;
             const operation = queryStringParameters.criteria;
             let fileName = entity + '-' + operation;
-            logger.debug('fileName:', fileName);
+            console.log('fileName:', fileName);
             const filePath = rootFolder + '/' + fileName;
-            logger.debug('filePath:', filePath);
+            console.log('filePath:', filePath);
             return filePath;
         } catch (exception){
             logger.error(`Exception while creating File Path: ${JSON.stringify(exception)}`);
@@ -115,9 +115,9 @@ class WriterDeleteConnectionApiProcessor {
      */
      getParams(event) {
         const { pathParameters, queryStringParameters } = event;
-        logger.debug('path', path);
-        logger.debug('pathParameters', pathParameters);
-        logger.debug('queryStringParameters', queryStringParameters);
+        console.log('path', path);
+        console.log('pathParameters', pathParameters);
+        console.log('queryStringParameters', queryStringParameters);
         let errorArray = [];
         let params = {
             "mentee_email_id": pathParameters.type ? pathParameters.type : errorArray.push["Invalid parameters"],
