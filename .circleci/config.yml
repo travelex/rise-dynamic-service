@@ -323,7 +323,7 @@ workflows:
               only:
                 - develop
                 - master
-                - feature/dit
+                - feature\/.*/
       #- sts_dmz
 
       # - lambda-job:
@@ -338,7 +338,7 @@ workflows:
       #           - feature/dit
 
       - lambda-job:
-          name: rise-connection-service
+          name: statistics-event-handler
           requires:
             - s3-download
           filters:
@@ -346,4 +346,4 @@ workflows:
               only:
                 - develop
                 - master
-                - feature/dit
+                - feature\/.*/
