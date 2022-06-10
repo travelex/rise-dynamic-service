@@ -3,7 +3,6 @@
 
 const path = require('path');
 const csv = require('csvtojson');
-const objectHash = require('object-hash');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
