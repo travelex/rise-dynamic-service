@@ -74,5 +74,5 @@ functions:
   - ${file(./configs/functions/rise-service.yml)}
 
 
-#resources:
-#  - ${file(./configs/resources/log-group-and-subscription.yml)}
+resources:
+  - ${file(./configs/resources/log-group-and-subscription.yml)}
