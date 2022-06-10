@@ -11,28 +11,18 @@ RISE:
       - node_modules/rise-service/**
   events:
     - http:
-        path: stats/{entity}
+        path: rise/connection/{type}/{email_id}
         method: get
         async: false
     #    private: true 
     - http:
-        path: referenceData/{entity}
-        method: post
-        async: false
-        # private: true 
-    - http:
-        path: referenceData/{entity}
-        method: get
-        async: false
-        # private: true 
-    - http:
-        path: referenceData/{entity}
+        path: rise/connection/{mentee_email_id}/{mentor_email_id}
         method: put
         async: false
         # private: true 
     - http:
-        path: search/{entity}
-        method: get
+        path: referenceData/{entity}
+        method: delete
         async: false
         # private: true 
     
