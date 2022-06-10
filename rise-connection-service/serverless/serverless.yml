@@ -44,7 +44,7 @@ provider:
   environment:
     ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
 
-functions: ${file(./configs/functions/rise-connection-service.yml)}
+functions: ${file(./configs/functions/functions.yml)}
 
 resources:
   - ${file(./configs/resources/log-group-and-subscription.yml)} 
