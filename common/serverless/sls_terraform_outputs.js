@@ -4,8 +4,8 @@ const shelljs = require('shelljs')
 const AWS = require('aws-sdk')
 module.exports = serverless => {
   let buckets = {
-    "dev":"tvx-hackathon-mentorship-dev-app-config",
-    "prod":"tvx-hackathon-mentorship-prod-app-config"
+    "dev": "tvx-hackathon-mentorship-dev-app-config",
+    "prod": "tvx-hackathon-mentorship-prod-app-config"
   }
 
   var configuration = {
@@ -18,6 +18,11 @@ module.exports = serverless => {
     }
     return configuration;
   }
+  let stage = serverless.processedInput['options']['stage']
+  console.log("Stage =" + stage)
+  let bucketName = buckets[stage]
+  console.log(bucketName)
+
   // console.log(fs.readdirSync(path.join(__dirname,"/../../terraform/applications/terraform_outputs.json")))
   //contents = fs.readFileSync('/root/project/terraform/applications/terraform_outputs.json');
   console.log(shelljs.pwd())
@@ -53,6 +58,6 @@ module.exports = serverless => {
   //     configuration[key] = rawValue
   //   }
   // });
-  
+
   return configuration;
 };
