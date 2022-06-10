@@ -1,4 +1,4 @@
-service: rise-dynamic-service
+service: rise-connection-service
 #variablesResolutionMode: 20210326
 
 

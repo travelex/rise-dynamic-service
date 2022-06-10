@@ -2,7 +2,7 @@ Resources:
   RISEServiceLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: /aws/lambda/${self:provider.stage}-rise-service
+      LogGroupName: /aws/lambda/${self:provider.stage}-rise-connection-service
       RetentionInDays: ${self:custom.fromTerraform.pe_log_group_retention_period}
   RISEServiceNewSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter

@@ -1,14 +1,14 @@
 RISE:
-  name: ${self:provider.stage}-rise-service
+  name: ${self:provider.stage}-rise-connection-service
   description: rise ${self:provider.stage} 
-  handler: src/handlers/${self:provider.name}/rise-service-handler.rise
+  handler: src/handlers/${self:provider.name}/rise-connection-service-handler.rise
   disableLogs: true #To disable default log group creation by serverless
   timeout: 30
   memorySize: 512 # optional, in MB, default is 1024
   package:
     include:
-      - src/handlers/${self:provider.name}/rise-service-handler.js
-      - node_modules/rise-service/**
+      - src/handlers/${self:provider.name}/rise-connection-service-handler.js
+      - node_modules/rise-connection-service/**
   events:
     - http:
         path: stats/{entity}
