@@ -12,5 +12,5 @@ default_test: ;
 
 default_deploy:
 	cd serverless && \
-		SLS_DEBUG=* $(SLS_PATH) print --stage ${APP_ENVIRONMENT} && \
-		SLS_DEBUG=* $(SLS_PATH) deploy --verbose --stage ${APP_ENVIRONMENT} --package .serverless
+		SLS_DEBUG=* $(SLS_PATH) print dev ${APP_ENVIRONMENT} && \
+		SLS_DEBUG=* $(SLS_PATH) deploy --verbose dev ${APP_ENVIRONMENT} --package .serverless
