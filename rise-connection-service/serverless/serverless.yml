@@ -10,7 +10,7 @@ plugins:
     - serverless-offline 
 
 custom:
-  fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
+  #fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
   filecounterTableName: file-counter-${opt:stage, self:provider.stage}
   tableName: object-processed-metadata-${opt:stage, self:provider.stage}
   middlewarestagingdata: middleware-staging-data-${opt:stage, self:provider.stage}
@@ -20,24 +20,24 @@ custom:
 
 provider:
   name: aws
-  runtime: ${self:custom.fromTerraform.node_runtime}
+  runtime: "nodejs14.x"
   memorySize: 512
   stage: dev
-  region: ${self:custom.fromTerraform.region}
+  region: "eu-west-1"
   stackName: sls-${opt:stage, self:provider.stage}-${self:service}-stack
-  stackTags: ${self:custom.fromTerraform.common_tags}
-  tags: ${self:custom.fromTerraform.common_tags}
+ # stackTags: ${self:custom.fromTerraform.common_tags}
+ # tags: ${self:custom.fromTerraform.common_tags}
   vpc:
-    securityGroupIds:
-      - ${self:custom.fromTerraform.middleware_lambda_security_group_id}
+   # securityGroupIds:
+    #  - ${self:custom.fromTerraform.middleware_lambda_security_group_id}
     subnetIds: 
-      - ${self:custom.fromTerraform.subnet_private_0}
-      - ${self:custom.fromTerraform.subnet_private_1}
+      - "subnet-0b74c02a9275bb954"
+      - "subnet-0ba5acc2b6e18714a"
   deploymentBucket:
-    name: 'dev-ui-mentorship-tvx-test-cloud'
+    name: "dev-ui-mentorship-tvx-test-cloud"
   apiGateway:
-    restApiId: ${self:custom.fromTerraform.mentorship_rest_api_id}
-    restApiRootResourceId: ${self:custom.fromTerraform.mentorship_rest_api_root_resource_id}
+    restApiId: "8sgqsx25bc"
+    restApiRootResourceId: "vhblyqi7c3"
   environment: ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
   #logs:
     #restApi: "${self:custom.fromTerraform.private_api_gateway_logs_enabled}"
