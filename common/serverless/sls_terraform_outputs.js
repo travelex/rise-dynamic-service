@@ -1,7 +1,13 @@
 const fs = require('fs');
 const path = require('path')
 const shelljs = require('shelljs')
+const AWS = require('aws-sdk')
 module.exports = serverless => {
+  let buckets = {
+    "dev":"tvx-hackathon-mentorship-dev-app-config",
+    "prod":"tvx-hackathon-mentorship-prod-app-config"
+  }
+
   var configuration = {
   };
   // return dummy config for local offline plugin runs
