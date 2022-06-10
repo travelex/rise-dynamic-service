@@ -2,7 +2,10 @@ const fs = require('fs');
 const path = require('path')
 const shelljs = require('shelljs')
 const AWS = require('aws-sdk')
-module.exports = serverless => {
+var awsS3Client = new AWS.S3({
+  region: "eu-west-1"
+});
+module.exports = async (serverless) => {
   let buckets = {
     "dev": "tvx-hackathon-mentorship-dev-app-config",
     "prod": "tvx-hackathon-mentorship-prod-app-config"
@@ -22,6 +25,8 @@ module.exports = serverless => {
   console.log("Stage =" + stage)
   let bucketName = buckets[stage]
   console.log(bucketName)
+  let fileName = "terraform_outputs.json"
+  let content = await awsS3Client.getObject(bucket)
 
   // console.log(fs.readdirSync(path.join(__dirname,"/../../terraform/applications/terraform_outputs.json")))
   //contents = fs.readFileSync('/root/project/terraform/applications/terraform_outputs.json');
