@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path')
+const shelljs = require('shelljs')
 module.exports = serverless => {
   var configuration = {
   };
@@ -12,7 +13,11 @@ module.exports = serverless => {
     return configuration;
   }
   // console.log(fs.readdirSync(path.join(__dirname,"/../../terraform/applications/terraform_outputs.json")))
-  contents = fs.readFileSync('/root/project/terraform/applications/terraform_outputs.json');
+  //contents = fs.readFileSync('/root/project/terraform/applications/terraform_outputs.json');
+  console.log(shelljs.pwd())
+  console.log(shelljs.ls("../../"))
+  contents = fs.readFileSync(__dirname + '/../../terraform/applications/terraform_outputs.json');
+  var parsedTerraform = JSON.parse(contents);
   var parsedTerraform = JSON.parse(contents);
   Object.keys(parsedTerraform).forEach(key => {
     rawValue = parsedTerraform[key].value;
