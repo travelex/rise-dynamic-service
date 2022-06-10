@@ -28,8 +28,8 @@ provider:
  # stackTags: ${self:custom.fromTerraform.common_tags}
  # tags: ${self:custom.fromTerraform.common_tags}
   vpc:
-   # securityGroupIds:
-    #  - ${self:custom.fromTerraform.middleware_lambda_security_group_id}
+    securityGroupIds:
+      - ""sg-0977564d060d554ed""
     subnetIds: 
       - "subnet-0b74c02a9275bb954"
       - "subnet-0ba5acc2b6e18714a"
@@ -41,11 +41,7 @@ provider:
   environment: ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
   #logs:
     #restApi: "${self:custom.fromTerraform.private_api_gateway_logs_enabled}"
-  iamManagedPolicies: 
-    - "arn:aws:iam::148807490170:policy/AWSLambdaExecute"
-    - "arn:aws:iam::148807490170:policy/service-role/AWSLambdaRole"
-    - "arn:aws:iam::148807490170:policy/AWSLambda_FullAccess"
-    - "arn:aws:iam::aws:policy/AWSLambdaInvocation-DynamoDB"
+  iamManagedPolicies: "arn:aws:iam::148807490170:role/dev-mentorship-iam-lambda-role"
   iamRoleStatements:
     - Effect: Allow
       Action:
