@@ -22,7 +22,7 @@ provider:
   name: aws
   runtime: ${self:custom.fromTerraform.node_runtime}
   memorySize: 512
-  stage: ${opt:stage}
+  stage: dev
   region: ${self:custom.fromTerraform.region}
   stackName: sls-${opt:stage, self:provider.stage}-${self:service}-stack
   stackTags: ${self:custom.fromTerraform.common_tags}
@@ -40,8 +40,8 @@ provider:
     restApiRootResourceId: ${self:custom.fromTerraform.mentorship_rest_api_root_resource_id}
   environment: ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
   #logs:
-    #restApi: "${self:custom.fromTerraform.middleware_private_api_gateway_logs_enabled}"
-  #iamManagedPolicies: ${self:custom.fromTerraform.middleware_lambda_iam_policy_arns}
+    #restApi: "${self:custom.fromTerraform.private_api_gateway_logs_enabled}"
+  #iamManagedPolicies: ${self:custom.fromTerraform.lambda_iam_policy_arns}
   iamRoleStatements:
     - Effect: Allow
       Action:
