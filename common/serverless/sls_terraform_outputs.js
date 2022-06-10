@@ -7,7 +7,7 @@ module.exports = serverless => {
   if (serverless.processedInput['options']['stage'] == 'local') {
     configuration = {
       region: "eu-west-1",
-      middleware_bucket_name: "tvx-risk-compliance-dev-application-config"
+      middleware_bucket_name: "dev-ui-mentorship-tvx-test-cloud"
     }
     return configuration;
   }
