@@ -260,6 +260,7 @@ jobs:
             echo ${ENVIRONMENT}
             aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json terraform/applications/            
             cd terraform/applications/
+            chmod 774 terraform_outputs.json
             ls -larth
             pwd
       - persist_to_workspace:
