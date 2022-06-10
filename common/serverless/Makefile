@@ -9,7 +9,8 @@ install:
 		@aws-sdk/client-s3 \
 		read-yaml-file \
 		shelljs \
-		cli-color \
+		cli-color \ && 
+	pwd
 
 configure:
 	echo "{}" | jq '. + {trackingDisabled: true}' > ~/.serverlessrc_tmp

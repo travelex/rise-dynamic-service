@@ -11,7 +11,7 @@ module.exports = serverless => {
     }
     return configuration;
   }
-
+  
   contents = fs.readFileSync(__dirname + '/../../terraform/applications/terraform_outputs.json');
   var parsedTerraform = JSON.parse(contents);
   Object.keys(parsedTerraform).forEach(key => {
