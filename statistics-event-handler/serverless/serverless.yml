@@ -1,4 +1,4 @@
-service: rise-connection-service
+service: statistics-event-handler
 
 frameworkVersion: ^2.50.0
 
