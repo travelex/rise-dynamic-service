@@ -71,8 +71,8 @@ provider:
         #- "arn:aws:sns:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:${opt:stage, self:provider.stage}-eif-audit-topic"
 
 functions: 
-  - ${file(./configs/functions/rise-service.yml)}
+  - ${file(./configs/functions/rise-connection-service.yml)}
 
 
-resources:
-  - ${file(./configs/resources/log-group-and-subscription.yml)}
+# resources:
+#   - ${file(./configs/resources/log-group-and-subscription.yml)}
