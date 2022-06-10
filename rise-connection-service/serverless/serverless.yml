@@ -1,5 +1,4 @@
 service: rise-connection-service
-#variablesResolutionMode: 20210326
 
 frameworkVersion: ^2.50.0
 
@@ -27,8 +26,8 @@ provider:
   stackTags: ${self:custom.fromTerraform.common_tags}
   tags: ${self:custom.fromTerraform.common_tags}
   deploymentBucket: ${self:custom.fromTerraform.application_bucketname}
-  iam:
-    role: ${self:custom.fromTerraform.mentorship_lambda_iam}  
+  # iam:
+  role: ${self:custom.fromTerraform.mentorship_lambda_iam}  
   
   apiGateway:
     restApiId: ${self:custom.fromTerraform.mentorship_rest_api_id}
@@ -47,3 +46,5 @@ provider:
 
 functions: ${file(./configs/functions/functions.yml)}
 
+# resources:
+#   - ${file(./configs/resources/authorizer.yml)} 
