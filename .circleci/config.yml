@@ -323,7 +323,7 @@ workflows:
               only:
                 - develop
                 - master
-                - feature\/.*/
+                - /feature\/.*/
       #- sts_dmz
 
       # - lambda-job:
@@ -346,4 +346,4 @@ workflows:
               only:
                 - develop
                 - master
-                - feature\/.*/
+                - /feature\/.*/
