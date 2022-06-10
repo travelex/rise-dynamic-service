@@ -3,7 +3,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: /aws/lambda/${self:provider.stage}-rise-connection-service
-      RetentionInDays: 10
+      RetentionInDays: "10"
   RISEServiceNewSubscriptionFilter:
     Type: AWS::Logs::SubscriptionFilter
     Properties: 
