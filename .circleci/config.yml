@@ -326,16 +326,16 @@ workflows:
                 - feature/dit
       #- sts_dmz
 
-      - lambda-job:
-          name: rise-dynamic-service
-          requires:
-            - s3-download
-          filters:
-            branches:
-              only:
-                - develop
-                - master
-                - feature/dit
+      # - lambda-job:
+      #     name: rise-dynamic-service
+      #     requires:
+      #       - s3-download
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - master
+      #           - feature/dit
 
       - lambda-job:
           name: rise-connection-service
