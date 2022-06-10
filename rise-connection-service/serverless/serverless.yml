@@ -42,9 +42,7 @@ provider:
   #logs:
     #restApi: "${self:custom.fromTerraform.private_api_gateway_logs_enabled}"
   iamManagedPolicies: 
-    - "arn:aws:iam::148807490170:policy/middleware-dev-lambda-s3"
-    - "arn:aws:iam::148807490170:policy/middleware-dev-lambda-ssm"
-    - "arn:aws:iam::148807490170:policy/middleware-dev-lambda-kms"
+    - "arn:aws:iam::148807490170:policy/AWSLambdaExecute"
   iamRoleStatements:
     - Effect: Allow
       Action:
