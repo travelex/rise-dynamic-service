@@ -12,7 +12,7 @@
         path: connection/{type}/{email_id}
         method: get
     - http:
-        path: connection/{mentee_email_id}/{mentor_email_id}
+        path: connection/{type}/{mentor_email_id}
         method: put
 
 # RISE:
