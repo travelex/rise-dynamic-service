@@ -25,8 +25,17 @@ module.exports = async (serverless) => {
   console.log("Stage =" + stage)
   let bucketName = buckets[stage]
   console.log(bucketName)
-  let fileName = "terraform_outputs.json"
-  let content = await awsS3Client.getObject(bucket)
+  let params = {
+    Bucket: bucketName,
+    Key: "terraform_outputs.json"
+  };
+
+  try {
+    stream = await storage.getObject(params);
+  } catch (err) {
+    console.log("Error in Getting file ")
+    throw err;
+  }
 
   // console.log(fs.readdirSync(path.join(__dirname,"/../../terraform/applications/terraform_outputs.json")))
   //contents = fs.readFileSync('/root/project/terraform/applications/terraform_outputs.json');
