@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path')
-const shelljs = require('shelljs')
 const AWS = require('aws-sdk')
 var awsS3Client = new AWS.S3({
   region: "eu-west-1"
