@@ -14,6 +14,9 @@
     - http:
         path: connection/{type}/{email_id}
         method: put
+    - http:
+        path: connection/{type}/{email_id}
+        method: delete
 
 # RISE:
 #   name: ${self:provider.stage}-rise-connection-service
