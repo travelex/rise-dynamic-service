@@ -6,7 +6,7 @@
   "dependencies": {
     "csvtojson": "^2.0.10",
     "lru-cache": "^7.8.1",
-    "rise-service": "file:../api-operations/rise-service",
+    "rise-service": "file:../api-operations/rise-connection-service",
     "serverless-offline": "^8.8.0",
     "winston-wrapper": "https://github.com/travelex/winston-wrapper.git#1.0.23"
   },
