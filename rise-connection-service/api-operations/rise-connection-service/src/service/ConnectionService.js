@@ -30,7 +30,7 @@ class ConnectionService {
 	async getConnectionInfo(params) {
 		try {
 			console.log(params);
-			let queryParams = this.getFetchRecordsParams(params)
+			let queryParams = this.getFetchRecordsParams(params);
 			console.log(queryParams);
 			let response = await dynamoDao.getRecords(queryParams);
 			console.log(response);
@@ -40,10 +40,10 @@ class ConnectionService {
 				return {
 					status: 404,
 					description: "Connection with email_id not found"
-				}
+				};
 			}
 		} catch (error) {
-			logger.error(`Error occurred while fetching records for connection: ${JSON.stringify(error)}`)
+			logger.error(`Error occurred while fetching records for connection: ${JSON.stringify(error)}`);
 			throw error;
 		}
 	}
@@ -51,8 +51,8 @@ class ConnectionService {
 	async putConnection(params, body) {
 		try {
 			let queryParams, response;
-			console.log(params.create_if_exist);
-			if (params.create_if_not_exist == true) {
+			console.log("params.create_if_exist", params.create_if_exist);
+			if (params.create_if_not_exist == 'true') {
 				queryParams = this.getInsertRecordsParams(params, body);
 				console.log(queryParams);
 				await dynamoDao.putRecords(params);
@@ -71,10 +71,10 @@ class ConnectionService {
 			return {
 				status: 200,
 				description: `Connection ${response}`
-			}
+			};
 
 		} catch (error) {
-			logger.error(`Error occured while fetching records for connection: ${JSON.stringify(error)}`)
+			logger.error(`Error occured while fetching records for connection: ${JSON.stringify(error)}`);
 			throw error;
 		}
 	}
@@ -98,9 +98,9 @@ class ConnectionService {
 			return {
 				status: 200,
 				description: `Connection ${response}`
-			}
+			};
 		} catch (error) {
-			logger.error(`Error occured while fetching records for connection: ${JSON.stringify(error)}`)
+			logger.error(`Error occured while fetching records for connection: ${JSON.stringify(error)}`);
 			throw error;
 		}
 	}
@@ -116,7 +116,7 @@ class ConnectionService {
 					":type": { S: params.type },
 					":status": { S: params.status }
 				}
-			}
+			};
 		} else {
 			queryObject = {
 				TableName: TABLE_NAME,
@@ -125,7 +125,7 @@ class ConnectionService {
 					":email_id": { S: params.email_id },
 					":type": { S: params.type }
 				}
-			}
+			};
 		}
 		return queryObject;
 	}
@@ -134,7 +134,7 @@ class ConnectionService {
 		const epochTime = Math.round(new Date().getTime() / 1000);
 		let date = new Date();
 		let insertDate = date.toISOString();
-		let guid = 12345
+		let guid = 12345;
 		let queryParams = {
 			RequestItems: {
 				TABLE_NAME: [
@@ -172,14 +172,14 @@ class ConnectionService {
 					}
 				]
 			}
-		}
+		};
 		return queryParams;
 	}
 
 
 	getUpdateRecordsParams(params, body) {
 		let mentorType = `mentor-${params.mentee_email_id}`;
-		let menteeType = `mentee-${params.mentor_email_id}`
+		let menteeType = `mentee-${params.mentor_email_id}`;
 
 		let queryParams = [
 			{
@@ -208,14 +208,14 @@ class ConnectionService {
 					':type': mentorType,
 				}
 			}
-		]
+		];
 		return queryParams;
 	}
 
 
 	getDeleteQueryParams(params) {
 		let mentorType = `mentor-${params.mentee_email_id}`;
-		let menteeType = `mentee-${params.mentor_email_id}`
+		let menteeType = `mentee-${params.mentor_email_id}`;
 
 		let queryParams = [
 			{
@@ -242,7 +242,7 @@ class ConnectionService {
 					':type': mentorType,
 				}
 			}
-		]
+		];
 		return queryParams;
 	}
 

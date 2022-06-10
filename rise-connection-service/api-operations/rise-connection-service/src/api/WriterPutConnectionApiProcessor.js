@@ -124,7 +124,7 @@ class WriterPutConnectionApiProcessor {
         let params = {
             "mentee_email_id": pathParameters.type ? pathParameters.type : errorArray.push["Invalid parameters"],
             "mentor_email_id": pathParameters.email_id ? pathParameters.email_id : errorArray.push["Invalid parameters"],
-            "create_if_not_exist": (queryStringParameters && queryStringParameters.create_if_not_exist) ? queryStringParameters.create_if_not_exist : true
+            "create_if_not_exist": (queryStringParameters && queryStringParameters.create_if_not_exist) ? queryStringParameters.create_if_not_exist : 'true'
         }
         if (errorArray.length) {
             throw new Error({
