@@ -62,7 +62,7 @@ class ConnectionService {
 				console.log(queryParams);
 				if (queryParams.length) {
 					for (let object = 0; object < queryParams.length; object++) {
-						let result = await dynamicDao.updateRecords(queryParams[object]);
+						let result = await dynamoDao.updateRecords(queryParams[object]);
 						console.log(result);
 					}
 				}
