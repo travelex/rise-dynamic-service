@@ -1,5 +1,5 @@
 {
-  "name": "soap-utility-adapter-service",
+  "name": "rise-connection-service",
   "version": "1.0.0",
   "description": "Serverless data api",
   "main": "index.js",
