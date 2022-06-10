@@ -11,7 +11,7 @@
         KeySchema:
           - AttributeName: "email_id"
             KeyType: "HASH"
-          - AttributeName: "sortKey"
+          - AttributeName: "type"
             KeyType: "RANGE"
         BillingMode: "PAY_PER_REQUEST"
         StreamSpecification:
