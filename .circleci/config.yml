@@ -328,7 +328,7 @@ workflows:
       - lambda-job:
           name: rise-dynamic-service
           requires:
-            - sts
+            - s3-download
           filters:
             branches:
               only:
@@ -339,7 +339,7 @@ workflows:
       - lambda-job:
           name: rise-connection-service
           requires:
-            - sts
+            - s3-download
           filters:
             branches:
               only:
