@@ -1,6 +1,13 @@
 const fs = require('fs');
 const path = require('path')
+const shelljs = require('shelljs')
+const AWS = require('aws-sdk')
 module.exports = serverless => {
+  let buckets = {
+    "dev":"tvx-hackathon-mentorship-dev-app-config",
+    "prod":"tvx-hackathon-mentorship-prod-app-config"
+  }
+
   var configuration = {
   };
   // return dummy config for local offline plugin runs
@@ -12,7 +19,11 @@ module.exports = serverless => {
     return configuration;
   }
   // console.log(fs.readdirSync(path.join(__dirname,"/../../terraform/applications/terraform_outputs.json")))
-  contents = fs.readFileSync('/root/project/terraform/applications/terraform_outputs.json');
+  //contents = fs.readFileSync('/root/project/terraform/applications/terraform_outputs.json');
+  console.log(shelljs.pwd())
+  console.log(shelljs.ls("../../"))
+  contents = fs.readFileSync(__dirname + '/../../terraform/applications/terraform_outputs.json');
+  var parsedTerraform = JSON.parse(contents);
   var parsedTerraform = JSON.parse(contents);
   Object.keys(parsedTerraform).forEach(key => {
     rawValue = parsedTerraform[key].value;
