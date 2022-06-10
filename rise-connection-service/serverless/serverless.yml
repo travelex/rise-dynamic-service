@@ -12,8 +12,8 @@ plugins:
 custom:
   fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
   filecounterTableName: file-counter-${opt:stage, self:provider.stage}
-  tableName: object-processed-metadata-${opt:stage, self:provider.stage}
   middlewarestagingdata: middleware-staging-data-${opt:stage, self:provider.stage}
+  tableName: rise-connection-${opt:stage, self:provider.stage}
   prune:
     automatic: true
     number: 1
@@ -76,3 +76,4 @@ functions:
 
 resources:
   - ${file(./configs/resources/log-group-and-subscription.yml)}
+  - ${file(./configs/resources/rise-connection.yml)}

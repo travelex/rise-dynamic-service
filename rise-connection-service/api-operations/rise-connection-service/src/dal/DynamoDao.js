@@ -1,4 +1,5 @@
-var AWS = require('aws-sdk');
+var aws = require('aws-sdk');
+let docClient = new aws.DynamoDB.DocumentClient();
 const path = require('path');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
 
@@ -23,7 +24,7 @@ class DynamoDao {
                 ConditionExpression: 'attribute_not_exists(id)'
             };
 
-            return await new AWS.DynamoDB({
+            return await new aws.DynamoDB({
                 retryDelayOptions: {
                     customBackoff: function (retryCount, err) {
                         if (err && (err.statusCode == 500 || err.statusCode == 503)) {
@@ -52,7 +53,7 @@ class DynamoDao {
             }
         }
     }
-    
+
     /**
      * 
      * @param {*} traceId 
@@ -60,7 +61,7 @@ class DynamoDao {
      */
     async updateRecordCount(traceId, totalRecordCount) {
         try {
-            var docClient = new AWS.DynamoDB.DocumentClient();
+            var docClient = new aws.DynamoDB.DocumentClient();
             const params = {
                 TableName: TABLE_NAME,
                 Key: {
@@ -83,9 +84,9 @@ class DynamoDao {
         }
     }
 
-    async getAllRecords(){
-        try{
-            var docClient = new AWS.DynamoDB.DocumentClient();
+    async getAllRecords() {
+        try {
+            var docClient = new aws.DynamoDB.DocumentClient();
             const params = {
                 TableName: TABLE_NAME,
                 Key: {
@@ -98,6 +99,42 @@ class DynamoDao {
             logger.error(`Exception occurred while fetching records :: , ${ex}`);
         }
     }
+
+    async getRecords(queryParams) {
+        try {
+            return await docClient.query(queryParams).promise();
+        } catch (error) {
+            logger.error(`Exception occurred while fetching records :: , ${error}`);
+            throw error;
+        }
+    }
+
+    async deleteRecords(params) {
+        try {
+            return await docClient.update(params).promise();
+        } catch (error) {
+            logger.error(`Exception occurred while deleting records :: , ${error}`);
+            throw error;
+        }
+    }
+
+    async putRecords(params) {
+        try {
+            return await docClient.batchWriteItem(params).promise();
+        } catch (error) {
+            logger.error(`Exception occurred while inserting records :: , ${error}`);
+            throw error;
+        }
+    }
+
+    async updateRecords(params){
+        try { 
+            return await docClient.update(params).promise();
+        } catch (error) {
+            logger.error(`Exception occurred while updating records :: , ${error}`);
+            throw error;
+        }
+    }
 }
 
-module.exports = DynamoDao;
+module.exports =  new DynamoDao();
