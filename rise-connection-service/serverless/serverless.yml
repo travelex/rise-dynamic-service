@@ -1,0 +1,78 @@
+service: rise-connection-service
+#variablesResolutionMode: 20210326
+
+
+plugins:
+  localPath: "/usr/local/lib/node_modules/"
+  modules:
+    - serverless-prune-plugin    
+    - serverless-plugin-existing-s3
+    - serverless-offline 
+
+custom:
+  #fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
+  filecounterTableName: file-counter-${opt:stage, self:provider.stage}
+  tableName: object-processed-metadata-${opt:stage, self:provider.stage}
+  middlewarestagingdata: middleware-staging-data-${opt:stage, self:provider.stage}
+  prune:
+    automatic: true
+    number: 1
+
+provider:
+  name: aws
+  runtime: "nodejs14.x"
+  memorySize: 512
+  stage: dev
+  region: "eu-west-1"
+  stackName: sls-${opt:stage, self:provider.stage}-${self:service}-stack
+ # stackTags: ${self:custom.fromTerraform.common_tags}
+ # tags: ${self:custom.fromTerraform.common_tags}
+  vpc:
+   # securityGroupIds:
+    #  - ${self:custom.fromTerraform.middleware_lambda_security_group_id}
+    subnetIds: 
+      - "subnet-0b74c02a9275bb954"
+      - "subnet-0ba5acc2b6e18714a"
+  deploymentBucket:
+    name: "dev-ui-mentorship-tvx-test-cloud"
+  apiGateway:
+    restApiId: "8sgqsx25bc"
+    restApiRootResourceId: "vhblyqi7c3"
+  environment: ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
+  #logs:
+    #restApi: "${self:custom.fromTerraform.private_api_gateway_logs_enabled}"
+  #iamManagedPolicies: ${self:custom.fromTerraform.lambda_iam_policy_arns}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:BatchGetItem
+        - ssm:GetParameter*
+        - SNS:Publish
+        - SNS:RemovePermission
+        - SNS:SetTopicAttributes
+        - SNS:ListSubscriptionsByTopic
+        - SNS:GetTopicAttributes
+        - SNS:Receive
+        - SNS:AddPermission
+        - SNS:Subscribe
+       
+      Resource:
+        #- "arn:aws:dynamodb:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:table/${self:custom.filecounterTableName}"  
+        #- "arn:aws:dynamodb:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:table/${self:custom.tableName}"
+        #- "arn:aws:dynamodb:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:table/${self:custom.middlewarestagingdata}"
+        - "*"
+        #- "arn:aws:sns:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:${opt:stage, self:provider.stage}-eif-audit-topic"
+
+functions: 
+  - ${file(./configs/functions/rise-service.yml)}
+
+
+#resources:
+#  - ${file(./configs/resources/log-group-and-subscription.yml)}
