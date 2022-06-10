@@ -260,7 +260,6 @@ jobs:
             
             aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json terraform/applications/ 
             aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json . 
-            aws cloudformation delete-stack --stack-name sls-rise-connection-service-dev-stack
             cd terraform/applications/
             ls -larth 
             du -sh terraform_outputs.json
@@ -338,13 +337,13 @@ workflows:
       #           - master
       #           - feature/dit
 
-      # - lambda-job:
-      #     name: rise-connection-service
-      #     requires:
-      #       - s3-download
-      #     filters:
-      #       branches:
-      #         only:
-      #           - develop
-      #           - master
-      #           - feature/dit
+      - lambda-job:
+          name: rise-connection-service
+          requires:
+            - s3-download
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+                - feature/dit
