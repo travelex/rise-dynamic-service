@@ -1,0 +1,62 @@
+Resources:
+  IceAdapterServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /my/default/path/
+      RoleName: ${opt:stage, self:provider.stage}-${self:service}-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ${opt:stage, self:provider.stage}-${self:service}-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
+                Action:
+                  - logs:CreateLogGroup
+                Resource:
+                  - 'Fn::Join':
+                    - ':'
+                    -
+                      - 'arn:aws:logs'
+                      - Ref: 'AWS::Region'
+                      - Ref: 'AWS::AccountId'
+                      - 'log-group:/aws/lambda/${opt:stage, self:provider.stage}-${self:service}*'
+
+              - Effect: Allow # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
+                Action:
+                  - logs:CreateLogStream
+                Resource:
+                  - 'Fn::Join':
+                    - ':'
+                    -
+                      - 'arn:aws:logs'
+                      - Ref: 'AWS::Region'
+                      - Ref: 'AWS::AccountId'
+                      - 'log-group:/aws/lambda/${opt:stage, self:provider.stage}-${self:service}*:*'
+
+              - Effect: Allow # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
+                Action:
+                  - logs:PutLogEvents
+                Resource:
+                  - 'Fn::Join':
+                    - ':'
+                    -
+                      - 'arn:aws:logs'
+                      - Ref: 'AWS::Region'
+                      - Ref: 'AWS::AccountId'
+                      - 'log-group:/aws/lambda/${opt:stage, self:provider.stage}-${self:service}*:*:*'
+
+              - Effect: Allow # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
+                Action:
+                  - ssm:GetParameter*
+                  - ssm:GetParameters*
+                  - ssm:DescribeParameter*
+                Resource:
+                  - "arn:aws:ssm:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:parameter/middleware-${opt:stage}-*"

@@ -1,0 +1,31 @@
+'use strict';
+let ExceptionCategory = {
+	'DATABASE_ERROR': 'database-error',
+	'VALIDATION_ERROR': 'validation-error',
+	'FILEMOVEMENT_ERROR': 'file-operation-error',
+	'TRANSFORMATION_ERROR': 'transformation-error',
+	'FILEOPERATION_ERROR':'file-operation-error',
+	'DATA_NOT_AVAILABLE':'data-not-available',
+	'RULE_FAILED':'rule-failed',
+	'FILE_MASK_FAILED':'file-mask-failed',
+	'SEND_EMAIL':'send-email',
+	'DUPLICATE_FILE':'duplicate-file',
+	'EMPLTY_FILE':'empty-file',
+	'UNEXPECTED_FILE_COUNT': 'unexpected-file-count',
+	'DATE_MISMATCHED': 'date-mismatched',
+	'RECORD_COUNT_CHECK':'record-count-check',
+	'EMPTY_FILE_HEADER':'file-header-empty',
+	'EMPTY_FILE_TRAILER':'file-trailer-empty',
+	'OUTPUT_FILE_NAME':'output-file-creation-failed',
+	'SOURCE_TABLE_EMPTY':'source-table-empty',
+	'FILE_RECORD_LENGTH_CHECK' : 'file-record-length-check',
+	'IGNORE_MESSAGE':'ignore-message',
+	'INVALID_MESSAGE_CODE' : 'invalid-message-code',
+	'WARNING' : 'warning-message',
+	'TIMESLOT_NOTIFICATION': 'timeslot_notification',
+	'EMPTY_FILE_DETAIL_RECORD':'file-detail-record-empty',
+	'MISSING_EXPECTED_FILE' : 'missing-expected-file',
+	'STATIC_DATA': 'static-data',
+	'INPUT_FILE_ERROR': 'input-file-error'
+};
+module.exports = ExceptionCategory;
