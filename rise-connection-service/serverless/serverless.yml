@@ -1,4 +1,4 @@
-service: rise-connection-service
+service: rise-connections-service
 
 frameworkVersion: ^2.50.0
 
