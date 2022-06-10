@@ -14,7 +14,7 @@ let AuditLogger = require('winston-wrapper/AuditLogger');
 const utils = require('../utils/Utils');
 const ExceptionType = require('../model/ExceptionType');
 const ExceptionCategory = require('../model/ExceptionCategory');
-const dynamicService = require('../service/DynamicService');
+const connectionService = require('../service/ConnectionService');
 
 
 const options = {
@@ -56,9 +56,9 @@ class WriterDeleteConnectionApiProcessor {
                 try {
                     logger.info('Dynamic service request received');
                     logger.debug('Event Received', JSON.stringify(event));
-                   
-                    const filePath = this.getFilePath(event);
-                    const response = dynamicService.applyRules(filePath);
+
+                    let params = this.getParams(event);
+                    const response = connectionService.deleteConnection(params);
 
                     _auditLog.withWorkFlowInfo('Dynamic Service request completed successfully')
                         .withCompleted(true).withEvent(response).build().generateAuditlog();
@@ -106,6 +106,31 @@ class WriterDeleteConnectionApiProcessor {
             throw exception;
         }
       
+    }
+
+    /**
+     * 
+     * @param {*} event 
+     * @description "Generates Parameters for further processing"
+     */
+     getParams(event) {
+        const { pathParameters, queryStringParameters } = event;
+        logger.debug('path', path);
+        logger.debug('pathParameters', pathParameters);
+        logger.debug('queryStringParameters', queryStringParameters);
+        let errorArray = [];
+        let params = {
+            "mentee_email_id": pathParameters.type ? pathParameters.type : errorArray.push["Invalid parameters"],
+            "mentor_email_id": pathParameters.email_id ? pathParameters.email_id : errorArray.push["Invalid parameters"]
+        }
+        if (errorArray.length) {
+            throw new Error({
+                status: 400,
+                description: "Unable to retrieve the Connection information.",
+                error: errorArray[0]
+            })
+        }
+        return params;
     }
 
 }

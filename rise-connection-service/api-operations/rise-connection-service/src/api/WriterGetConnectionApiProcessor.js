@@ -14,7 +14,7 @@ let AuditLogger = require('winston-wrapper/AuditLogger');
 const utils = require('../utils/Utils');
 const ExceptionType = require('../model/ExceptionType');
 const ExceptionCategory = require('../model/ExceptionCategory');
-const dynamicService = require('../service/DynamicService');
+const connectionService = require('../service/ConnectionService');
 
 
 const options = {
@@ -56,9 +56,9 @@ class WriterGetConnectionApiProcessor {
                 try {
                     logger.info('Dynamic service request received');
                     logger.debug('Event Received', JSON.stringify(event));
-                   
-                    const filePath = this.getFilePath(event);
-                    const response = dynamicService.applyRules(filePath);
+                    
+                    let params = this.getParams(event);
+                    const response = connectionService.getConnectionInfo(params);
 
                     _auditLog.withWorkFlowInfo('Dynamic Service request completed successfully')
                         .withCompleted(true).withEvent(response).build().generateAuditlog();
@@ -86,13 +86,13 @@ class WriterGetConnectionApiProcessor {
      * @param {*} event 
      * @description "Creates the file path based on event path parameters and querystring parameters"
      */
-    getFilePath(event){
+    getFilePath(event) {
         try {
             const { path, pathParameters, queryStringParameters } = event;
             logger.debug('path', path);
             logger.debug('pathParameters', pathParameters);
             logger.debug('queryStringParameters', queryStringParameters);
-    
+
             const rootFolder = path.split('/')[1];
             const entity = pathParameters.entity;
             const operation = queryStringParameters.criteria;
@@ -101,11 +101,36 @@ class WriterGetConnectionApiProcessor {
             const filePath = rootFolder + '/' + fileName;
             logger.debug('filePath:', filePath);
             return filePath;
-        } catch (exception){
+        } catch (exception) {
             logger.error(`Exception while creating File Path: ${JSON.stringify(exception)}`);
             throw exception;
         }
-      
+
+    }
+
+    /**
+     * 
+     * @param {*} event 
+     * @description "Generates Parameters for further processing"
+     */
+    getParams(event) {
+        const { pathParameters, queryStringParameters } = event;
+        logger.debug('path', path);
+        logger.debug('pathParameters', pathParameters);
+        logger.debug('queryStringParameters', queryStringParameters);
+        let errorArray = [];
+        let params = {
+            "email_id": pathParameters.email_id ? pathParameters.email_id : errorArray.push["Invalid parameters"],
+            "type": pathParameters.type ? pathParameters.type : errorArray.push["Invalid parameters"],
+            "status": queryStringParameters.status ? queryStringParameters.status : ''
+        }
+        if (errorArray.length) {
+            throw new Error({
+                status: 400,
+                description: "Unable to retrieve the Connection information.",
+            })
+        }
+        return params;
     }
 
 }
