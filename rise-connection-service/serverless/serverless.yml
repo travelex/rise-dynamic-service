@@ -43,6 +43,9 @@ provider:
     #restApi: "${self:custom.fromTerraform.private_api_gateway_logs_enabled}"
   iamManagedPolicies: 
     - "arn:aws:iam::148807490170:policy/AWSLambdaExecute"
+    - "arn:aws:iam::148807490170:policy/service-role/AWSLambdaRole"
+    - "arn:aws:iam::148807490170:policy/AWSLambda_FullAccess"
+    - "arn:aws:iam::aws:policy/AWSLambdaInvocation-DynamoDB"
   iamRoleStatements:
     - Effect: Allow
       Action:
