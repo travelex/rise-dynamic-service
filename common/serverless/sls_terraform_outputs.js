@@ -38,9 +38,8 @@ module.exports = async (serverless) => {
 
   // console.log(fs.readdirSync(path.join(__dirname,"/../../terraform/applications/terraform_outputs.json")))
   //contents = fs.readFileSync('/root/project/terraform/applications/terraform_outputs.json');
-  console.log(shelljs.pwd())
-  console.log(shelljs.ls("../../"))
-  contents = fs.readFileSync(__dirname + '/../../terraform/applications/terraform_outputs.json');
+  
+  // contents = fs.readFileSync(__dirname + '/../../terraform/applications/terraform_outputs.json');
   var parsedTerraform = JSON.parse(contents);
   var parsedTerraform = JSON.parse(contents);
   Object.keys(parsedTerraform).forEach(key => {
