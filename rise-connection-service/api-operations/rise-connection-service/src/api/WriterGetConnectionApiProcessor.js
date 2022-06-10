@@ -115,9 +115,9 @@ class WriterGetConnectionApiProcessor {
      */
     getParams(event) {
         const { pathParameters, queryStringParameters } = event;
-        logger.debug('path', path);
-        logger.debug('pathParameters', pathParameters);
-        logger.debug('queryStringParameters', queryStringParameters);
+        console.log(`path ${path}`);
+        console.log(`pathParameters ${pathParameters}`);
+        console.log('queryStringParameters', queryStringParameters);
         let errorArray = [];
         let params = {
             "email_id": pathParameters.email_id ? pathParameters.email_id : errorArray.push["Invalid parameters"],
