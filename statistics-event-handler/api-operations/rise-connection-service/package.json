@@ -1,0 +1,49 @@
+{
+  "name": "rise-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/dal/__mocks__/*.js",
+      "!src/dal/*.js",
+      "!src/config/*.js",
+      "!src/utils/*.js",
+      "!src/transformer/*.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 80
+      }
+    }
+  },
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "dependencies": {
+    "ajv": "8.8.2",
+    "csvtojson": "^2.0.10",
+    "evil-dns": "0.2.0",
+    "fast-xml-parser": "^4.0.7",
+    "generic-exception": "https://github.com/travelex/generic-exception-js.git#1.0.0",
+    "he": "^1.2.0",
+    "lru-cache": "7.8.1",
+    "moment": "2.29.1",
+    "object-mapper": "6.2.0",
+
+    "request": "2.88.0",
+    "require-from-memory": "^1.0.2",
+    "tvxcloud-storage": "https://github.com/travelex/tvxcloud-storage.git",
+    "winston-wrapper": "https://github.com/travelex/winston-wrapper.git#1.0.23",
+    "xml-js": "^1.6.11"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "aws-sdk": "^2.1028.0",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.5.1",
+    "jest": "24.8.0"
+  },
+  "author": "Nikhil More"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "rise-connection-service",
+  "version": "1.0.0",
+  "description": "Serverless data api",
+  "main": "index.js",
+  "dependencies": {
+    "rise-service": "file:../api-operations/rise-connection-service",
+    "winston-wrapper": "https://github.com/travelex/winston-wrapper.git#1.0.23"
+  },
+  "directories": {
+    "lib": "./configs"
+  },
+  "devDependencies": {
+    "nyc": "^14.1.0",
+    "serverless": "^3.15.2",
+    "serverless-aws-alias": "^1.7.1",
+    "serverless-dynamodb-local": "^0.2.35",
+    "serverless-plugin-existing-s3": "^2.4.0",
+    "serverless-prune-plugin": "^2.0.1"
+  },
+  "scripts": {
+    "unit-test": "mocha ../api-operations/*/unit-test/*.js",
+    "code-coverage": "nyc --reporter=html --reporter=text mocha ../api-operations/*/unit-test/*.js",
+    "component-test": "sls offline --exec \"npm run component-test-pointer\" ",
+    "test": "npm run unit-test & npm run code-coverage & npm run component-test"
+  },
+  "contributors": [],
+  "author": "Nikhil More",
+  "license": "[license]"
+}

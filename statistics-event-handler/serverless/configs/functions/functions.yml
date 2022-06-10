@@ -1,0 +1,13 @@
+- process:
+    name: ${self:provider.stage}-${self:service}
+    description: Connection Service
+    handler: src/handlers/${self:provider.name}/rise-connection-service-handler.rise
+    timeout: 900
+    include:
+      - src/handlers/${self:provider.name}/rise-connection-service-handler.js
+      - node_modules/rise-connection-service/**
+
+    events:
+      - sqs:
+          arn: arn:aws:sqs:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:${opt:stage}-${self:custom.queueName}
+          batchSize: 10
