@@ -6,9 +6,13 @@ const winston_wrapper = require('winston-wrapper');
 const logger = winston_wrapper.getLogger(path.basename(__filename))
 
 const PostApiProcessor = require('rise-service').PostApiProcessor;
-const GetApiProcessor = require('rise-service').GetApiProcessor;
-const PutApiProcessor = require('rise-service').PutApiProcessor;
-const DeleteApiProcessor = require('rise-service').DeleteApiProcessor;
+// const GetApiProcessor = require('rise-service').GetApiProcessor;
+// const PutApiProcessor = require('rise-service').PutApiProcessor;
+// const DeleteApiProcessor = require('rise-service').DeleteApiProcessor;
+
+const GetApiProcessor = require('rise-connection-service').GetConnectionApiProcessor;
+const PutApiProcessor = require('rise-connection-service').PutConnectionApiProcessor;
+const DeleteApiProcessor = require('rise-connection-service').DeleteConnectionApiProcessor;
 
 const apiProcessors = {
     post: PostApiProcessor,
