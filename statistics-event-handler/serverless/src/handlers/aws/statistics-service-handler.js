@@ -5,14 +5,14 @@ const winston_wrapper = require('winston-wrapper');
 //const apiProcessor = require('rise-service').apiProcessor;
 const logger = winston_wrapper.getLogger(path.basename(__filename))
 
-const PostApiProcessor = require('rise-service').PostApiProcessor;
+const PostApiProcessor = require('statistics-service').PostApiProcessor;
 // const GetApiProcessor = require('rise-service').GetApiProcessor;
 // const PutApiProcessor = require('rise-service').PutApiProcessor;
 // const DeleteApiProcessor = require('rise-service').DeleteApiProcessor;
 
-const GetApiProcessor = require('rise-connection-service').GetConnectionApiProcessor;
-const PutApiProcessor = require('rise-connection-service').PutConnectionApiProcessor;
-const DeleteApiProcessor = require('rise-connection-service').DeleteConnectionApiProcessor;
+const GetApiProcessor = require('statistics-service').GetConnectionApiProcessor;
+const PutApiProcessor = require('statistics-service').PutConnectionApiProcessor;
+const DeleteApiProcessor = require('statistics-service').DeleteConnectionApiProcessor;
 
 const apiProcessors = {
     post: PostApiProcessor,

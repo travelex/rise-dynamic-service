@@ -4,7 +4,7 @@
   "description": "Serverless data api",
   "main": "index.js",
   "dependencies": {
-    "rise-service": "file:../api-operations/rise-connection-service",
+    "statistics-service": "file:../api-operations/statistics-service",
     "winston-wrapper": "https://github.com/travelex/winston-wrapper.git#1.0.23"
   },
   "directories": {
