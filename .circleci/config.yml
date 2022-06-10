@@ -183,11 +183,11 @@ jobs:
             echo "TAG_NAMES is $TAG_NAMES"
             
       - persist_to_workspace:
-          root: /workspace
+          root: /root/project/
           paths:
             - .aws/credentials
             - .env
-
+            
   get_artifacts:
     docker:
       - image: amazonlinux:1
@@ -233,7 +233,6 @@ jobs:
             go version
             go get -u github.com/tfsec/tfsec/cmd/tfsec            
             tfsec .
-            
             
   s3-download:
     docker:
@@ -309,6 +308,8 @@ jobs:
       - setup_remote_docker:
           name: Spining off remote docker
 
+
+
 workflows:
   version: 2
   build:
@@ -346,21 +347,3 @@ workflows:
                 - develop
                 - master
                 - feature/dit
-
-
-      
-       
-# workflows:
-#   middleware:
-#     jobs:
-#       - setup:
-#           filters: *branch_filters
-#       - s3-download:
-#           requires:
-#             - setup
-#           filters: *branch_filters
-#       - lambda-job:
-#           name: rise-dynamic-service
-#           requires:
-#             - s3-download
-#           filters: *branch_filters
