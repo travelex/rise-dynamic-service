@@ -44,7 +44,7 @@ provider:
   environment:
     ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
 
-functions: ${file(./configs/functions/functions.yml)}
+functions: ${file(./configs/functions/rise-connection-service.yml)}
 
 # resources:
 #   - ${file(./configs/resources/authorizer.yml)} 
