@@ -31,12 +31,9 @@
     "lru-cache": "7.8.1",
     "moment": "2.29.1",
     "object-mapper": "6.2.0",
-    "prettify-xml": "1.2.0",
+
     "request": "2.88.0",
     "require-from-memory": "^1.0.2",
-    "serverless": "^3.16.0",
-    "serverless-offline": "^8.8.0",
-    "soap": "0.42.0",
     "tvxcloud-storage": "https://github.com/travelex/tvxcloud-storage.git",
     "winston-wrapper": "https://github.com/travelex/winston-wrapper.git#1.0.23",
     "xml-js": "^1.6.11"

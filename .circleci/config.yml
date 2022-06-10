@@ -183,11 +183,11 @@ jobs:
             echo "TAG_NAMES is $TAG_NAMES"
             
       - persist_to_workspace:
-          root: /workspace
+          root: /root/project/
           paths:
             - .aws/credentials
             - .env
-
+            
   get_artifacts:
     docker:
       - image: amazonlinux:1
@@ -243,7 +243,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/      
+           at: ~/      
       - add_ssh_keys: *add_ssh_keys_infra_modules
       #- run: *setup_env
       - run:
@@ -253,42 +253,57 @@ jobs:
             pip install awscli
             ls -larth
             aws s3 ls
-  
+            hostname
             BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
             ENVIRONMENT=$(echo -e 'feature/ dev\nplay/ play\ndevelopment sit\nrelease/ uat\nhotfix/ preprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
             AWS_ACCOUNT_TYPE=$(echo -e 'feature/ nonprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
-            echo ${ENVIRONMENT}
-            aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json terraform/applications/            
+            
+            aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json terraform/applications/ 
+            aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json . 
             cd terraform/applications/
-            chmod 774 terraform_outputs.json
-            ls -larth
+            ls -larth 
+            du -sh terraform_outputs.json
             pwd
       - persist_to_workspace:
           root: /root/project/
           paths:
-            - "terraform/applications/terraform_outputs.json"
+            - terraform/applications/terraform_outputs.json
 
   
 
   lambda-job:
     docker:
-      - image: circleci/node:12.22
+      - image: cimg/node:14.17.0
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/      
+      - *attach_workspace
+          #at: .
       - add_ssh_keys: *add_ssh_keys_infra_modules
       - run: *load_bash_env
       - run:
           name: Serverless dependencies are installed
           command: |
+            
+            ls -la
+            ls -la ~/terraform/applications
+            
+            pwd
+            hostname
+            sudo find /root -name terraform_outputs.json
+            sudo cp ~/terraform/applications/terraform_outputs.json /home/circleci/project/common/serverless
             cd common/serverless
+            ls -la
+            pwd
             sudo make install
             make configure
       - run:
           name: Lambda is built and deployed
           command: |
+            ls -la /home/circleci/project
+            ls -la /home/circleci/project/common/serverless
+            pwd
             cd ${CIRCLE_STAGE}
+            pwd
             make build test deploy
       - setup_remote_docker:
           name: Spining off remote docker
@@ -311,16 +326,16 @@ workflows:
                 - feature/dit
       #- sts_dmz
 
-      - lambda-job:
-          name: rise-dynamic-service
-          requires:
-            - s3-download
-          filters:
-            branches:
-              only:
-                - develop
-                - master
-                - feature/dit
+      # - lambda-job:
+      #     name: rise-dynamic-service
+      #     requires:
+      #       - s3-download
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - master
+      #           - feature/dit
 
       - lambda-job:
           name: rise-connection-service
@@ -332,21 +347,3 @@ workflows:
                 - develop
                 - master
                 - feature/dit
-
-
-      
-       
-# workflows:
-#   middleware:
-#     jobs:
-#       - setup:
-#           filters: *branch_filters
-#       - s3-download:
-#           requires:
-#             - setup
-#           filters: *branch_filters
-#       - lambda-job:
-#           name: rise-dynamic-service
-#           requires:
-#             - s3-download
-#           filters: *branch_filters

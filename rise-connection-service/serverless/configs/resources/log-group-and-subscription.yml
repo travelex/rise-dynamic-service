@@ -1,13 +1,6 @@
 Resources:
-  RISEServiceLogGroup:
+  RiseConnectionServiceLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: /aws/lambda/${self:provider.stage}-rise-connection-service
+      LogGroupName: /aws/lambda/${opt:stage, self:provider.stage}-${self:service}
       RetentionInDays: ${self:custom.fromTerraform.pe_log_group_retention_period}
-  RISEServiceNewSubscriptionFilter:
-    Type: AWS::Logs::SubscriptionFilter
-    Properties: 
-      DestinationArn: arn:aws:lambda:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:function:datadog-log-shipper-lambda-${self:provider.stage}
-      FilterPattern: ''
-      LogGroupName: 
-        Ref: RISEServiceLogGroup

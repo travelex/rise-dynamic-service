@@ -1,4 +1,4 @@
-FROM circleci/node:14.17.0
+FROM circleci/node:10.16.0-stretch
 
 ADD serverless/Makefile /home/circleci/Makefile
 
