@@ -16,5 +16,5 @@
     #     private: false
     events:
       - sqs:
-          arn: arn:aws:sqs:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:${opt:stage}-${self:custom.queueName}
+          arn: arn:aws:sqs:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:${opt:stage}-${self:custom.queueName}
           batchSize: 10

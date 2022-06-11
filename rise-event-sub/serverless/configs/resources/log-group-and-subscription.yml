@@ -7,7 +7,7 @@ Resources:
   # OrderDOmainServiceSubscriptionFilter:
   #   Type: AWS::Logs::SubscriptionFilter
   #   Properties: 
-  #     DestinationArn: arn:aws:lambda:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:function:datadog-log-shipper-lambda-${self:provider.stage}
+  #     DestinationArn: arn:aws:lambda:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:function:datadog-log-shipper-lambda-${self:provider.stage}
   #     FilterPattern: ''
   #     LogGroupName: 
   #       Ref: OrderDOmainServiceLogGroup
