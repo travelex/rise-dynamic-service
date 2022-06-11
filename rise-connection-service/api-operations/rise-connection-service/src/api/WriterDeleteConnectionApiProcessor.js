@@ -58,7 +58,7 @@ class WriterDeleteConnectionApiProcessor {
                     console.log('Event Received', JSON.stringify(event));
 
                     let params = this.getParams(event);
-                    const response = connectionService.deleteConnection(params);
+                    const response = await connectionService.deleteConnection(params);
 
                     _auditLog.withWorkFlowInfo('Dynamic Service request completed successfully')
                         .withCompleted(true).withEvent(response).build().generateAuditlog();
