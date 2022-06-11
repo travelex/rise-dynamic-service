@@ -220,7 +220,7 @@ class ConnectionService {
 				}
 			}
 		];
-		console.log("updateQueryParam: ", object);
+		console.log("updateQueryParam: ", queryParams);
 		return queryParams;
 	}
 
