@@ -166,7 +166,7 @@ class ConnectionService {
 						"email_id": params.mentee_email_id,
 						"user_type": `mentor-${params.mentor_email_id}-${guid}`,
 						"category": "mentee",
-						"status": body.status,
+						"connection_status": body.status,
 						"remark": body.remarks,
 						"updation_datetime_iso": insertDate,
 						"start_datetime_iso": insertDate,
@@ -182,7 +182,7 @@ class ConnectionService {
 						"email_id": params.mentor_email_id,
 						"user_type": `mentee-${params.mentee_email_id}-${guid}`,
 						"category": "mentor",
-						"status": body.status,
+						"connection_status": body.status,
 						"remark": body.remarks,
 						"updation_datetime_iso": insertDate,
 						"start_datetime_iso": insertDate,
@@ -212,7 +212,7 @@ class ConnectionService {
 				email_id: params.email_id,
 				user_type: params.user_type
 			},
-			UpdateExpression: "set status = :status, remark = :remark",
+			UpdateExpression: "set connection_status = :status, remark = :remark",
 			ExpressionAttributeValues: {
 				':status': body.status,
 				':remark': body.remarks
