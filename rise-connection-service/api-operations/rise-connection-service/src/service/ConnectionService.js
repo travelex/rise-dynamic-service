@@ -67,7 +67,7 @@ class ConnectionService {
 					for (let object = 0; object < fetchQueryParams.length; object++) {
 						let data = await dynamoDao.getRecords(fetchQueryParams[object]);
 						console.log(JSON.stringify(data));
-						if(data.Items && data.Items.length){
+						if (data.Items && data.Items.length) {
 							console.log("relevant records found for update");
 							console.log(data.Items[0]);
 							updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
@@ -206,20 +206,18 @@ class ConnectionService {
 
 	getUpdateRecordsParams(params, body) {
 
-		let queryParams = [
-			{
-				TableName: TABLE_NAME,
-				Key: {
-					email_id: params.email_id,
-					user_type: params.user_type
-				},
-				UpdateExpression: "set status = :status and remark = :remark",
-				ExpressionAttributeValues: {
-					':status': body.status,
-					':remark': body.remark
-				}
+		let queryParams = {
+			TableName: TABLE_NAME,
+			Key: {
+				email_id: params.email_id,
+				user_type: params.user_type
+			},
+			UpdateExpression: "set status = :status and remark = :remark",
+			ExpressionAttributeValues: {
+				':status': body.status,
+				':remark': body.remarks
 			}
-		];
+		};
 		console.log("updateQueryParam: ", queryParams);
 		return queryParams;
 	}
