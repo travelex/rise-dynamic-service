@@ -238,8 +238,8 @@ class ConnectionService {
 
 
 	getUpdateRecordsParams(params, body) {
-		let mentorType = `mentor-${params.mentee_email_id}`;
-		let menteeType = `mentee-${params.mentor_email_id}`;
+		let mentorType = `mentor-${params.mentor_email_id}`;
+		let menteeType = `mentee-${params.mentee_email_id}`;
 
 		let queryParams = [
 			{
@@ -274,8 +274,8 @@ class ConnectionService {
 
 
 	getDeleteQueryParams(params) {
-		let mentorType = `mentor-${params.mentee_email_id}`;
-		let menteeType = `mentee-${params.mentor_email_id}`;
+		let mentorType = `mentor-${params.mentor_email_id}`;
+		let menteeType = `mentee-${params.mentee_email_id}`;
 
 		let queryParams = [
 			{
