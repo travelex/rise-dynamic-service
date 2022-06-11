@@ -34,7 +34,7 @@ class ConnectionService {
 			console.log(queryParams);
 			let response = await dynamoDao.getRecords(queryParams);
 			console.log("response",response);
-			if (response) {
+			if (response.Items) {
 				return response;
 			} else {
 				return {
