@@ -95,7 +95,7 @@ class ConnectionService {
 			if (queryParams.length) {
 				for (let object = 0; object < queryParams.length; object++) {
 					let result = await dynamoDao.deleteRecords(queryParams);
-					console.log(result);
+					console.log("result", result);
 				}
 			}
 			return {
@@ -302,6 +302,8 @@ class ConnectionService {
 				}
 			}
 		];
+
+		console.log("queryParams", queryParams);
 		return queryParams;
 	}
 
