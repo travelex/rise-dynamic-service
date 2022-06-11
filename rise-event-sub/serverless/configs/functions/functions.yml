@@ -8,13 +8,13 @@
       include:
         - src/handlers/${self:provider.name}/handler.js
         - node_modules/file-success-handler/**
-    # events:
-    # - http:
-    #     path: filehandler
-    #     method: post
-    #     async: false
-    #     private: false
     events:
-      - sqs:
-          arn: arn:aws:sqs:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:${opt:stage}-${self:custom.queueName}
-          batchSize: 10
+    - http:
+        path: filehandler
+        method: post
+        async: false
+        private: false
+    # events:
+    #   - sqs:
+    #       arn: arn:aws:sqs:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:${opt:stage}-${self:custom.queueName}
+    #       batchSize: 10
