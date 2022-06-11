@@ -215,11 +215,12 @@ class ConnectionService {
 				}
 			}
 		]
-		console.log(`RequestItems: ${RequestItems}`);
+		console.log(`RequestItems: ${JSON.stringify(RequestItems)}`);
 		let queryParams = {
 			RequestItems: RequestItems
 		}
-		console.log(`queryParams: ${queryParams}`);
+		console.log(`queryParams.RequestItems: ${queryParams.RequestItems}`);
+		console.log(`queryParams.RequestItems: ${JSON.stringify(queryParams.RequestItems)}`);
 
 		return queryParams;
 	}
