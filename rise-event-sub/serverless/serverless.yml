@@ -1,4 +1,4 @@
-service: rise-event-handler
+service: rise-event-handler-1
 
 plugins:
   localPath: '/usr/local/lib/node_modules/'
