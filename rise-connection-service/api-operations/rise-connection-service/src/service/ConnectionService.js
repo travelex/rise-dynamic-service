@@ -114,7 +114,7 @@ class ConnectionService {
 		if (params.status) {
 			queryObject = {
 				TableName: TABLE_NAME,
-				KeyConditionExpression: "email_id = :email_id and begins_with(user_type, :type)",
+				KeyConditionExpression: "email_id = :email_id and user_type begins_with :type",
 				ExpressionAttributeValues: {
 					":email_id": { S: params.email_id },
 					":type": { S: params.type }
@@ -124,7 +124,7 @@ class ConnectionService {
 		} else {
 			queryObject = {
 				TableName: TABLE_NAME,
-				KeyConditionExpression: "email_id = :email_id and begins_with(user_type, :type)",
+				KeyConditionExpression: "email_id = :email_id and user_type begins_with :type",
 				ExpressionAttributeValues: {
 					":email_id": { S: params.email_id },
 					":type": { S: params.type }
