@@ -252,7 +252,7 @@ class ConnectionService {
 				ExpressionAttributeValues: {
 					':status': body.status,
 					':remark': body.remark,
-					':type': menteeType,
+					':type': mentorType,
 				}
 			},
 			{
@@ -265,7 +265,7 @@ class ConnectionService {
 				ExpressionAttributeValues: {
 					':status': params.status,
 					':remark': params.remark,
-					':type': mentorType,
+					':type': menteeType,
 				}
 			}
 		];
@@ -287,7 +287,7 @@ class ConnectionService {
 				ConditionExpression: 'begins_with(user_type, :type)',
 				ExpressionAttributeValues: {
 					':isDeleted': 1,
-					':type': menteeType,
+					':type': mentorType,
 				}
 			},
 			{
@@ -299,7 +299,7 @@ class ConnectionService {
 				ConditionExpression: 'begins_with(user_type, :type)',
 				ExpressionAttributeValues: {
 					':isDeleted': 1,
-					':type': mentorType,
+					':type': menteeType,
 				}
 			}
 		];
