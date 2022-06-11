@@ -1,0 +1,9 @@
+- process:
+    name: ${opt:stage, self:provider.stage}-${self:service}
+    handler: src/handlers/${self:provider.name}/audit-event-pub-handler.handle
+    timeout: 900
+    package:
+      include:
+        - src/handlers/${self:provider.name}/audit-event-pub-handler.js
+        - node_modules/audit-event-pub/**
+   

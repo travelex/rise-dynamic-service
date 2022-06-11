@@ -336,11 +336,21 @@ workflows:
       #           - develop
       #           - master
       #           - feature/dit
+      - lambda-job:
+          name: rise-audit-event-pub
+          requires:
+            - s3-download
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+                - /feature\/.*/
 
       - lambda-job:
           name: statistics-event-handler
           requires:
-            - s3-download
+            - rise-audit-event-pub
           filters:
             branches:
               only:

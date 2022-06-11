@@ -1,0 +1,5 @@
+Resources:
+  AuditTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: ${opt:stage}-rise-audit-topic

@@ -1,0 +1,27 @@
+{
+  "name": "eif-audit-event-pub",
+  "version": "1.0.0",
+  "description": "Audit Event Publisher",
+  "main": "index.js",
+  "dependencies": {
+    "winston-wrapper": "git+ssh://git@github.com/travelex/winston-wrapper.git#1.0.23"
+  },
+  "directories": {
+    "lib": "./configs"
+  },
+  "devDependencies": {
+    "mocha": "6.1.4",
+    "nyc": "14.1.0",
+    "eslint": "6.3.0",
+    "babel-eslint": "10.0.3"
+  },
+  "scripts": {
+    "unit-test": "mocha ../api-operations/*/unit-test/*.js",
+    "code-coverage": "nyc --reporter=html --reporter=text mocha ../api-operations/*/unit-test/*.js",
+    "component-test": "sls offline --exec \"npm run component-test-pointer\" ",
+    "test": "npm run unit-test & npm run code-coverage & npm run component-test"
+  },
+  "contributors": [],
+  "author": "Prashant Baditya",
+  "license": "ISC"
+}
