@@ -348,7 +348,7 @@ workflows:
                 - /feature\/.*/
 
       - lambda-job:
-          name: statistics-event-handler
+          name: rise-event-sub
           requires:
             - rise-audit-event-pub
           filters:
