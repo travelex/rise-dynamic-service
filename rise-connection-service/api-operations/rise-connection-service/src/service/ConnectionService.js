@@ -97,13 +97,20 @@ class ConnectionService {
 	 */
 	async deleteConnection(params) {
 		try {
-			let response = "deleted";
-			let queryParams = this.getDeleteQueryParams(params);
-			if (queryParams.length) {
-				for (let object = 0; object < queryParams.length; object++) {
-					console.log("queryParams[object]", queryParams[object]);
-					let result = await dynamoDao.deleteRecords(queryParams[object]);
-					console.log("result", result);
+			let response = "deleted", fetchQueryParams, updateQueryParams;
+			fetchQueryParams = this.getQueryParams(params);
+			console.log("fetchQueryParams", JSON.stringify(fetchQueryParams));
+			if (fetchQueryParams && fetchQueryParams.length) {
+				for (let object = 0; object < fetchQueryParams.length; object++) {
+					let data = await dynamoDao.getRecords(fetchQueryParams[object]);
+					console.log(JSON.stringify(data));
+					if (data.Items && data.Items.length) {
+						console.log("relevant records found for deletion");
+						console.log(data.Items[0]);
+						updateQueryParams = this.getDeleteQueryParams(data.Items[0], body);
+						let result = await dynamoDao.deleteRecords(updateQueryParams);
+						console.log(result);
+					}
 				}
 			}
 			return {
@@ -223,27 +230,18 @@ class ConnectionService {
 	}
 
 	getDeleteQueryParams(params) {
-		let mentorType = `mentor-${params.mentor_email_id}`;
-		let menteeType = `mentee-${params.mentee_email_id}`;
 
-		let queryParams = [
-			{
-				TableName: TABLE_NAME,
-				Key: {
-					"email_id": params.mentee_email_id
-				},
-				UpdateExpression: "set is_deleted = 1",
-				ConditionExpression: 'begins_with(user_type, mentor-khan.juned@travelex.com)',
+		let queryParams = {
+			TableName: TABLE_NAME,
+			Key: {
+				email_id: params.email_id,
+				user_type: params.user_type
 			},
-			{
-				TableName: TABLE_NAME,
-				Key: {
-					"email_id": params.mentor_email_id
-				},
-				UpdateExpression: "set is_deleted = 1",
-				ConditionExpression: 'begins_with(user_type, mentee-nikita.pawar@travelex.com)',
+			UpdateExpression: "set is_deleted = :isDeleted",
+			ExpressionAttributeValues: {
+				':isDeleted': 1
 			}
-		];
+		};
 
 		console.log("queryParams", queryParams);
 		return queryParams;
