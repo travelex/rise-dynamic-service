@@ -8,7 +8,7 @@ plugins:
 
 custom:
   fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
-  queueName: rise-audit-sub-queue
+  queueName: rise-audit-queue
   tableName: object-processed-metadata-${opt:stage, self:provider.stage}
   # stagingTableName: staging-data-${opt:stage, self:provider.stage}
   prune:
