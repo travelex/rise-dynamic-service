@@ -107,7 +107,7 @@ class ConnectionService {
 					if (data.Items && data.Items.length) {
 						console.log("relevant records found for deletion");
 						console.log(data.Items[0]);
-						updateQueryParams = this.getDeleteQueryParams(data.Items[0], body);
+						updateQueryParams = this.getDeleteQueryParams(data.Items[0]);
 						let result = await dynamoDao.deleteRecords(updateQueryParams);
 						console.log(result);
 					}
