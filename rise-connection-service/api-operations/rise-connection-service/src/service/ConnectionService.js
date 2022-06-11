@@ -110,6 +110,7 @@ class ConnectionService {
 
 	getFetchRecordsParams(params) {
 		let queryObject;
+		console.log("params", params);
 		if (params.status) {
 			queryObject = {
 				TableName: TABLE_NAME,
@@ -120,6 +121,7 @@ class ConnectionService {
 					":status": { S: params.status }
 				}
 			};
+
 		} else {
 			queryObject = {
 				TableName: TABLE_NAME,
@@ -130,6 +132,7 @@ class ConnectionService {
 				}
 			};
 		}
+		console.log("queryObject", queryObject);
 		return queryObject;
 	}
 
