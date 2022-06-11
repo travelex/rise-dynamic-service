@@ -151,46 +151,6 @@ class ConnectionService {
 		let TableName = TABLE_NAME;
 		console.log(TableName);
 		let guid = 12345;
-		// let queryParams = {
-		// 	RequestItems: {
-		// 		[TABLE_NAME]: [
-		// 			{
-		// 				PutRequest: {
-		// 					Item: {
-		// 						"email_id": params.mentee_email_id,
-		// 						"user_type": `mentor-${params.mentor_email_id}-${guid}`,
-		// 						"category": "mentee",
-		// 						"status": body.status,
-		// 						"remark": body.remark,
-		// 						"updation_datetime_iso": insertDate,
-		// 						"start_datetime_iso": insertDate,
-		// 						"end_datetime_iso": insertDate,
-		// 						"record_expiry": epochTime,
-		// 						"is_deleted": 0
-		// 					}
-		// 				}
-		// 			},
-		// 			{
-		// 				PutRequest: {
-		// 					Item: {
-		// 						"email_id": params.mentor_email_id,
-		// 						"user_type": `mentee-${params.mentee_email_id}-${guid}`,
-		// 						"category": "mentor",
-		// 						"status": body.status,
-		// 						"remark": body.remark,
-		// 						"updation_datetime_iso": insertDate,
-		// 						"start_datetime_iso": insertDate,
-		// 						"end_datetime_iso": insertDate,
-		// 						"record_expiry": epochTime,
-		// 						"is_deleted": 0
-		// 					}
-		// 				}
-		// 			}
-		// 		]
-		// 	}
-		// };
-
-
 		let RequestItems = {};
 		RequestItems['rise-connections-dev'] = [
 			{
@@ -283,8 +243,12 @@ class ConnectionService {
 				Key: {
 					"email_id": params.mentee_email_id
 				},
-				UpdateExpression: "set is_deleted = :isDeleted",
-				ConditionExpression: 'begins_with(user_type, :type)',
+				UpdateExpression: "set #is_deleted = :isDeleted",
+				ConditionExpression: 'begins_with(#user_type, :type)',
+				ExpressionAttributeNames: {
+					"#is_deleted": "is_deleted",
+					"#user_type": "user_type"
+				},
 				ExpressionAttributeValues: {
 					':isDeleted': '1',
 					':type': mentorType,
