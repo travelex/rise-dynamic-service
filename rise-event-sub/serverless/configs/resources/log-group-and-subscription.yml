@@ -3,7 +3,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: /aws/lambda/${opt:stage, self:provider.stage}-${self:service}
-      RetentionInDays: ${self:custom.fromTerraform.middleware_cloudwatch_log_group_retention_period}
+      RetentionInDays: 5
   # OrderDOmainServiceSubscriptionFilter:
   #   Type: AWS::Logs::SubscriptionFilter
   #   Properties: 
