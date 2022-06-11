@@ -33,8 +33,8 @@ class ConnectionService {
 			let queryParams = this.getFetchRecordsParams(params);
 			console.log(queryParams);
 			let response = await dynamoDao.getRecords(queryParams);
-			console.log(response);
-			if (response.length) {
+			console.log("response",response);
+			if (response) {
 				return response;
 			} else {
 				return {
