@@ -56,7 +56,7 @@ class ConnectionService {
 				console.log("Trying to insert");
 				queryParams = this.getInsertRecordsParams(params, body);
 				console.log(JSON.stringify(queryParams));
-				await dynamoDao.putRecords(params);
+				await dynamoDao.putRecords(queryParams);
 				console.log("Data Inserted");
 				response = "Created";
 			} else {
