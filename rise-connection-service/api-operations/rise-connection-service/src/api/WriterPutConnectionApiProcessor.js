@@ -61,7 +61,7 @@ class WriterPutConnectionApiProcessor {
                     console.log(params);
                     let body = JSON.parse(event.body);
                     console.log(body);
-                    const response = connectionService.putConnection(params, body);
+                    const response = await connectionService.putConnection(params, body);
 
                     _auditLog.withWorkFlowInfo('Dynamic Service request completed successfully')
                         .withCompleted(true).withEvent(response).build().generateAuditlog();

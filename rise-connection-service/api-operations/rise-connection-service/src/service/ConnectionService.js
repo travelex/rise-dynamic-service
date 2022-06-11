@@ -51,15 +51,18 @@ class ConnectionService {
 	async putConnection(params, body) {
 		try {
 			let queryParams, response;
-			console.log("params.create_if_exist", params.create_if_exist);
+			console.log("params.create_if_not_exist", params.create_if_not_exist);
 			if (params.create_if_not_exist == 'true') {
+				console.log("Trying to insert");
 				queryParams = this.getInsertRecordsParams(params, body);
-				console.log(queryParams);
+				console.log(JSON.stringify(queryParams));
 				await dynamoDao.putRecords(params);
+				console.log("Data Inserted");
 				response = "Created";
 			} else {
+				console.log("Trying to update");
 				queryParams = this.getUpdateRecordsParams(params, body);
-				console.log(queryParams);
+				console.log(JSON.stringify(queryParams));
 				if (queryParams.length) {
 					for (let object = 0; object < queryParams.length; object++) {
 						let result = await dynamoDao.updateRecords(queryParams[object]);
@@ -74,7 +77,7 @@ class ConnectionService {
 			};
 
 		} catch (error) {
-			logger.error(`Error occured while fetching records for connection: ${JSON.stringify(error)}`);
+			logger.error(`Error occurred while fetching records for connection: ${JSON.stringify(error)}`);
 			throw error;
 		}
 	}
@@ -134,10 +137,12 @@ class ConnectionService {
 		const epochTime = Math.round(new Date().getTime() / 1000);
 		let date = new Date();
 		let insertDate = date.toISOString();
+		let TableName = TABLE_NAME;
+		console.log(object);
 		let guid = 12345;
 		let queryParams = {
 			RequestItems: {
-				TABLE_NAME: [
+				[TABLE_NAME]: [
 					{
 						PutRequest: {
 							Item: {
