@@ -11,7 +11,7 @@ plugins:
 
 custom:
   fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
-  queueName: rise-audit-queue-${opt:stage, self:provider.stage}
+  queueName: rise-audit-queue
   prune:
     automatic: true
     number: 1
