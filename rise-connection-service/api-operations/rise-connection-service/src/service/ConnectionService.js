@@ -62,11 +62,14 @@ class ConnectionService {
 			} else {
 				console.log("Trying to update");
 				fetchQueryParams = this.getQueryParams(params);
+				console.log("fetchQueryParams", JSON.stringify(fetchQueryParams));
 				if (fetchQueryParams && fetchQueryParams.length) {
 					for (let object = 0; object < fetchQueryParams.length; object++) {
 						let data = await dynamoDao.getRecords(fetchQueryParams[object]);
 						console.log(JSON.stringify(data));
 						if(data.Items && data.Items.length){
+							console.log("relevant records found for update");
+							console.log(data.Items[0]);
 							updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
 							let result = await dynamoDao.updateRecords(updateQueryParams);
 							console.log(result);
@@ -260,7 +263,7 @@ class ConnectionService {
 			},
 			ExpressionAttributeValues: {
 				":email_id": params.mentor_email_id,
-				":type": mentee
+				":type": `mentee-${mentee}`
 			}
 		},
 		{
@@ -272,7 +275,7 @@ class ConnectionService {
 			},
 			ExpressionAttributeValues: {
 				":email_id": params.mentee_email_id,
-				":type": mentor
+				":type": `mentor-${mentor}`
 			}
 		}]
 
