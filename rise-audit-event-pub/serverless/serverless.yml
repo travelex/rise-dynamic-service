@@ -1,7 +1,8 @@
-service: eif-audit-event-pub
+service: rise-audit-event-pub
+frameworkVersion: ^2.50.0
 
 plugins:
-  localPath: '/usr/local/lib/node_modules/'
+  localPath: "/usr/local/lib/node_modules/"
   modules:
     - serverless-prune-plugin
     - serverless-plugin-existing-s3
@@ -9,7 +10,7 @@ plugins:
 
 custom:
   fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
-  
+  queueName: rise-audit-queue
   prune:
     automatic: true
     number: 1
@@ -17,27 +18,35 @@ custom:
 provider:
   name: aws
   runtime: ${self:custom.fromTerraform.node_runtime}
+  memorySize: 1024
   stage: ${opt:stage}
-  region: ${self:custom.fromTerraform.middleware_region}
+  region: ${self:custom.fromTerraform.region}
   stackName: sls-${self:service}-${opt:stage, self:provider.stage}-stack
-  stackTags: ${self:custom.fromTerraform.middleware_common_tags}
-  tags: ${self:custom.fromTerraform.middleware_common_tags}
-  role: ${self:custom.fromTerraform.middleware_lambda_iam_role_arn}
-  deploymentBucket:
-    name: ${self:custom.fromTerraform.middleware_deployment_bucket_name}
-  environment:
-    ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
+  stackTags: ${self:custom.fromTerraform.common_tags}
+  tags: ${self:custom.fromTerraform.common_tags}
+  deploymentBucket: ${self:custom.fromTerraform.application_bucketname}
+  iam:
+    role: ${self:custom.fromTerraform.mentorship_lambda_iam}  
+  
+  apiGateway:
+    restApiId: ${self:custom.fromTerraform.mentorship_rest_api_id}
+    restApiRootResourceId: ${self:custom.fromTerraform.mentorship_rest_api_root_resource_id}  
   vpc:
     securityGroupIds:
-      - ${self:custom.fromTerraform.middleware_lambda_security_group_id}
-    subnetIds: ${self:custom.fromTerraform.aws_subnet_ids}
+      - ${self:custom.fromTerraform.mentorship_sg}
+    subnetIds:
+      - ${self:custom.fromTerraform.subnet_private_0}
+      - ${self:custom.fromTerraform.subnet_private_1}
   logs:
-    restApi: "${self:custom.fromTerraform.middleware_private_api_gateway_logs_enabled}"
-  iamManagedPolicies: ${self:custom.fromTerraform.middleware_lambda_iam_execution_vpc_policy_arns}
+    restApi: "${self:custom.fromTerraform.mentorship_rest_api_id}"
+    frameworkLambda: false
+  environment:
+    ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
 
-
-functions:
-  ${file(./configs/functions/functions.yml)}
+functions: ${file(./configs/functions/functions.yml)}
 
 resources:
-  ${file(./configs/resources/sns-topic.yml)}
+
+  - ${file(./configs/resources/log-group-and-subscription.yml)}
+  # - ${file(./configs/resources/sns-topic.yml)}
+  - ${file(./configs/resources/rise-audit-queue.yml)}
