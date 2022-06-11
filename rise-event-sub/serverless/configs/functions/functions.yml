@@ -10,7 +10,7 @@
         - node_modules/file-success-handler/**
     events:
     - http:
-        path: filehandler
+        path: filehandler1
         method: post
         async: false
         private: false
