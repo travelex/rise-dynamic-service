@@ -62,13 +62,15 @@ class ConnectionService {
 			} else {
 				console.log("Trying to update");
 				fetchQueryParams = this.getQueryParams(params);
-				let data = await dynamoDao.getRecords(fetchQueryParams);
-				console.log(JSON.stringify(data));
-				if (data.Items && data.Items.length) {
-					for (let object = 0; object < data.Items.length; object++) {
-						updateQueryParams = this.getUpdateRecordsParams(data.Items[object], body);
-						let result = await dynamoDao.updateRecords(updateQueryParams);
-						console.log(result);
+				if (fetchQueryParams && fetchQueryParams.length) {
+					for (let object = 0; object < fetchQueryParams.length; object++) {
+						let data = await dynamoDao.getRecords(fetchQueryParams[object]);
+						console.log(JSON.stringify(data));
+						if(data.Items && data.Items.length){
+							updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
+							let result = await dynamoDao.updateRecords(updateQueryParams);
+							console.log(result);
+						}
 					}
 				}
 				response = "Updated";
@@ -215,7 +217,7 @@ class ConnectionService {
 				}
 			}
 		];
-		console.log("updateQueryParam: ",object);
+		console.log("updateQueryParam: ", object);
 		return queryParams;
 	}
 
