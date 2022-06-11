@@ -47,6 +47,6 @@ functions: ${file(./configs/functions/functions.yml)}
 
 resources:
 
-  - ${file(./configs/resources/log-group-and-subscription.yml)}
-  # - ${file(./configs/resources/sns-topic.yml)}
-  - ${file(./configs/resources/rise-audit-queue.yml)}
+  # - ${file(./configs/resources/log-group-and-subscription.yml)}
+  - ${file(./configs/resources/sns-topic.yml)}
+  # - ${file(./configs/resources/rise-audit-queue.yml)}
