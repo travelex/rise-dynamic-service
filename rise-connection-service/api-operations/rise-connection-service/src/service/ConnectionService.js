@@ -54,9 +54,9 @@ class ConnectionService {
 			console.log("params.create_if_not_exist", params.create_if_not_exist);
 			if (params.create_if_not_exist == 'true') {
 				console.log("Trying to insert");
-				queryParams = this.getInsertRecordsParams(params, body);
-				console.log(JSON.stringify(queryParams));
-				await dynamoDao.putRecords(queryParams);
+				fetchQueryParams = this.getInsertRecordsParams(params, body);
+				console.log(JSON.stringify(fetchQueryParams));
+				await dynamoDao.putRecords(fetchQueryParams);
 				console.log("Data Inserted");
 				response = "Created";
 			} else {
