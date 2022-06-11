@@ -3,14 +3,14 @@ Resources:
     Type: "AWS::SQS::Queue"
     DeletionPolicy: Retain
     Properties:
-      QueueName: ${opt:stage}-${self:custom.queueName}
+      QueueName: dev-rise-audit-queue
       DelaySeconds: 0
       MaximumMessageSize: 262144
       MessageRetentionPeriod: 345600   
       ReceiveMessageWaitTimeSeconds: 20
       VisibilityTimeout: 60
       # KmsMasterKeyId: alias/aws/sqs
-      Tags: ${self:custom.fromTerraform.common_tags}
+      # Tags: ${self:custom.fromTerraform.common_tags}
 
   snsToSuccessQueueSqsPolicy:
       Type: AWS::SQS::QueuePolicy
