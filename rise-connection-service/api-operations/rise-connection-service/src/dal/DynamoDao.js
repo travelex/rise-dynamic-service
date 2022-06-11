@@ -17,7 +17,6 @@ class DynamoDao {
     async saveRecord(record, trackingId, recordNo) {
         let isInternalServerErrorStatus = false;
         try {
-
             var params = {
                 TableName: TABLE_NAME,
                 Item: record,
@@ -76,9 +75,7 @@ class DynamoDao {
                 },
                 ReturnValues: 'UPDATED_NEW'
             };
-
             return await docClient.update(params).promise();
-
         } catch (ex) {
             logger.error(`Exception occurred for trackingId ${traceId} while increasing currentCount:: , ${ex}`);
         }

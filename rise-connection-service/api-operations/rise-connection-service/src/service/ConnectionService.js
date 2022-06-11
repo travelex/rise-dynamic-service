@@ -33,7 +33,7 @@ class ConnectionService {
 			let queryParams = this.getFetchRecordsParams(params);
 			console.log(queryParams);
 			let response = await dynamoDao.getRecords(queryParams);
-			console.log("response",response);
+			console.log("response", response);
 			if (response.Items && response.Items.length > 0) {
 				return response;
 			} else {
@@ -50,7 +50,7 @@ class ConnectionService {
 
 	async putConnection(params, body) {
 		try {
-			let queryParams, response;
+			let fetchQueryParams, updateQueryParams, response;
 			console.log("params.create_if_not_exist", params.create_if_not_exist);
 			if (params.create_if_not_exist == 'true') {
 				console.log("Trying to insert");
@@ -61,11 +61,13 @@ class ConnectionService {
 				response = "Created";
 			} else {
 				console.log("Trying to update");
-				queryParams = this.getUpdateRecordsParams(params, body);
-				console.log(JSON.stringify(queryParams));
-				if (queryParams.length) {
-					for (let object = 0; object < queryParams.length; object++) {
-						let result = await dynamoDao.updateRecords(queryParams[object]);
+				fetchQueryParams = this.getQueryParams(params);
+				let data = await dynamoDao.getRecords(fetchQueryParams);
+				console.log(JSON.stringify(data));
+				if (data.Items && data.Items.length) {
+					for (let object = 0; object < data.Items.length; object++) {
+						updateQueryParams = this.getUpdateRecordsParams(data.Items[object], body);
+						let result = await dynamoDao.updateRecords(updateQueryParams);
 						console.log(result);
 					}
 				}
@@ -198,37 +200,22 @@ class ConnectionService {
 
 
 	getUpdateRecordsParams(params, body) {
-		let mentorType = `mentor-${params.mentor_email_id}`;
-		let menteeType = `mentee-${params.mentee_email_id}`;
 
 		let queryParams = [
 			{
 				TableName: TABLE_NAME,
 				Key: {
-					"email_id": params.mentee_email_id
+					email_id: params.email_id,
+					user_type: params.user_type
 				},
 				UpdateExpression: "set status = :status and remark = :remark",
-				ConditionExpression: 'begins_with(user_type, :type)',
 				ExpressionAttributeValues: {
 					':status': body.status,
-					':remark': body.remark,
-					':type': mentorType,
-				}
-			},
-			{
-				TableName: TABLE_NAME,
-				Key: {
-					"email_id": params.mentor_email_id
-				},
-				UpdateExpression: "set status = :status and remark = :remark",
-				ConditionExpression: 'begins_with(user_type, :type)',
-				ExpressionAttributeValues: {
-					':status': params.status,
-					':remark': params.remark,
-					':type': menteeType,
+					':remark': body.remark
 				}
 			}
 		];
+		console.log("updateQueryParam: ",object);
 		return queryParams;
 	}
 
@@ -256,6 +243,37 @@ class ConnectionService {
 		];
 
 		console.log("queryParams", queryParams);
+		return queryParams;
+	}
+
+	getQueryParams(params) {
+		let mentee = params.mentee_email_id
+		let mentor = params.mentor_email_id
+		let queryParams = [{
+			TableName: TABLE_NAME,
+			KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
+			ExpressionAttributeNames: {
+				"#email_id": "email_id",
+				"#user_type": "user_type"
+			},
+			ExpressionAttributeValues: {
+				":email_id": params.mentor_email_id,
+				":type": mentee
+			}
+		},
+		{
+			TableName: TABLE_NAME,
+			KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
+			ExpressionAttributeNames: {
+				"#email_id": "id",
+				"#user_type": "recNo"
+			},
+			ExpressionAttributeValues: {
+				":email_id": params.mentee_email_id,
+				":type": mentor
+			}
+		}]
+
 		return queryParams;
 	}
 
