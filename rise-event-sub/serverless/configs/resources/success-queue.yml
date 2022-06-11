@@ -44,11 +44,11 @@ Resources:
         Protocol: sqs
         RawMessageDelivery: 'false'
 
-  # AuditSuccessLogGroup:
-  #   Type: AWS::Logs::LogGroup
-  #   Properties:
-  #     LogGroupName: /aws/lambda/${opt:stage, self:provider.stage}-${self:service}
-  #     RetentionInDays: ${self:custom.fromTerraform.middleware_cloudwatch_log_group_retention_period}
+  AuditSuccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/${opt:stage, self:provider.stage}-${self:service}
+      RetentionInDays: 5
   # AuditSuccessSubscriptionFilter:
   #   Type: AWS::Logs::SubscriptionFilter
   #   Properties: 
