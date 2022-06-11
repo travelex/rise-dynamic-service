@@ -138,46 +138,89 @@ class ConnectionService {
 		let date = new Date();
 		let insertDate = date.toISOString();
 		let TableName = TABLE_NAME;
-		console.log(object);
+		console.log(TableName);
 		let guid = 12345;
-		let queryParams = {
-			RequestItems: {
-				[TABLE_NAME]: [
-					{
-						PutRequest: {
-							Item: {
-								"email_id": params.mentee_email_id,
-								"user_type": `mentor-${params.mentor_email_id}-${guid}`,
-								"category": "mentee",
-								"status": body.status,
-								"remark": body.remark,
-								"updation_datetime_iso": insertDate,
-								"start_datetime_iso": insertDate,
-								"end_datetime_iso": insertDate,
-								"record_expiry": epochTime,
-								"is_deleted": 0
-							}
-						}
-					},
-					{
-						PutRequest: {
-							Item: {
-								"email_id": params.mentor_email_id,
-								"user_type": `mentee-${params.mentee_email_id}-${guid}`,
-								"category": "mentor",
-								"status": body.status,
-								"remark": body.remark,
-								"updation_datetime_iso": insertDate,
-								"start_datetime_iso": insertDate,
-								"end_datetime_iso": insertDate,
-								"record_expiry": epochTime,
-								"is_deleted": 0
-							}
-						}
+		// let queryParams = {
+		// 	RequestItems: {
+		// 		[TABLE_NAME]: [
+		// 			{
+		// 				PutRequest: {
+		// 					Item: {
+		// 						"email_id": params.mentee_email_id,
+		// 						"user_type": `mentor-${params.mentor_email_id}-${guid}`,
+		// 						"category": "mentee",
+		// 						"status": body.status,
+		// 						"remark": body.remark,
+		// 						"updation_datetime_iso": insertDate,
+		// 						"start_datetime_iso": insertDate,
+		// 						"end_datetime_iso": insertDate,
+		// 						"record_expiry": epochTime,
+		// 						"is_deleted": 0
+		// 					}
+		// 				}
+		// 			},
+		// 			{
+		// 				PutRequest: {
+		// 					Item: {
+		// 						"email_id": params.mentor_email_id,
+		// 						"user_type": `mentee-${params.mentee_email_id}-${guid}`,
+		// 						"category": "mentor",
+		// 						"status": body.status,
+		// 						"remark": body.remark,
+		// 						"updation_datetime_iso": insertDate,
+		// 						"start_datetime_iso": insertDate,
+		// 						"end_datetime_iso": insertDate,
+		// 						"record_expiry": epochTime,
+		// 						"is_deleted": 0
+		// 					}
+		// 				}
+		// 			}
+		// 		]
+		// 	}
+		// };
+
+
+		let RequestItems = {};
+		RequestItems['rise-connections-dev'] = [
+			{
+				PutRequest: {
+					Item: {
+						"email_id": params.mentee_email_id,
+						"user_type": `mentor-${params.mentor_email_id}-${guid}`,
+						"category": "mentee",
+						"status": body.status,
+						"remark": body.remark,
+						"updation_datetime_iso": insertDate,
+						"start_datetime_iso": insertDate,
+						"end_datetime_iso": insertDate,
+						"record_expiry": epochTime,
+						"is_deleted": 0
 					}
-				]
+				}
+			},
+			{
+				PutRequest: {
+					Item: {
+						"email_id": params.mentor_email_id,
+						"user_type": `mentee-${params.mentee_email_id}-${guid}`,
+						"category": "mentor",
+						"status": body.status,
+						"remark": body.remark,
+						"updation_datetime_iso": insertDate,
+						"start_datetime_iso": insertDate,
+						"end_datetime_iso": insertDate,
+						"record_expiry": epochTime,
+						"is_deleted": 0
+					}
+				}
 			}
-		};
+		]
+		console.log(`RequestItems: ${RequestItems}`);
+		let queryParams = {
+			RequestItems: RequestItems
+		}
+		console.log(`queryParams: ${queryParams}`);
+
 		return queryParams;
 	}
 
