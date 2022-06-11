@@ -212,7 +212,7 @@ class ConnectionService {
 				email_id: params.email_id,
 				user_type: params.user_type
 			},
-			UpdateExpression: "set status = :status and remark = :remark",
+			UpdateExpression: "set status = :status, remark = :remark",
 			ExpressionAttributeValues: {
 				':status': body.status,
 				':remark': body.remarks
