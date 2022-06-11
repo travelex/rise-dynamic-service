@@ -1,0 +1,58 @@
+Resources:
+  SuccessQueue:
+    Type: "AWS::SQS::Queue"
+    DeletionPolicy: Retain
+    Properties:
+      QueueName: ${self:provider.stage}-rise-audit-sub-queue
+      DelaySeconds: 0
+      MaximumMessageSize: 262144
+      MessageRetentionPeriod: 345600   
+      ReceiveMessageWaitTimeSeconds: 20
+      VisibilityTimeout: 60
+      # KmsMasterKeyId: alias/aws/sqs
+      Tags: ${self:custom.fromTerraform.middleware_common_tags_cloudformation}
+
+  snsToSuccessQueueSqsPolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Sid: "allow-sns-messages"
+              Effect: Allow
+              Principal: "*"
+              Resource: !GetAtt
+                - SuccessQueue
+                - Arn
+              Action: "SQS:SendMessage"
+              Condition:
+                ArnEquals:
+                  "aws:SourceArn": "arn:aws:sns:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:${self:provider.stage}-eif-audit-topic"
+        Queues:
+          - Ref: "SuccessQueue"
+
+  SuccessQueueSubscription:
+      Type: 'AWS::SNS::Subscription'
+      Properties:
+        TopicArn: "arn:aws:sns:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:${self:provider.stage}-eif-audit-topic"
+        Endpoint: !GetAtt
+          - SuccessQueue
+          - Arn
+        FilterPolicy:
+          status: [success]
+          interfaceName: [{"anything-but": "cnrscreening"}]
+        Protocol: sqs
+        RawMessageDelivery: 'false'
+
+  AuditSuccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/${opt:stage, self:provider.stage}-${self:service}
+      RetentionInDays: ${self:custom.fromTerraform.middleware_cloudwatch_log_group_retention_period}
+  AuditSuccessSubscriptionFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties: 
+      DestinationArn: arn:aws:lambda:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:function:datadog-log-shipper-lambda-${self:provider.stage}
+      FilterPattern: ''
+      LogGroupName: 
+        Ref: AuditSuccessLogGroup

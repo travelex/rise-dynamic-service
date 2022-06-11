@@ -1,0 +1,20 @@
+- process:
+    name: ${self:provider.stage}-${self:service}
+    description: File Success Handler
+    handler: src/handlers/${self:provider.name}/handler.handle
+    reservedConcurrency: 30
+    timeout: 60
+    package:
+      include:
+        - src/handlers/${self:provider.name}/handler.js
+        - node_modules/file-success-handler/**
+    # events:
+    # - http:
+    #     path: filehandler
+    #     method: post
+    #     async: false
+    #     private: false
+    events:
+      - sqs:
+          arn: arn:aws:sqs:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:${opt:stage}-${self:custom.queueName}
+          batchSize: 10

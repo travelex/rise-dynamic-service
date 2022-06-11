@@ -1,0 +1,64 @@
+service: rise-event-sub
+
+plugins:
+  localPath: '/usr/local/lib/node_modules/'
+  modules:
+    - serverless-prune-plugin
+    - ./../../common/serverless/plugins/no-logs-group
+
+custom:
+  fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
+  queueName: rise-audit-sub-queue
+  tableName: object-processed-metadata-${opt:stage, self:provider.stage}
+  # stagingTableName: staging-data-${opt:stage, self:provider.stage}
+  prune:
+    automatic: true
+    number: 1
+
+provider:
+  name: aws
+  runtime: ${self:custom.fromTerraform.node_runtime}
+  memorySize: 3008
+  stage: ${opt:stage}
+  region: ${self:custom.fromTerraform.middleware_region}
+  stackName: sls-${self:service}-${opt:stage, self:provider.stage}-stack
+  stackTags: ${self:custom.fromTerraform.middleware_common_tags}
+  tags: ${self:custom.fromTerraform.middleware_common_tags}
+  deploymentBucket:
+    name: ${self:custom.fromTerraform.middleware_deployment_bucket_name}
+  environment:
+    ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
+  vpc:
+    securityGroupIds:
+      - ${self:custom.fromTerraform.middleware_lambda_security_group_id}
+    subnetIds: ${self:custom.fromTerraform.aws_subnet_ids}
+  logs:
+    restApi: "${self:custom.fromTerraform.middleware_private_api_gateway_logs_enabled}"
+    frameworkLambda: false 
+  iamManagedPolicies: ${self:custom.fromTerraform.middleware_lambda_iam_policy_arns}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:DeleteMessage*
+        - sqs:Receive*
+        - sqs:SendMessage*
+        - sqs:Get*
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "arn:aws:sqs:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:${self:custom.queueName}-${opt:stage}"
+        - "arn:aws:dynamodb:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:table/${self:custom.tableName}"
+        - "arn:aws:dynamodb:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:table/*"
+
+functions:
+  ${file(./configs/functions/functions.yml)}
+
+resources:
+  ${file(./configs/resources/success-queue.yml)}
+  # ${file(./configs/resources/log-group-and-subscription.yml)}
+#   ${file(./configs/resources/object-processed-metadata-table.yml)}

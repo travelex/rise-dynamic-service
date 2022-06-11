@@ -1,0 +1,39 @@
+{
+  "name": "file-success-handler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/dal/__mocks__/*.js",
+      "!src/dal/*.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 80
+      }
+    }
+  },
+  "dependencies": {
+    "aws-sdk": "2.1028.0",
+    "generic-exception": "git+ssh://git@github.com/travelex/generic-exception-js.git#1.0.0",
+    "hashmap": "^2.4.0",
+    "jsonpath-plus": "0.20.0",
+    "jsonwebtoken": "8.5.1",
+    "object-hash": "^2.0.0",
+    "request": "2.88.0",
+    "winston-wrapper": "git+ssh://git@github.com/travelex/winston-wrapper.git#1.0.23",
+    "moment": "2.24.0"
+  },
+  "license": "ISC",
+  "author": "Prashant Baditya",
+  "devDependencies": {
+    "jest": "24.8.0",
+    "eslint": "6.3.0",
+    "babel-eslint": "10.0.3"
+  }
+}
