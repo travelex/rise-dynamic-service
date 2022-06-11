@@ -11,6 +11,23 @@
     - http:
         path: connection/{type}/{email_id}
         method: get
+        cors:
+          origin: '*'
+          headers:
+            - Content-Type
+            - X-Amz-Date
+            - Authorization
+            - X-Api-Key
+            - X-Amz-Security-Token
+            - X-Amz-User-Agent
+            - applicationId
+            - applicationid
+            - code
+            - code_verifier
+            - Access-Control-Allow-Headers
+            - Access-Control-Request-Headers
+            - Access-Control-Request-Method
+            - Access-Control-Allow-Origin
     - http:
         path: connection/{type}/{email_id}
         method: put
