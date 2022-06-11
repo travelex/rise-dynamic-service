@@ -232,7 +232,6 @@ class ConnectionService {
 		return queryParams;
 	}
 
-
 	getDeleteQueryParams(params) {
 		let mentorType = `mentor-${params.mentor_email_id}`;
 		let menteeType = `mentee-${params.mentee_email_id}`;
@@ -243,34 +242,63 @@ class ConnectionService {
 				Key: {
 					"email_id": params.mentee_email_id
 				},
-				UpdateExpression: "set #is_deleted = :isDeleted",
-				ConditionExpression: 'begins_with(#user_type, :type)',
-				ExpressionAttributeNames: {
-					"#is_deleted": "is_deleted",
-					"#user_type": "user_type"
-				},
-				ExpressionAttributeValues: {
-					':isDeleted': '1',
-					':type': mentorType,
-				}
+				UpdateExpression: "set is_deleted = 1",
+				ConditionExpression: 'begins_with(user_type, mentor-khan.juned@travelex.com)',
 			},
 			{
 				TableName: TABLE_NAME,
 				Key: {
 					"email_id": params.mentor_email_id
 				},
-				UpdateExpression: "set is_deleted = :isDeleted",
-				ConditionExpression: 'begins_with(user_type, :type)',
-				ExpressionAttributeValues: {
-					':isDeleted': '1',
-					':type': menteeType,
-				}
+				UpdateExpression: "set is_deleted = 1",
+				ConditionExpression: 'begins_with(user_type, mentee-nikita.pawar@travelex.com)',
 			}
 		];
 
 		console.log("queryParams", queryParams);
 		return queryParams;
 	}
+
+	// getDeleteQueryParams(params) {
+	// 	let mentorType = `mentor-${params.mentor_email_id}`;
+	// 	let menteeType = `mentee-${params.mentee_email_id}`;
+
+	// 	let queryParams = [
+	// 		{
+	// 			TableName: TABLE_NAME,
+	// 			Key: {
+	// 				"email_id": params.mentee_email_id
+	// 			},
+	// 			UpdateExpression: "set #is_deleted = :isDeleted",
+	// 			ConditionExpression: 'begins_with(#user_type, :type)',
+	// 			ExpressionAttributeNames: {
+	// 				"#is_deleted": "is_deleted",
+	// 				"#user_type": "user_type"
+	// 			},
+	// 			ExpressionAttributeValues: {
+	// 				':isDeleted': '1',
+	// 				':type': mentorType,
+	// 			}
+	// 		},
+	// 		{
+	// 			TableName: TABLE_NAME,
+	// 			Key: {
+	// 				"email_id": params.mentor_email_id
+	// 			},
+	// 			UpdateExpression: "set is_deleted = :isDeleted",
+	// 			ConditionExpression: 'begins_with(user_type, :type)',
+	// 			ExpressionAttributeValues: {
+	// 				':isDeleted': '1',
+	// 				':type': menteeType,
+	// 			}
+	// 		}
+	// 	];
+
+	// 	console.log("queryParams", queryParams);
+	// 	return queryParams;
+	// }
+
+
 
 	/**
 	 * 
