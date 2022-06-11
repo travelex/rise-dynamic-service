@@ -286,7 +286,7 @@ class ConnectionService {
 				UpdateExpression: "set is_deleted = :isDeleted",
 				ConditionExpression: 'begins_with(user_type, :type)',
 				ExpressionAttributeValues: {
-					':isDeleted': 1,
+					':isDeleted': '1',
 					':type': mentorType,
 				}
 			},
@@ -298,7 +298,7 @@ class ConnectionService {
 				UpdateExpression: "set is_deleted = :isDeleted",
 				ConditionExpression: 'begins_with(user_type, :type)',
 				ExpressionAttributeValues: {
-					':isDeleted': 1,
+					':isDeleted': '1',
 					':type': menteeType,
 				}
 			}
