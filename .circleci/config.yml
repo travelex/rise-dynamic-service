@@ -257,7 +257,7 @@ jobs:
             BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
             ENVIRONMENT=$(echo -e 'feature/ dev\nplay/ play\ndevelopment sit\nrelease/ uat\nhotfix/ preprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
             AWS_ACCOUNT_TYPE=$(echo -e 'feature/ nonprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
-            
+            aws create-queue --queue-name rise-audit-queue-test --DelaySeconds  0 --MaximumMessageSize 262144 --MessageRetentionPeriod 345600 --ReceiveMessageWaitTimeSeconds 20 --VisibilityTimeout 60
             aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json terraform/applications/ 
             aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json . 
             cd terraform/applications/
@@ -336,16 +336,16 @@ workflows:
       #           - develop
       #           - master
       #           - feature/dit
-      - lambda-job:
-          name: rise-audit-event-pub
-          requires:
-            - s3-download
-          filters:
-            branches:
-              only:
-                - develop
-                - master
-                - /feature\/.*/
+      # - lambda-job:
+      #     name: rise-audit-event-pub
+      #     requires:
+      #       - s3-download
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - master
+      #           - /feature\/.*/
 
       - lambda-job:
           name: rise-event-sub
