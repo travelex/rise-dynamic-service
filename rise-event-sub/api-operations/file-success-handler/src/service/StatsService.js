@@ -31,8 +31,10 @@ class StatsService {
             for (let fileCount = 0; fileCount < filesFromS3.length; fileCount++) {
                 let fileName = filesFromS3[fileCount].Key
                 logger.debug(`Rule Name :: ${fileName}`);
-                let fileContent = await S3Service.getStream(bucketName,fileName).toString('utf-8')
+                let fileContent = await S3Service.getObjectData(bucketName,fileName)
+                fileContent = fileContent.toString("utf-8")
                 logger.debug("File Content = "+fileContent)
+                
             }
         } catch (error) {
             logger.error(`Error occurred while fetching connection: ${JSON.stringify(error)}`);
