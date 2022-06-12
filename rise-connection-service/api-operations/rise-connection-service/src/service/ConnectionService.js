@@ -244,15 +244,12 @@ class ConnectionService {
 		return queryObject;
 	}
 
-	getCheckBeforeInsertParams(params, body) {
-
-	}
 
 	getInsertRecordsParams(params, body) {
 		const epochTime = Math.round(new Date().getTime() / 1000) + 2592000;
 		let date = new Date();
 		let insertDate = date.toISOString();
-		let endDate = new Date(date.setMonth(date.getMonth()+1)).toISOString();
+		let endDate = new Date(date.setMonth(date.getMonth() + 1)).toISOString();
 		let TableName = TABLE_NAME;
 		let guid = Math.floor(Math.random() * 90000) + 10000;
 		let RequestItems = {};
@@ -386,6 +383,36 @@ class ConnectionService {
 		return queryParams;
 	}
 
+
+
+
+
+	createMessageAttribues(attributes) {
+		let attributeNames, msgAttribute = {};
+		try {
+			attributeNames = attributes;
+			this.fixedAttributes.forEach(attributeName => {
+				if (attributeNames[attributeName]) {
+					attributeNames[attributeName] = attributeNames[attributeName];
+					if (typeof attributeNames[attributeName] === 'string' || typeof attributeNames[attributeName] === 'number') {
+						msgAttribute[attributeName] = {
+							'DataType': 'String',
+							'StringValue': typeof attributeNames[attributeName] === 'number' ? attributeNames[attributeName].toString() : attributeNames[attributeName]
+						};
+					} else if (typeof attributeNames[attributeName] === 'object') {
+						msgAttribute[attributeName] = {
+							'DataType': 'String.Array',
+							'StringValue': JSON.stringify([attributeNames[attributeName]])
+						};
+					}
+				}
+			});
+			return msgAttribute;
+		} catch (ex) {
+			console.error(ex);
+		}
+	}
+
 	publishSNSService(status) {
 		let payload = {
 			correlation_id: "",
@@ -393,35 +420,95 @@ class ConnectionService {
 			operation: "insert",
 			date_time_iso: "",
 			data: {
-				menter_email_id: "",
-				mentee_email_id: "",
+				mentor_email_id: "abcd@travelex.com",
+				mentee_email_id: "xyz@travelex.com",
 				status: status
 			}
 		};
+		// let messageAttributes = this.createMessageAttribues(payload);
 
-		const params = {
-			Message: JSON.stringify({ 'default': 'Audit Messages', payload }), /* required */
-			TopicArn: 'arn:aws:sns:eu-west-1:148807490170:dev-rise-audit-topic',
-			MessageStructure: 'json',
+		let params = {
+			TopicArn: this.options.auditTopic.topicARN,
+			Message: JSON.stringify({
+				'default': 'Audit Messages',
+				'sqs': payload
+			}),
 			MessageAttributes: {
 				'status': {
-                    'DataType': 'String',
-                    'StringValue': 'success'
-                }
-			}
+					'DataType': 'String',
+					'StringValue': 'success'
+				}
+			},
+			MessageStructure: 'json'
 		};
 
-		const publishTextPromise = new AWS.SNS({ apiVersion: '2010-03-31' }).publish(params).promise();
-
-		 publishTextPromise.then(
-            function (data) {
-                console.log(`Message ${params.Message} sent to the topic ${params.TopicArn}`);
-                console.log("MessageID is " + data.MessageId);
-            }).catch(
-                function (err) {
-                    console.error(err, err.stack);
-            });
+		try {
+			new AWS.SNS({
+				apiVersion: this.options.auditTopic.apiVersion ? this.options.auditTopic.apiVersion : '2010-03-31',
+				endpoint: this.options.auditTopic.snsEndpoint
+			}).publish(params, (err, success) => {
+				if (err) {
+					console.error(err);
+				}else{
+					console.log(`Message ${params.Message} sent to the topic ${params.TopicArn}`);
+				console.log("MessageID is " + data.MessageId);
+				}
+			});
+		} catch (err) {
+			console.error(err);
+		}
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// publishSNSService(status) {
+	// 	let payload = {
+	// 		correlation_id: "",
+	// 		entity: "connection",
+	// 		operation: "insert",
+	// 		date_time_iso: "",
+	// 		data: {
+	// 			menter_email_id: "",
+	// 			mentee_email_id: "",
+	// 			status: status
+	// 		}
+	// 	};
+
+	// 	const params = {
+	// 		Message: JSON.stringify({ 'default': 'Audit Messages', payload }), /* required */
+	// 		TopicArn: 'arn:aws:sns:eu-west-1:148807490170:dev-rise-audit-topic',
+	// 		MessageStructure: 'json',
+	// 		MessageAttributes: {
+	// 			'status': {
+	// 				'DataType': 'String',
+	// 				'StringValue': 'success'
+	// 			}
+	// 		}
+	// 	};
+
+	// 	const publishTextPromise = new AWS.SNS({ apiVersion: '2010-03-31' }).publish(params).promise();
+
+	// 	publishTextPromise.then(
+	// 		function (data) {
+	// 			console.log(`Message ${params.Message} sent to the topic ${params.TopicArn}`);
+	// 			console.log("MessageID is " + data.MessageId);
+	// 		}).catch(
+	// 			function (err) {
+	// 				console.error(err, err.stack);
+	// 			});
+	// }
 }
 
 module.exports = new ConnectionService();
