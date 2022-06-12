@@ -108,6 +108,7 @@ class DynamoDao {
 
     async deleteRecords(params) {
         try {
+            console.log("Inside deleteRecords: ", params);
             return await docClient.update(params).promise();
         } catch (error) {
             logger.error(`Exception occurred while deleting records :: , ${error}`);
