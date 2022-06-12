@@ -108,7 +108,12 @@ class ConnectionService {
 				response = `Connection request ${body.status}`;
 				status = body.status;
 			}
-
+			try {
+				console.log("Sending notification via SNS");
+				this.publishSNSService(status);
+			} catch (error) {
+				logger.error(error)
+			}
 			return {
 				status: 200,
 				message: `Connection ${response}`
@@ -245,7 +250,7 @@ class ConnectionService {
 		const epochTime = Math.round(new Date().getTime() / 1000) + 2592000;
 		let date = new Date();
 		let insertDate = date.toISOString();
-		let endDate = date.setMonth(date.getMonth() + 1)
+		let endDate = date.setMonth(date.getMonth() + 1).toISOString();
 		let TableName = TABLE_NAME;
 		let guid = Math.floor(Math.random() * 90000) + 10000;
 		let RequestItems = {};
@@ -388,17 +393,32 @@ class ConnectionService {
 			data: {
 				menter_email_id: "",
 				mentee_email_id: "",
-				status: "pending/approved/rejected/deleted"
+				status: status
 			}
 		};
 
 		const params = {
 			Message: JSON.stringify({ 'default': 'Audit Messages', payload }), /* required */
-			TopicArn: 'arn:aws:sns:ap-south-1:738131246206:ProcessStatusTopic',
+			TopicArn: 'arn:aws:sns:eu-west-1:148807490170:dev-rise-audit-topic',
 			MessageStructure: 'json',
 			MessageAttributes: {
+				'status': {
+                    'DataType': 'String',
+                    'StringValue': 'success'
+                }
 			}
 		};
+
+		const publishTextPromise = new AWS.SNS({ apiVersion: '2010-03-31' }).publish(params).promise();
+
+		 publishTextPromise.then(
+            function (data) {
+                console.log(`Message ${params.Message} sent to the topic ${params.TopicArn}`);
+                console.log("MessageID is " + data.MessageId);
+            }).catch(
+                function (err) {
+                    console.error(err, err.stack);
+            });
 	}
 }
 
