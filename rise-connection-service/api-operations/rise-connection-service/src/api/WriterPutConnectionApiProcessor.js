@@ -59,7 +59,9 @@ class WriterPutConnectionApiProcessor {
 
                     let params = this.getParams(event);
                     console.log(params);
-                    const response = connectionService.putConnection(params, event.body);
+                    let body = JSON.parse(event.body);
+                    console.log(body);
+                    const response = await connectionService.putConnection(params, body);
 
                     _auditLog.withWorkFlowInfo('Dynamic Service request completed successfully')
                         .withCompleted(true).withEvent(response).build().generateAuditlog();
@@ -122,12 +124,12 @@ class WriterPutConnectionApiProcessor {
         let params = {
             "mentee_email_id": pathParameters.type ? pathParameters.type : errorArray.push["Invalid parameters"],
             "mentor_email_id": pathParameters.email_id ? pathParameters.email_id : errorArray.push["Invalid parameters"],
-            "create_if_not_exist": (queryStringParameters && queryStringParameters.create_if_not_exist) ? queryStringParameters.create_if_not_exist : true
+            "create_if_not_exist": (queryStringParameters && queryStringParameters.create_if_not_exist) ? queryStringParameters.create_if_not_exist : 'true'
         }
         if (errorArray.length) {
             throw new Error({
                 status: 400,
-                description: "Unable to retrieve the Connection information.",
+                message: "Unable to retrieve the Connection information.",
             })
         }
         return params;

@@ -58,7 +58,7 @@ class WriterDeleteConnectionApiProcessor {
                     console.log('Event Received', JSON.stringify(event));
 
                     let params = this.getParams(event);
-                    const response = connectionService.deleteConnection(params);
+                    const response = await connectionService.deleteConnection(params);
 
                     _auditLog.withWorkFlowInfo('Dynamic Service request completed successfully')
                         .withCompleted(true).withEvent(response).build().generateAuditlog();
@@ -126,7 +126,7 @@ class WriterDeleteConnectionApiProcessor {
         if (errorArray.length) {
             throw new Error({
                 status: 400,
-                description: "Unable to retrieve the Connection information.",
+                message: "Unable to retrieve the Connection information.",
                 error: errorArray[0]
             })
         }

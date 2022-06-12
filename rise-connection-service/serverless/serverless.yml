@@ -1,4 +1,4 @@
-service: rise-connection-service
+service: rise-connections-service
 
 frameworkVersion: ^2.50.0
 
@@ -13,7 +13,7 @@ custom:
   fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
   filecounterTableName: file-counter-${opt:stage, self:provider.stage}
   middlewarestagingdata: middleware-staging-data-${opt:stage, self:provider.stage}
-  tableName: rise-connection-${opt:stage, self:provider.stage}
+  tableName: rise-connections-${opt:stage, self:provider.stage}
   prune:
     automatic: true
     number: 1
@@ -45,8 +45,28 @@ provider:
     frameworkLambda: false
   environment:
     ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - SNS:Publish
+        - SNS:RemovePermission
+        - SNS:SetTopicAttributes
+        - SNS:ListSubscriptionsByTopic
+        - SNS:GetTopicAttributes
+        - SNS:Receive
+        - SNS:AddPermission
+        - SNS:Subscribe
+       
+      Resource:
+        #- "arn:aws:dynamodb:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:table/${self:custom.filecounterTableName}"  
+        #- "arn:aws:dynamodb:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:table/${self:custom.tableName}"
+        #- "arn:aws:dynamodb:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:table/${self:custom.middlewarestagingdata}"
+        - "*"
+        #- "arn:aws:sns:${self:custom.fromTerraform.middleware_region, 'eu-west-1'}:${self:custom.fromTerraform.middleware_aws_account_id, '0'}:${opt:stage, self:provider.stage}-eif-audit-topic"
 
 functions: ${file(./configs/functions/functions.yml)}
+
+
 
 resources:
   - ${file(./configs/resources/log-group-and-subscription.yml)}

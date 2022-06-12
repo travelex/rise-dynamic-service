@@ -17,7 +17,6 @@ class DynamoDao {
     async saveRecord(record, trackingId, recordNo) {
         let isInternalServerErrorStatus = false;
         try {
-
             var params = {
                 TableName: TABLE_NAME,
                 Item: record,
@@ -76,9 +75,7 @@ class DynamoDao {
                 },
                 ReturnValues: 'UPDATED_NEW'
             };
-
             return await docClient.update(params).promise();
-
         } catch (ex) {
             logger.error(`Exception occurred for trackingId ${traceId} while increasing currentCount:: , ${ex}`);
         }
@@ -111,6 +108,7 @@ class DynamoDao {
 
     async deleteRecords(params) {
         try {
+            console.log("Inside deleteRecords: ", params);
             return await docClient.update(params).promise();
         } catch (error) {
             logger.error(`Exception occurred while deleting records :: , ${error}`);
@@ -120,7 +118,7 @@ class DynamoDao {
 
     async putRecords(params) {
         try {
-            return await docClient.batchWriteItem(params).promise();
+            return await docClient.batchWrite(params).promise();
         } catch (error) {
             logger.error(`Exception occurred while inserting records :: , ${error}`);
             throw error;
