@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer')
 const path = require('path');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
 const agreement = require('../report/agreement')
+const fs = require('fs');
 
 class EmailService {
 
