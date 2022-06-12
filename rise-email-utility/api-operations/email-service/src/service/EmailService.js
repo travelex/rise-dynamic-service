@@ -23,7 +23,7 @@ class EmailService {
             fs.writeFileSync('/tmp/test.txt', 'Test DATA')
             fs.readdirSync('/tmp').forEach(file => {
                 console.log(`file names  : ${file}`);
-                console.log(`file stat - ${JSON.stringify(fs.stat(file))}`)
+                console.log(`file stat - ${JSON.stringify(fs.statSync(file))}`)
               });
               
             const transporter =await EmailService.getTransport();
