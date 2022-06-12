@@ -21,8 +21,8 @@ class EmailService {
             const transporter =await EmailService.getTransport();
             const info = await transporter.sendMail({
 
-                from: 'bharat.kendre@travelex.com', // sender address
-                to: "juned.khan@travelex.com", // list of receivers
+                from: 'Middleware-nonprod@travelex.com', // sender address
+                to: "bharat.kendre@travelex.com", // list of receivers
                 subject: "Test Email for Mentorship App", // Subject line
                 text: "Hello world", // plain text body
                 html: "<b>Hello world</b>", // html body,
