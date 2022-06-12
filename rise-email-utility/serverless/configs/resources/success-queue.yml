@@ -1,5 +1,5 @@
 Resources:
-  Siddhiraj:
+  reportingQueue:
     Type: "AWS::SQS::Queue"
     DeletionPolicy: Retain
     Properties:
@@ -22,21 +22,21 @@ Resources:
               Effect: Allow
               Principal: "*"
               Resource: !GetAtt
-                - Siddhiraj
+                - reportingQueue
                 - Arn
               Action: "SQS:SendMessage"
               Condition:
                 ArnEquals:
                   "aws:SourceArn": "arn:aws:sns:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:${self:provider.stage}-rise-audit-topic"
         Queues:
-          - Ref: "Siddhiraj"
+          - Ref: "reportingQueue"
 
   SiddhirajSubscription:
       Type: 'AWS::SNS::Subscription'
       Properties:
         TopicArn: "arn:aws:sns:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:${self:provider.stage}-rise-audit-topic"
         Endpoint: !GetAtt
-          - Siddhiraj
+          - reportingQueue
           - Arn
         # FilterPolicy:
         #   status: [success]
