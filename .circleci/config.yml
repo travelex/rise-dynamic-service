@@ -350,7 +350,7 @@ workflows:
       - lambda-job:
           name: rise-event-sub
           requires:
-            - rise-audit-event-pub
+            - s3-download
           filters:
             branches:
               only:
