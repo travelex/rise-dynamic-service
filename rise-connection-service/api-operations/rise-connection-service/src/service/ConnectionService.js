@@ -440,10 +440,15 @@ class ConnectionService {
 				'sqs': payload
 			}),
 			MessageAttributes: {
-				'status': {
+				'entity': {
 					'DataType': 'String',
-					'StringValue': 'success'
-				}
+					'StringValue': 'connection'
+				},
+				'operation' : {
+					'DataType': 'String',
+					'StringValue': 'insert'
+				},
+
 			},
 			MessageStructure: 'json'
 		};
