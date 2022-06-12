@@ -35,7 +35,15 @@ class ConnectionService {
 			let response = await dynamoDao.getRecords(queryParams);
 			console.log("response", response);
 			if (response.Items && response.Items.length > 0) {
-				return response;
+				let data = {
+					status: 200,
+					message: "Coonection recieved",
+					body: {}
+				}
+				data.body.pending = response.Items.filter(data => data.connection_status == 'pending');
+				data.body.approved = response.Items.filter(data => data.connection_status == 'approved');
+				data.body.rejected = response.Items.filter(data => data.connection_status == 'rejected');
+				return data;
 			} else {
 				return {
 					status: 404,
@@ -336,7 +344,6 @@ class ConnectionService {
 
 		return queryParams;
 	}
-
 }
 
 module.exports = new ConnectionService();
