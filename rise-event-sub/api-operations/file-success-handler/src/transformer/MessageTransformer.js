@@ -7,41 +7,20 @@ const TableDomainName = require('../model/TableDomainName');
 class MessageTransformer {
     static async transformToBo(messageDto) {
         try {
-            let messageAttribute = utils.parseElement(messageDto.messageAttributes);
-            messageAttribute.options.Value = utils.parseElement(messageAttribute.options.Value);
-            
-            const valueObject = {
-                header: {
-                    config: null,
-                    source: null,
-                    param: null,
+
+            let expexted = {
+                correlation_id: messageDto.messageDetails.correlation_id,
+                entity: messageDto.messageDetails.entity,
+                operation: messageDto.messageDetails.operation,
+                date_time_iso: messageDto.messageDetails.date_time_iso,
+                data: {
+                    menter_email_id: messageDto.messageDetails.data.menter_email_id,
+                    mentee_email_id: messageDto.messageDetails.data.mentee_email_id,
+                    status: messageDto.messageDetails.data.status,
                 }
             }
-            if (messageAttribute.options && messageAttribute.options.Value && messageAttribute.options.Value[0] && messageAttribute.options.Value[0].header) {
-                messageAttribute.options.Value[0].header.config = (messageAttribute.options.Value[0].header && messageAttribute.options.Value[0].header.config) ? utils.parseElement(messageAttribute.options.Value[0].header.config) : null;
-                messageAttribute.options.Value[0].header.source = (messageAttribute.options.Value[0].header && messageAttribute.options.Value[0].header.source) ? utils.parseElement(messageAttribute.options.Value[0].header.source) : null;
-                messageAttribute.options.Value[0].header.param = (messageAttribute.options.Value[0].header && messageAttribute.options.Value[0].header.param) ? utils.parseElement(messageAttribute.options.Value[0].header.param) : null;
-            } else {
-                if (messageAttribute.options && messageAttribute.options.Value && messageAttribute.options.Value[0]) {
-                    messageAttribute.options.Value[0] = valueObject
-                } else {
-                    messageAttribute.options = {
-                        Value: [valueObject]
-                    }
-                }
-            }
-
-            let metadata = (messageAttribute.options.Value[0].header.config && messageAttribute.options.Value[0].header.config.metadata) ? messageAttribute.options.Value[0].header.config.metadata : null;
-            let trackingId = null;
-            if (metadata && metadata.trackingid) {
-                trackingId = metadata.trackingid.split('#')[0];
-            }
-
-            let originDomain = this.getOriginDomain(messageAttribute);
-
-            const eventDetail = MessageTransformer.getEventEventDetails(messageAttribute, originDomain, trackingId)
-
-            return new MessageBo(messageDto.topicArn, messageDto.messageDetails, messageAttribute, trackingId, originDomain, eventDetail);
+          
+            return new MessageBo();
 
         } catch (error) {
             logger.error(`Exception occurred while Transforming event Object, ${error.toString()}`);

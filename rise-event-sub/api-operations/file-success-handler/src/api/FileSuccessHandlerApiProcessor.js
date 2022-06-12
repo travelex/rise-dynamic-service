@@ -28,7 +28,7 @@ class FileSuccessHandlerApiProcessor {
             winstonWrapper.serverlessFunction(event, context, async () => {
                 _auditLog = new AuditLogger.Builder(logger, 'rise-event-sub');
                 try {
-                    logger.info("Receiving Messages from Success-Queue if Exist..");
+                    logger.info("Receiving Messages from  Audit Queue ");
                     let eventRecord = utils.parseElement(event);
                     logger.debug(`Success queue Events:::: ${JSON.stringify (eventRecord)}`);
                     let params = undefined, config;

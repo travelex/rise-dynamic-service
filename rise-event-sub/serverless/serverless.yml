@@ -24,7 +24,8 @@ provider:
   stackName: sls-${self:service}-${opt:stage, self:provider.stage}-stack
   stackTags: ${self:custom.fromTerraform.common_tags}
   tags: ${self:custom.fromTerraform.common_tags}
-  deploymentBucket: ${self:custom.fromTerraform.application_bucketname}
+  deploymentBucket:
+    name: tvx-mentorship-deployment-${opt:stage, self:provider.stage}
   iam:
     role: ${self:custom.fromTerraform.mentorship_lambda_iam}  
   
