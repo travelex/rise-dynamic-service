@@ -209,12 +209,14 @@ class S3Dao {
 
 	async listObjects(bucket, prefix) {
 		try {
+
 			let result = await s3.listObjects({
 				Bucket: bucket,
 				Prefix: prefix
 			}).promise();
 
 			if (result) {
+				logger.debug("Files Listed ="+JSON.stringify(result))
 				result.Contents = result.Contents.filter((data) => data.Key[data.Key.length - 1] !== '/');
 			}
 			
