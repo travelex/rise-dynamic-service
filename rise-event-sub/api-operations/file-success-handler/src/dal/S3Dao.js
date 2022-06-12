@@ -217,6 +217,7 @@ class S3Dao {
 			if (result) {
 				result.Contents = result.Contents.filter((data) => data.Key[data.Key.length - 1] !== '/');
 			}
+			
 			return result;
 		} catch (error) {
 			logger.error(`Error while listing objects : ${error}`);

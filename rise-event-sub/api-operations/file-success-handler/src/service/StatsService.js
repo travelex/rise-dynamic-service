@@ -22,8 +22,8 @@ class StatsService {
             
             let bucketName = process.env.BUCKET_NAME
             logger.debug(`Bucket Name :: ${bucketName}`);
-            let filesFromS3 = await S3Service.listObjects(bucketName, pathToRetrieve)
-
+            let filesFromS3 = await S3Service.listObjects(bucketName, pathToRetrieve).Contents
+            logger.debug(filesFromS3);
             /**
              * Iterating for each file to Get the Content 
              */
