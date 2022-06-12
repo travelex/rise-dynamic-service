@@ -40,12 +40,14 @@ module.exports = function(err, reportName, testing) {
     let reportNameDir;
     if (reportName.indexOf("/") === -1) {
         reportNameDir = process.cwd() + "/" + reportName;
+        console.log(` 43 path : ${reportName}`);
     } else {
         reportNameDir = reportName;
         reportName = reportName.substring(reportName.lastIndexOf("/")+1);
+        console.log(` 47 path : ${reportName}`);
     }
     const reportNoExt = reportName.replace(".pdf", "");
-
+    console.log(` 50 path : ${reportNoExt}`);
     if (typeof process.env.TESTING !== "undefined" || testing.force === true ) {
         if (global.skipTesting) {
             console.log("SKIPPED:", reportNoExt);
