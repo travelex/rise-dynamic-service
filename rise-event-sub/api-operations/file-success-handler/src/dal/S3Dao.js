@@ -209,12 +209,12 @@ class S3Dao {
 
 	async listObjects(bucket, prefix) {
 		try {
-
+			logger.debug("Start of Listing Files ")
 			let result = await s3.listObjects({
 				Bucket: bucket,
 				Prefix: prefix
 			}).promise();
-
+			logger.debug("After Listing files  ")
 			if (result) {
 				logger.debug("Files Listed ="+JSON.stringify(result))
 				result.Contents = result.Contents.filter((data) => data.Key[data.Key.length - 1] !== '/');
@@ -222,8 +222,9 @@ class S3Dao {
 			
 			return result;
 		} catch (error) {
+			console.log(error)
 			logger.error(`Error while listing objects : ${error}`);
-			throw new Error(`Error occured while Listing objects: ${error}`);
+			throw error
 		}
 	}
 
