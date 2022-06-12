@@ -127,20 +127,36 @@ class ConnectionService {
 	getFetchRecordsParams(params) {
 		let queryObject;
 		console.log("params", params);
-		if (params.status) {
+		if (params.status && params.type == "both") {
 			queryObject = {
 				TableName: TABLE_NAME,
-				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
+				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type) and #connection_status = :status",
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
-					"#user_type": "user_type"
+					"#user_type": "user_type",
+					"#connection_status": "connection_status"
 				},
 				ExpressionAttributeValues: {
 					":email_id": params.email_id,
-					":type": params.type
+					":type": params.type,
+					":status": params.status
 				}
 			};
-
+		} else if(params.status){
+			queryObject = {
+				TableName: TABLE_NAME,
+				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type) and #connection_status = :status",
+				ExpressionAttributeNames: {
+					"#email_id": "email_id",
+					"#user_type": "user_type",
+					"#connection_status": "connection_status"
+				},
+				ExpressionAttributeValues: {
+					":email_id": params.email_id,
+					":type": params.type,
+					":status": params.status
+				}
+			};
 		} else {
 			queryObject = {
 				TableName: TABLE_NAME,
@@ -160,14 +176,13 @@ class ConnectionService {
 	}
 
 	getInsertRecordsParams(params, body) {
-		const epochTime = Math.round(new Date().getTime() / 1000);
+		const epochTime = Math.round(new Date().getTime() / 1000) + 2592000;
 		let date = new Date();
 		let insertDate = date.toISOString();
 		let TableName = TABLE_NAME;
-		console.log(TableName);
-		let guid = 12345;
+		let guid = Math.floor(Math.random() * 90000) + 10000;
 		let RequestItems = {};
-		RequestItems['rise-connections-dev'] = [
+		RequestItems[TableName] = [
 			{
 				PutRequest: {
 					Item: {
