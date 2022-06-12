@@ -37,7 +37,7 @@ class ConnectionService {
 			if (response.Items && response.Items.length > 0) {
 				let data = {
 					status: 200,
-					message: "Coonection recieved",
+					message: "Connection list fetched",
 					body: {}
 				}
 				data.body.pending = response.Items.filter(data => data.connection_status == 'pending');
@@ -51,7 +51,7 @@ class ConnectionService {
 				};
 			}
 		} catch (error) {
-			logger.error(`Error occurred while fetching records for connection: ${JSON.stringify(error)}`);
+			logger.error(`Error occurred while fetching connection: ${JSON.stringify(error)}`);
 			throw error;
 		}
 	}
@@ -66,7 +66,7 @@ class ConnectionService {
 				console.log(JSON.stringify(fetchQueryParams));
 				await dynamoDao.putRecords(fetchQueryParams);
 				console.log("Data Inserted");
-				response = "Created";
+				response = "sent";
 			} else {
 				console.log("Trying to update");
 				fetchQueryParams = this.getQueryParams(params);
@@ -84,7 +84,7 @@ class ConnectionService {
 						}
 					}
 				}
-				response = "Updated";
+				response = `Connection request ${body.status}`;
 			}
 			return {
 				status: 200,
@@ -92,7 +92,7 @@ class ConnectionService {
 			};
 
 		} catch (error) {
-			logger.error(`Error occurred while fetching records for connection: ${JSON.stringify(error)}`);
+			logger.error(`Error occurred while updating connection: ${JSON.stringify(error)}`);
 			throw error;
 		}
 	}
@@ -127,7 +127,7 @@ class ConnectionService {
 				message: `Connection ${response}`
 			};
 		} catch (error) {
-			logger.error(`Error occured while fetching records for connection: ${JSON.stringify(error)}`);
+			logger.error(`Error occurred while deleting connection: ${JSON.stringify(error)}`);
 			throw error;
 		}
 	}
@@ -216,6 +216,7 @@ class ConnectionService {
 		const epochTime = Math.round(new Date().getTime() / 1000) + 2592000;
 		let date = new Date();
 		let insertDate = date.toISOString();
+		let endDate = date.setMonth(date.getMonth() + 1)
 		let TableName = TABLE_NAME;
 		let guid = Math.floor(Math.random() * 90000) + 10000;
 		let RequestItems = {};
@@ -230,7 +231,7 @@ class ConnectionService {
 						"remark": body.remarks,
 						"updation_datetime_iso": insertDate,
 						"start_datetime_iso": insertDate,
-						"end_datetime_iso": insertDate,
+						"end_datetime_iso": endDate,
 						"record_expiry": epochTime,
 						"is_deleted": 0
 					}
@@ -246,7 +247,7 @@ class ConnectionService {
 						"remark": body.remarks,
 						"updation_datetime_iso": insertDate,
 						"start_datetime_iso": insertDate,
-						"end_datetime_iso": insertDate,
+						"end_datetime_iso": endDate,
 						"record_expiry": epochTime,
 						"is_deleted": 0
 					}
@@ -266,6 +267,8 @@ class ConnectionService {
 
 	getUpdateRecordsParams(params, body) {
 		let queryParams;
+		let date = new Date();
+		let newDate = date.toISOString();
 		if (body.remarks) {
 			queryParams = {
 				TableName: TABLE_NAME,
@@ -273,10 +276,11 @@ class ConnectionService {
 					email_id: params.email_id,
 					user_type: params.user_type
 				},
-				UpdateExpression: "set connection_status = :status, remark = :remark",
+				UpdateExpression: "set connection_status = :status, remark = :remark, updation_datetime_iso = :newDate",
 				ExpressionAttributeValues: {
 					':status': body.status,
-					':remark': body.remarks
+					':remark': body.remarks,
+					':newDate': newDate
 				}
 			};
 		} else {
@@ -286,9 +290,10 @@ class ConnectionService {
 					email_id: params.email_id,
 					user_type: params.user_type
 				},
-				UpdateExpression: "set connection_status = :status",
+				UpdateExpression: "set connection_status = :status, updation_datetime_iso = :newDate",
 				ExpressionAttributeValues: {
-					':status': body.status
+					':status': body.status,
+					':newDate': newDate
 				}
 			};
 		}
@@ -304,9 +309,10 @@ class ConnectionService {
 				email_id: params.email_id,
 				user_type: params.user_type
 			},
-			UpdateExpression: "set is_deleted = :isDeleted",
+			UpdateExpression: "set is_deleted = :isDeleted, updation_datetime_iso = :newDate",
 			ExpressionAttributeValues: {
-				':isDeleted': 1
+				':isDeleted': 1,
+				':newDate': newDate
 			}
 		};
 
