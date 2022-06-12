@@ -28,7 +28,7 @@ class StatsService {
              * Iterating for each file to Get the Content 
              */
             for (let fileCount = 0; fileCount < filesFromS3.length; fileCount++) {
-                let fileName = filesFromS3[fileCount]
+                let fileName = filesFromS3[fileCount].Key
                 logger.debug(`Rule Name :: ${fileName}`);
                 let fileContent = await S3Service.getStream(bucketName,fileName).toString('utf-8')
                 logger.debug("File Content = "+fileContent)

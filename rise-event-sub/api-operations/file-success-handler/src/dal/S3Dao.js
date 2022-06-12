@@ -215,6 +215,7 @@ class S3Dao {
 				Prefix: prefix
 			}
 			let result = await s3.listObjects(params).promise();
+			console.log("aa agaya After Results ")
 			logger.debug("After Listing files  ")
 			if (result) {
 				logger.debug("Files Listed ="+JSON.stringify(result))
