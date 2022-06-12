@@ -36,7 +36,7 @@ class EmailService {
                 attachments: [
                     {
                         filename: 'test.txt',
-                        path:  + 'tmp/test.txt',
+                        path: 'tmp/test.txt',
                        
                     },
                 //     {
