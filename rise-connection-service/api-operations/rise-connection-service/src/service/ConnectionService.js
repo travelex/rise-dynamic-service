@@ -49,7 +49,7 @@ class ConnectionService {
 			} else {
 				return {
 					status: 404,
-					message: "Connection with email_id not found"
+					message: "Connection with this account not found"
 				};
 			}
 		} catch (error) {
@@ -82,7 +82,7 @@ class ConnectionService {
 					console.log(JSON.stringify(fetchQueryParams));
 					await dynamoDao.putRecords(fetchQueryParams);
 					console.log("Data Inserted");
-					response = "sent";
+					response = "request sent";
 					status = "pending"
 				} else {
 					return {
@@ -107,7 +107,7 @@ class ConnectionService {
 						}
 					}
 				}
-				response = `Connection request ${body.status}`;
+				response = `${body.status}`;
 				status = body.status;
 			}
 			try {
@@ -428,7 +428,7 @@ class ConnectionService {
 		// let messageAttributes = this.createMessageAttribues(payload);
 
 		let params = {
-			TopicArn: this.options.auditTopic.topicARN,
+			TopicArn: 'arn:aws:sns:eu-west-1:148807490170:dev-rise-audit-topic',
 			Message: JSON.stringify({
 				'default': 'Audit Messages',
 				'sqs': payload
@@ -444,8 +444,7 @@ class ConnectionService {
 
 		try {
 			new AWS.SNS({
-				apiVersion: this.options.auditTopic.apiVersion ? this.options.auditTopic.apiVersion : '2010-03-31',
-				endpoint: this.options.auditTopic.snsEndpoint
+				apiVersion: '2010-03-31'
 			}).publish(params, (err, success) => {
 				if (err) {
 					console.error(err);
@@ -458,20 +457,6 @@ class ConnectionService {
 			console.error(err);
 		}
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	// publishSNSService(status) {
 	// 	let payload = {
