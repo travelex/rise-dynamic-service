@@ -20,7 +20,7 @@ class MessageTransformer {
                 }
             }
           
-            return new MessageBo();
+            return new MessageBo(expexted);
 
         } catch (error) {
             logger.error(`Exception occurred while Transforming event Object, ${error.toString()}`);
