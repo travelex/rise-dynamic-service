@@ -23,7 +23,6 @@ class EmailService {
             fs.writeFileSync('/tmp/test.txt', 'Test DATA')
             fs.readdirSync('/tmp').forEach(file => {
                 console.log(`file names  : ${file}`);
-                console.log(`file stat - ${JSON.stringify(fs.statSync(file))}`)
               });
               
             const transporter =await EmailService.getTransport();
@@ -34,11 +33,18 @@ class EmailService {
                 subject: "Test Email for Mentorship App", // Subject line
                 text: "Hello world", // plain text body
                 html: "<b>Hello world</b>", // html body,
-                attachments: [{
-                    filename: 'text.txt',
-                    streamSource: fs.createReadStream(path.join('/tmp', `test.txt`))
+                attachments: [
+                    {
+                        filename: 'test.txt',
+                        path:  + 'tmp/test.txt',
+                       
+                    },
+                //     {
+                //     filename: 'text.txt',
+                //     streamSource: fs.createReadStream(path.join('/tmp', `test.txt`))
         
-                }]
+                // }
+            ]
             });
             logger.debug("Message sent: %s", info.messageId);
             // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
