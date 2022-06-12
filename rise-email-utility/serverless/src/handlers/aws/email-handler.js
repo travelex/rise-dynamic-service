@@ -8,10 +8,16 @@ exports.handler = async (event, context) => {
         console.log(`Handler Event : ${JSON.stringify(event)}`);
         const response = await new EmailApiProcessor().process(event);
         logger.debug(`User profile data :- ${JSON.stringify(response)}`);
-        return response;
+        return  {
+            statusCode : 200,
+            body : JSON.stringify({error : 'succes'})
+        };;
     } catch (error) {
         logger.error(error);
-        throw error;
+        return {
+            statusCode : 400,
+            body : JSON.stringify({error : error.message})
+        };
     }
 }
 
