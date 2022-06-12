@@ -210,6 +210,7 @@ class S3Dao {
 	async listObjects(bucket, prefix) {
 		try {
 			logger.debug("Start of Listing Files ")
+			
 			let result = await s3.listObjects({
 				Bucket: bucket,
 				Prefix: prefix
