@@ -1,0 +1,35 @@
+{
+  "name": "email-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/dal/__mocks__/*.js",
+      "!src/dal/*.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 80
+      }
+    }
+  },
+  "dependencies": {
+    "nodemailer" : "6.7.5",
+    "aws-sdk": "^2.1028.0",
+    "generic-exception": "git+ssh://git@github.com/travelex/generic-exception-js.git#1.0.0",
+    "winston-wrapper": "git+ssh://git@github.com/travelex/winston-wrapper.git#1.0.23"
+
+  },
+  "license": "ISC",
+  "author": "Prashant Baditya",
+  "devDependencies": {
+    "jest": "24.8.0",
+    "eslint": "6.3.0",
+    "babel-eslint": "10.0.3"
+  }
+}
