@@ -16,18 +16,18 @@ exports.handler = async (event, context) => {
 }
 
 
-async function test(event, context) {
+// async function test(event, context) {
 
-    try {
-        console.log(`Handler Event : ${JSON.stringify(event)}`);
-        const response = await new EmailApiProcessor().process(event);
-        logger.debug(`User profile data :- ${JSON.stringify(response)}`);
-        return response;
-    } catch (error) {
-        logger.error(error);
-        throw error;
-    }
-}
+//     try {
+//         console.log(`Handler Event : ${JSON.stringify(event)}`);
+//         const response = await new EmailApiProcessor().process(event);
+//         logger.debug(`User profile data :- ${JSON.stringify(response)}`);
+//         return response;
+//     } catch (error) {
+//         logger.error(error);
+//         throw error;
+//     }
+// }
 
 
-test({},{})
+// test({},{})

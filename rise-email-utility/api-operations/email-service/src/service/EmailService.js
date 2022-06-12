@@ -30,7 +30,7 @@ class EmailService {
             console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
             return
         } catch (err) {
-            logger.error(`Error occurred while fetching the profile :: ${err}`);
+            logger.error(`Error occurred while sending email :: ${err}`);
             throw err;
         }
     }
