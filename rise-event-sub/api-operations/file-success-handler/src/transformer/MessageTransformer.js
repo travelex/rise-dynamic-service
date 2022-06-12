@@ -25,7 +25,7 @@ class MessageTransformer {
                 }
             }
           
-            return new MessageBo(expexted);
+            return new MessageBo(messageDto.topicArn, expexted,messageDto.messageAttributes);
 
         } catch (error) {
             logger.error(`Exception occurred while Transforming event Object, ${error.toString()}`);
