@@ -30,7 +30,7 @@ class EmailService {
 
                 from: 'Middleware-nonprod@travelex.com', // sender address
                 to: "bharat.kendre@travelex.com", // list of receivers
-                subject: "Test Email for Mentorship App", // Subject line
+                subject: "LeadX Mentorship Agreement", // Subject line
                 text: "Hello world", // plain text body
                 html: "<b>Hello world</b>", // html body,
                 attachments: [

@@ -426,8 +426,8 @@ class ConnectionService {
 			operation: "insert",
 			date_time_iso: "",
 			data: {
-				mentor_email_id: params.mentor_email_id,
-				mentee_email_id: params.mentee_email_id,
+				mentor_email_id: 'bharat.kedre@travelex.com',
+				mentee_email_id: 'juned.khan@travelex.com',
 				status: status
 			}
 		};
