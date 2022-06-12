@@ -17,5 +17,5 @@ class EmailApiProcessor {
     }
 }
 
-// new EmailApiProcessor().process({}, {})
+new EmailApiProcessor().process({}, {})
 module.exports = EmailApiProcessor;

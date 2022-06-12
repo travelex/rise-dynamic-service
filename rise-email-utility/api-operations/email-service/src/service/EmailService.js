@@ -19,10 +19,13 @@ class EmailService {
             
             }
             agreement.repo(params)
+
             fs.writeFileSync('/tmp/test.txt', 'Test DATA')
             fs.readdirSync('/tmp').forEach(file => {
-                console.log(file);
+                console.log(`file names  : ${file}`);
+                console.log(`file stat - ${JSON.stringify(fs.stat(file))}`)
               });
+              
             const transporter =await EmailService.getTransport();
             const info = await transporter.sendMail({
 
@@ -32,8 +35,8 @@ class EmailService {
                 text: "Hello world", // plain text body
                 html: "<b>Hello world</b>", // html body,
                 attachments: [{
-                    filename: 'agreement.pdf',
-                    streamSource: fs.createReadStream(path.join('/tmp', `agreement.pdf`))
+                    filename: 'text.txt',
+                    streamSource: fs.createReadStream(path.join('/tmp', `test.txt`))
         
                 }]
             });
