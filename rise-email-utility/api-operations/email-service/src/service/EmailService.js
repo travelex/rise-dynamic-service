@@ -29,7 +29,7 @@ class EmailService {
             const info = await transporter.sendMail({
 
                 from: 'Middleware-nonprod@travelex.com', // sender address
-                to: "bharat.kendre@travelex.com", // list of receivers
+                to: "juned.khan@travelex.com", // list of receivers
                 subject: "LeadX Mentorship Agreement", // Subject line
                 text: "Hello world", // plain text body
                 html: "<b>Hello world</b>", // html body,
