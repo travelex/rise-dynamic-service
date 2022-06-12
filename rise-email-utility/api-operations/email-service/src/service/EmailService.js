@@ -51,7 +51,7 @@ class EmailService {
             port: 587,
             secure: false, // true for 465, false for other ports
             auth: {
-                user: 'TescoTravelMoneyCSD_UAT@travelex.co.uk', // generated ethereal user
+                user: 'Middleware-nonprod@travelex.com', // generated ethereal user
                 pass: 'KFJcq3bQ2:3#S+Jk_{}~p]}#$', // generated ethereal password
             },
         });
