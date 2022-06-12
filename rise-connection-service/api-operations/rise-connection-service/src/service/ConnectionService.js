@@ -1,4 +1,6 @@
 const util = require('../utils/Utils.js');
+var AWS = require('aws-sdk');
+
 const path = require('path');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
 const dynamicDao = require('../dal/DynamicDao');
