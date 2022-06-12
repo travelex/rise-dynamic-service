@@ -257,7 +257,6 @@ jobs:
             BRANCH_STEM=${CIRCLE_BRANCH/\/*//}
             ENVIRONMENT=$(echo -e 'feature/ dev\nplay/ play\ndevelopment sit\nrelease/ uat\nhotfix/ preprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
             AWS_ACCOUNT_TYPE=$(echo -e 'feature/ nonprod\nmaster prod' | awk -vX=$BRANCH_STEM '$1 == X { print $2 }')
-            aws sqs create-queue --queue-name rise-audit-queue-test --attributes file://.circleci/q-attributes.json
             aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json terraform/applications/ 
             aws s3 cp s3://tvx-hackathon-mentorship-${ENVIRONMENT}-app-config/terraform_outputs.json . 
             cd terraform/applications/

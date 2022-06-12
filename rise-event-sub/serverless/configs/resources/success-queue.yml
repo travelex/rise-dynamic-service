@@ -3,7 +3,7 @@ Resources:
     Type: "AWS::SQS::Queue"
     DeletionPolicy: Retain
     Properties:
-      QueueName: rise-audit-queue-test
+      QueueName: ${opt:stage}-${self:custom.queueName}
       DelaySeconds: 0
       MaximumMessageSize: 262144
       MessageRetentionPeriod: 345600   

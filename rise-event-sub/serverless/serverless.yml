@@ -8,7 +8,7 @@ plugins:
 
 custom:
   fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
-  queueName: rise-audit-queue-test
+  queueName: rise-audit-queue-final
   # tableName: object-processed-metadata-${opt:stage, self:provider.stage}
   # stagingTableName: staging-data-${opt:stage, self:provider.stage}
   prune:
@@ -57,14 +57,14 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - "arn:aws:sqs:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:${self:provider.stage}-${self:custom.queueName}"
+        - "arn:aws:sqs:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:${opt:stage}-${self:custom.queueName}"
         # - "arn:aws:dynamodb:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:table/${self:custom.tableName}"
         # - "arn:aws:dynamodb:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:table/*"
 
 functions:
   ${file(./configs/functions/functions.yml)}
 
-# resources:
-#   ${file(./configs/resources/success-queue.yml)}
+resources:
+  ${file(./configs/resources/success-queue.yml)}
   # ${file(./configs/resources/log-group-and-subscription.yml)}
 #   ${file(./configs/resources/object-processed-metadata-table.yml)}
