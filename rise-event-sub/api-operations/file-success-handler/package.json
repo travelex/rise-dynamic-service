@@ -26,6 +26,7 @@
     "jsonwebtoken": "8.5.1",
     "object-hash": "^2.0.0",
     "request": "2.88.0",
+    "require-from-memory": "^1.0.2",
     "winston-wrapper": "git+ssh://git@github.com/travelex/winston-wrapper.git#1.0.23",
     "moment": "2.24.0"
   },
