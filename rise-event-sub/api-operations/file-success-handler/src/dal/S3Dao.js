@@ -7,10 +7,6 @@ const logger = require('winston-wrapper').getLogger(path.basename(__filename));
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 
-const { factory } = require('tvxcloud-storage');
-
-const storage = factory.storageProvider({});
-
 // let FileConverterHelper = require('./FileConverterHelper');
 
 class S3Dao {
@@ -32,7 +28,7 @@ class S3Dao {
 
 			return new Promise(async (resolve, reject) => {
 				let objectBuffer = '';
-				let objectStream = await storage.getObjectStream(params);
+				let objectStream = await s3.getObjectStream(params);
 
 				objectStream.on('data', data => {
 					objectBuffer += data;
@@ -69,7 +65,7 @@ class S3Dao {
 				...extraParams
 			};
 			logger.debug(`Params used for copy file data ${JSON.stringify(params)}`);
-			return await storage.copyObject(params);
+			return await s3.copyObject(params);
 
 		} catch (exception) {
 			logger.error(exception);
@@ -91,7 +87,7 @@ class S3Dao {
 			};
 			//logger.info('Deleting file from bucket');
 			logger.debug(`Deleting object using Params: ${JSON.stringify(params)}`);
-			return await storage.deleteObject(params);
+			return await s3.deleteObject(params);
 
 		} catch (exception) {
 			logger.error(`Error while deleting object : ${exception}`);
@@ -114,7 +110,7 @@ class S3Dao {
 				...extraParams
 			};
 			logger.debug(`Params used for get file data ${JSON.stringify(params)}`);
-			let stream = await storage.getObject(params);
+			let stream = await s3.getObject(params);
 			return stream.Body.toString();
 		} catch (err) {
 			logger.error(`Error while getting content ${JSON.stringify(err.message)}`);
@@ -142,7 +138,7 @@ class S3Dao {
 				params.Metadata = metaData;
 			}
 
-			return await storage.putObject(params);
+			return await s3.putObject(params);
 
 		} catch (exception) {
 			logger.error(`Error while writing object : ${exception}`);
@@ -161,7 +157,7 @@ class S3Dao {
 				OutputSerialization: outputSerialization
 			};
 
-			let buffer = await storage.selectObjectContent(selectObjectContentParams);
+			let buffer = await s3.selectObjectContent(selectObjectContentParams);
 			let records = await this.getEventData(buffer.Payload);
 			return records;
 		} catch (ex) {
@@ -201,7 +197,7 @@ class S3Dao {
 				Key: fileName
 			};
 			logger.debug(`getobject parameters :  ${JSON.stringify(params)}`);
-			const data = await storage.getObject(params);
+			const data = await s3.getObject(params);
 			logger.debug(`getobject exceution time in ms :  ${new Date() - startTime}`);
 			return data.Body;
 
@@ -213,7 +209,7 @@ class S3Dao {
 
 	async listObjects(bucket, prefix) {
 		try {
-			let result = await storage.listObjects({
+			let result = await s3.listObjects({
 				Bucket: bucket,
 				Prefix: prefix
 			});
