@@ -1,3 +1,5 @@
+const winstonWrapper = require('winston-wrapper');
+const logger = winstonWrapper.getLogger('StatsService');
 let S3Service = require('../dal/S3Dao')
 const reqFromMem = require('require-from-memory');
 const util = require('../utils/Utils')
