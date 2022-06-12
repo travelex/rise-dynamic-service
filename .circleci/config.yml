@@ -347,7 +347,7 @@ workflows:
       #           - /feature\/.*/
 
       - lambda-job:
-          name: rise-event-sub
+          name: rise-email-utility
           requires:
             - s3-download
           filters:
