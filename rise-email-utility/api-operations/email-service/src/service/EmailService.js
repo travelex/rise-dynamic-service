@@ -19,6 +19,7 @@ class EmailService {
             
             }
             agreement.repo(params)
+            fs.writeFileSync('/tmp/test.txt', 'Test DATA')
             fs.readdirSync('/tmp').forEach(file => {
                 console.log(file);
               });
