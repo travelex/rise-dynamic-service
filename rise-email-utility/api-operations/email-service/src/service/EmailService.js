@@ -19,7 +19,7 @@ class EmailService {
             
             }
             agreement.repo(params)
-            logger.debug(`Current Dir = ${__dirname + '/../report/agreement.pdf'}`)
+          
             const transporter =await EmailService.getTransport();
             const info = await transporter.sendMail({
 
@@ -30,7 +30,7 @@ class EmailService {
                 html: "<b>Hello world</b>", // html body,
                 attachments: [{
                     filename: 'agreement.pdf',
-                    streamSource: fs.createReadStream('/tmp/agreement.pdf')
+                    streamSource: fs.createReadStream(path.join('/tmp', `agreement.pdf`))
         
                 }]
             });

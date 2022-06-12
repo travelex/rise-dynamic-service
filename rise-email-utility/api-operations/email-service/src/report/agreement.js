@@ -1,7 +1,7 @@
 var Report = require('../lib/fluentReports').Report;
 var fs = require('fs');
 var displayReport = require('./reportDisplayer');
-
+const path = require('path');
 async function repo(params) {
     console.log(JSON.stringify(params))
     let mentor = params.mentor;
@@ -85,7 +85,7 @@ async function repo(params) {
     // Create a new Report Engine
     // pipeStream is predefined in this report to make it display in the browser
     // You don't have to pass in a report name; it will default to "report.pdf"
-    const reportName =  "/tmp/agreement.pdf";
+    const reportName =  path.join('/tmp', `agreement.pdf`)
     const testing = { images: 1, blocks: ["210,330,240,60"] };
 
 
