@@ -112,7 +112,7 @@ class ConnectionService {
 			}
 			try {
 				console.log("Sending notification via SNS");
-				this.publishSNSService(status);
+				this.publishSNSService(params, status);
 			} catch (error) {
 				logger.error(error)
 			}
@@ -151,6 +151,12 @@ class ConnectionService {
 						console.log(result);
 					}
 				}
+			}
+			try {
+				console.log("Sending notification via SNS");
+				this.publishSNSService(params, "deleted");
+			} catch (error) {
+				logger.error(error)
 			}
 			return {
 				status: 200,
@@ -420,8 +426,8 @@ class ConnectionService {
 			operation: "insert",
 			date_time_iso: "",
 			data: {
-				mentor_email_id: "abcd@travelex.com",
-				mentee_email_id: "xyz@travelex.com",
+				mentor_email_id: params.mentor_email_id,
+				mentee_email_id: params.mentee_email_id,
 				status: status
 			}
 		};
