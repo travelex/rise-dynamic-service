@@ -18,6 +18,7 @@ class EmailService {
             
             }
             agreement.repo(params)
+            logger.debug(`Current Dir = ${__dirname + '/../report/agreement.pdf'}`)
             const transporter =await EmailService.getTransport();
             const info = await transporter.sendMail({
 
@@ -26,11 +27,11 @@ class EmailService {
                 subject: "Test Email for Mentorship App", // Subject line
                 text: "Hello world", // plain text body
                 html: "<b>Hello world</b>", // html body,
-                // attachments: [{
-                //     filename: 'temp.txt',
-                //     // streamSource: fs.createReadStream(filepath)
-                //     streamSource: fs.createReadStream('temp.txt')
-                // }]
+                attachments: [{
+                    filename: 'agreement.pdf',
+                    streamSource: fs.createReadStream(__dirname + '/../report/agreement.pdf')
+        
+                }]
             });
             logger.debug("Message sent: %s", info.messageId);
             // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
