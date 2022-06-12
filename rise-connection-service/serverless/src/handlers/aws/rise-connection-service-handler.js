@@ -37,6 +37,14 @@ module.exports.rise = function (event, context, callback) {
                 logger.debug("Exiting with response ", JSON.stringify(body));
                 callback(null, {
                     statusCode: 200,
+                    headers: {
+                        "Content-Type" : "application/json",
+                        "Access-Control-Allow-Headers" : "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,code,code_verfier,applicationid",
+                        "Access-Control-Allow-Methods" : "OPTIONS,POST,GET",
+                        "Access-Control-Allow-Credentials" : false,
+                        "Access-Control-Allow-Origin" : "*",
+                        "X-Requested-With" : "*"
+                      },
                     body: JSON.stringify(body)
                 })
             }).catch(error => {
