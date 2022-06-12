@@ -9,7 +9,7 @@ class EmailApiProcessor {
 
         try {
 
-            EmailService.sendEmail(event)
+            await EmailService.sendEmail(event)
 
         } catch (error) {
             logger.error(error)
