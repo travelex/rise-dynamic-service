@@ -58,15 +58,36 @@ class ConnectionService {
 
 	async putConnection(params, body) {
 		try {
-			let fetchQueryParams, updateQueryParams, response;
+			let status;
+			let fetchQueryParams, updateQueryParams, checkBeforeInsertParams, response;
 			console.log("params.create_if_not_exist", params.create_if_not_exist);
 			if (params.create_if_not_exist == 'true') {
 				console.log("Trying to insert");
-				fetchQueryParams = this.getInsertRecordsParams(params, body);
-				console.log(JSON.stringify(fetchQueryParams));
-				await dynamoDao.putRecords(fetchQueryParams);
-				console.log("Data Inserted");
-				response = "sent";
+				let dataInsertPostCheck = true;
+				checkBeforeInsertParams = this.getQueryParams(params)
+				console.log("checkBeforeInsertParams", JSON.stringify(checkBeforeInsertParams));
+				if (checkBeforeInsertParams && checkBeforeInsertParams.length) {
+					for (let object = 0; object < checkBeforeInsertParams.length; object++) {
+						let data = await dynamoDao.getRecords(checkBeforeInsertParams[object]);
+						console.log(JSON.stringify(data));
+						if (data.Items && data.Items.length) {
+							dataInsertPostCheck = false;
+						}
+					}
+				}
+				if (dataInsertPostCheck == true) {
+					fetchQueryParams = this.getInsertRecordsParams(params, body);
+					console.log(JSON.stringify(fetchQueryParams));
+					await dynamoDao.putRecords(fetchQueryParams);
+					console.log("Data Inserted");
+					response = "sent";
+					status = "pending"
+				} else {
+					return {
+						status: 200,
+						message: `Connection already sent`
+					};
+				}
 			} else {
 				console.log("Trying to update");
 				fetchQueryParams = this.getQueryParams(params);
@@ -85,7 +106,9 @@ class ConnectionService {
 					}
 				}
 				response = `Connection request ${body.status}`;
+				status = body.status;
 			}
+
 			return {
 				status: 200,
 				message: `Connection ${response}`
@@ -131,6 +154,8 @@ class ConnectionService {
 			throw error;
 		}
 	}
+
+
 
 	getFetchRecordsParams(params) {
 		let queryObject;
@@ -210,6 +235,10 @@ class ConnectionService {
 		}
 		console.log("queryObject", queryObject);
 		return queryObject;
+	}
+
+	getCheckBeforeInsertParams(params, body) {
+
 	}
 
 	getInsertRecordsParams(params, body) {
@@ -347,8 +376,29 @@ class ConnectionService {
 				":type": `mentor-${mentor}`
 			}
 		}]
-
 		return queryParams;
+	}
+
+	publishSNSService(status) {
+		let payload = {
+			correlation_id: "",
+			entity: "connection",
+			operation: "insert",
+			date_time_iso: "",
+			data: {
+				menter_email_id: "",
+				mentee_email_id: "",
+				status: "pending/approved/rejected/deleted"
+			}
+		};
+
+		const params = {
+			Message: JSON.stringify({ 'default': 'Audit Messages', payload }), /* required */
+			TopicArn: 'arn:aws:sns:ap-south-1:738131246206:ProcessStatusTopic',
+			MessageStructure: 'json',
+			MessageAttributes: {
+			}
+		};
 	}
 }
 
