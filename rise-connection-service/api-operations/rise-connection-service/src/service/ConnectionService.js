@@ -131,7 +131,8 @@ class ConnectionService {
 			console.log("inside status and type both");
 			queryObject = {
 				TableName: TABLE_NAME,
-				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type) and #connection_status = :status",
+				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
+				FilterExpression: "#connection_status = :status",
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
 					"#user_type": "user_type",
@@ -161,7 +162,8 @@ class ConnectionService {
 			console.log("inside status");
 			queryObject = {
 				TableName: TABLE_NAME,
-				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type) and #connection_status = :status",
+				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
+				FilterExpression: "#connection_status = :status",
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
 					"#user_type": "user_type",
