@@ -138,7 +138,7 @@ class S3Dao {
 				params.Metadata = metaData;
 			}
 
-			return await s3.putObject(params);
+			return await s3.putObject(params).promise();
 
 		} catch (exception) {
 			logger.error(`Error while writing object : ${exception}`);
@@ -197,7 +197,7 @@ class S3Dao {
 				Key: fileName
 			};
 			logger.debug(`getobject parameters :  ${JSON.stringify(params)}`);
-			const data = await s3.getObject(params);
+			const data = await s3.getObject(params).promise();
 			logger.debug(`getobject exceution time in ms :  ${new Date() - startTime}`);
 			return data.Body;
 
@@ -212,7 +212,7 @@ class S3Dao {
 			let result = await s3.listObjects({
 				Bucket: bucket,
 				Prefix: prefix
-			});
+			}).promise();
 
 			if (result) {
 				result.Contents = result.Contents.filter((data) => data.Key[data.Key.length - 1] !== '/');
