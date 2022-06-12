@@ -30,7 +30,7 @@ class FileSuccessHandlerApiProcessor {
                 try {
                     logger.info("Receiving Messages from Success-Queue if Exist..");
                     let eventRecord = utils.parseElement(event);
-                    logger.debug(`Success queue Events:::: ${eventRecord}`);
+                    logger.debug(`Success queue Events:::: ${JSON.stringify (eventRecord)}`);
                     let params = undefined, config;
                     for (let recordCounter = 0; recordCounter < eventRecord.Records.length; recordCounter++) {
                         let messageInfo = eventRecord.Records[recordCounter].body;

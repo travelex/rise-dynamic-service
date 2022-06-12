@@ -9,7 +9,7 @@ class MessageTransformer {
         try {
             let messageAttribute = utils.parseElement(messageDto.messageAttributes);
             messageAttribute.options.Value = utils.parseElement(messageAttribute.options.Value);
-
+            
             const valueObject = {
                 header: {
                     config: null,
