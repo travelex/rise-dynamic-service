@@ -132,16 +132,18 @@ class ConnectionService {
 			queryObject = {
 				TableName: TABLE_NAME,
 				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
-				FilterExpression: "#connection_status = :status",
+				FilterExpression: "#connection_status = :status and #is_deleted = :isDeleted",
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
 					"#user_type": "user_type",
-					"#connection_status": "connection_status"
+					"#connection_status": "connection_status",
+					"#is_deleted": "is_deleted"
 				},
 				ExpressionAttributeValues: {
 					":email_id": params.email_id,
 					":type": "ment",
-					":status": params.status
+					":status": params.status,
+					":isDeleted": 0
 				}
 			};
 		} else if (!params.status && params.type == "both") {
@@ -149,13 +151,16 @@ class ConnectionService {
 			queryObject = {
 				TableName: TABLE_NAME,
 				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
+				FilterExpression: "#is_deleted = :isDeleted",
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
-					"#user_type": "user_type"
+					"#user_type": "user_type",
+					"#is_deleted": "is_deleted"
 				},
 				ExpressionAttributeValues: {
 					":email_id": params.email_id,
-					":type": "ment"
+					":type": "ment",
+					":isDeleted": 0
 				}
 			};
 		} else if (params.status) {
@@ -163,16 +168,18 @@ class ConnectionService {
 			queryObject = {
 				TableName: TABLE_NAME,
 				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
-				FilterExpression: "#connection_status = :status",
+				FilterExpression: "#connection_status = :status and #is_deleted = :isDeleted",
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
 					"#user_type": "user_type",
-					"#connection_status": "connection_status"
+					"#connection_status": "connection_status",
+					"#is_deleted": "is_deleted"
 				},
 				ExpressionAttributeValues: {
 					":email_id": params.email_id,
 					":type": params.type,
-					":status": params.status
+					":status": params.status,
+					":isDeleted": 0
 				}
 			};
 		} else {
@@ -180,13 +187,16 @@ class ConnectionService {
 			queryObject = {
 				TableName: TABLE_NAME,
 				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
+				FilterExpression: "#is_deleted = :isDeleted and #is_deleted = :isDeleted",
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
-					"#user_type": "user_type"
+					"#user_type": "user_type",
+					"#is_deleted": "is_deleted"
 				},
 				ExpressionAttributeValues: {
 					":email_id": params.email_id,
-					":type": params.type
+					":type": params.type,
+					":isDeleted": 0
 				}
 			};
 		}
@@ -247,19 +257,33 @@ class ConnectionService {
 
 
 	getUpdateRecordsParams(params, body) {
-
-		let queryParams = {
-			TableName: TABLE_NAME,
-			Key: {
-				email_id: params.email_id,
-				user_type: params.user_type
-			},
-			UpdateExpression: "set connection_status = :status, remark = :remark",
-			ExpressionAttributeValues: {
-				':status': body.status,
-				':remark': body.remarks
-			}
-		};
+		let queryParams;
+		if (body.remarks) {
+			queryParams = {
+				TableName: TABLE_NAME,
+				Key: {
+					email_id: params.email_id,
+					user_type: params.user_type
+				},
+				UpdateExpression: "set connection_status = :status, remark = :remark",
+				ExpressionAttributeValues: {
+					':status': body.status,
+					':remark': body.remarks
+				}
+			};
+		} else {
+			queryParams = {
+				TableName: TABLE_NAME,
+				Key: {
+					email_id: params.email_id,
+					user_type: params.user_type
+				},
+				UpdateExpression: "set connection_status = :status",
+				ExpressionAttributeValues: {
+					':status': body.status
+				}
+			};
+		}
 		console.log("updateQueryParam: ", queryParams);
 		return queryParams;
 	}
