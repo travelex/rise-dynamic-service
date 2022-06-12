@@ -19,7 +19,9 @@ class EmailService {
             
             }
             agreement.repo(params)
-          
+            fs.readdirSync('/tmp').forEach(file => {
+                console.log(file);
+              });
             const transporter =await EmailService.getTransport();
             const info = await transporter.sendMail({
 
