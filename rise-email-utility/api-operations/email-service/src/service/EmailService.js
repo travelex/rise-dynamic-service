@@ -2,6 +2,7 @@ const AWS = require('aws-sdk');
 const nodemailer = require('nodemailer')
 const path = require('path');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
+const agreement = require('../report/agreement')
 
 class EmailService {
 
@@ -9,6 +10,14 @@ class EmailService {
         
         try {
             console.log('sending email to mentor and mentee')
+            let params = {
+
+                "mentor": `amar@travelex.com`,
+            
+                "mentee": `juned@travelex.com`
+            
+            }
+            agreement.repo(params)
             const transporter =await EmailService.getTransport();
             const info = await transporter.sendMail({
 

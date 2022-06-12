@@ -21,6 +21,7 @@
   "dependencies": {
     "nodemailer" : "6.7.5",
     "aws-sdk": "^2.1028.0",
+    "pdfkit": "0.13.0",
     "generic-exception": "git+ssh://git@github.com/travelex/generic-exception-js.git#1.0.0",
     "winston-wrapper": "git+ssh://git@github.com/travelex/winston-wrapper.git#1.0.23"
 
