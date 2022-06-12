@@ -235,8 +235,8 @@ class ConnectionService {
 		let queryParams = {
 			TableName: TABLE_NAME,
 			Key: {
-				'email_id': params.email_id,
-				'user_type': params.user_type
+				email_id: params.email_id,
+				user_type: params.user_type
 			},
 			UpdateExpression: "set is_deleted = :isDeleted",
 			ExpressionAttributeValues: {
@@ -267,8 +267,8 @@ class ConnectionService {
 			TableName: TABLE_NAME,
 			KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
 			ExpressionAttributeNames: {
-				"#email_id": "id",
-				"#user_type": "recNo"
+				"#email_id": "email_id",
+				"#user_type": "user_type"
 			},
 			ExpressionAttributeValues: {
 				":email_id": params.mentee_email_id,
