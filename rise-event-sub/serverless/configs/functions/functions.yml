@@ -8,7 +8,7 @@
       include:
         - src/handlers/${self:provider.name}/handler.js
         - node_modules/file-success-handler/**
-    events:
+    # events:
     # - http:
     #     path: filehandler2
     #     method: post
