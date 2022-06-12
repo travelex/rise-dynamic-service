@@ -10,15 +10,16 @@ class MessageTransformer {
             
             logger.debug(messageDto.messageDetails)
             logger.debug("Type Of "+typeof(messageDto.messageDetails))
+            let queueData = utils.parseElement(messageDto.messageDetails)
             let expexted = {
-                correlation_id: messageDto.messageDetails.correlation_id,
-                entity: messageDto.messageDetails.entity,
-                operation: messageDto.messageDetails.operation,
-                date_time_iso: messageDto.messageDetails.date_time_iso,
+                correlation_id: queueData.correlation_id,
+                entity: queueData.entity,
+                operation: queueData.operation,
+                date_time_iso: queueData.date_time_iso,
                 data: {
-                    menter_email_id: messageDto.messageDetails.data.menter_email_id,
-                    mentee_email_id: messageDto.messageDetails.data.mentee_email_id,
-                    status: messageDto.messageDetails.data.status,
+                    menter_email_id: queueData.data.menter_email_id,
+                    mentee_email_id: queueData.data.mentee_email_id,
+                    status: queueData.data.status,
                 }
             }
           
