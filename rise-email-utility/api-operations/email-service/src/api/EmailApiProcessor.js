@@ -8,7 +8,7 @@ class EmailApiProcessor {
     async process(event, context) {
 
         try {
-
+            console.log(event)
             await EmailService.sendEmail(event)
 
         } catch (error) {

@@ -64,7 +64,7 @@ provider:
 functions:
   ${file(./configs/functions/functions.yml)}
 
-# resources:
-#   ${file(./configs/resources/success-queue.yml)}
+resources:
+  ${file(./configs/resources/success-queue.yml)}
   # ${file(./configs/resources/log-group-and-subscription.yml)}
-#   ${file(./configs/resources/object-processed-metadata-table.yml)}
+  # ${file(./configs/resources/object-processed-metadata-table.yml)}

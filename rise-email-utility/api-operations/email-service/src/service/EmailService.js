@@ -37,12 +37,7 @@ class EmailService {
                     {
                         filename: 'agreement.pdf',
                         path: '/tmp/agreement.pdf',
-                    },
-                //     {
-                //     filename: 'text.txt',
-                //     streamSource: fs.createReadStream(path.join('/tmp', `test.txt`))
-        
-                // }
+                    }
             ]
             });
             logger.debug("Message sent: %s", info.messageId);

@@ -108,7 +108,6 @@ async function repo(params) {
     // This does the MAGIC...  :-)
     console.time("Rendered");
     rpt.render(function (err, name) {
-        console.log(`$$$$$$`)
         console.timeEnd("Rendered");
         if (name === false) {
             console.log("Report has been cancelled!");
