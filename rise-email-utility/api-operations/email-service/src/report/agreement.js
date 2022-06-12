@@ -85,7 +85,7 @@ async function repo(params) {
     // Create a new Report Engine
     // pipeStream is predefined in this report to make it display in the browser
     // You don't have to pass in a report name; it will default to "report.pdf"
-    const reportName = __dirname + "/agreement.pdf";
+    const reportName =  "/tmp/agreement.pdf";
     const testing = { images: 1, blocks: ["210,330,240,60"] };
 
 

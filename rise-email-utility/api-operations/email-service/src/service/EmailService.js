@@ -30,7 +30,7 @@ class EmailService {
                 html: "<b>Hello world</b>", // html body,
                 attachments: [{
                     filename: 'agreement.pdf',
-                    streamSource: fs.createReadStream(__dirname + '/../report/agreement.pdf')
+                    streamSource: fs.createReadStream('/tmp/agreement.pdf')
         
                 }]
             });
