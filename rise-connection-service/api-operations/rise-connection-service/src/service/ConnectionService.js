@@ -252,7 +252,7 @@ class ConnectionService {
 		const epochTime = Math.round(new Date().getTime() / 1000) + 2592000;
 		let date = new Date();
 		let insertDate = date.toISOString();
-		let endDate = date.setMonth(date.getMonth() + 1).toISOString();
+		let endDate = new Date(date.setMonth(date.getMonth()+1)).toISOString();
 		let TableName = TABLE_NAME;
 		let guid = Math.floor(Math.random() * 90000) + 10000;
 		let RequestItems = {};
