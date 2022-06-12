@@ -448,9 +448,8 @@ class ConnectionService {
 			}).publish(params, (err, success) => {
 				if (err) {
 					console.error(err);
-				}else{
+				} else {
 					console.log(`Message ${params.Message} sent to the topic ${params.TopicArn}`);
-				console.log("MessageID is " + data.MessageId);
 				}
 			});
 		} catch (err) {
