@@ -35,7 +35,7 @@ class StatsService {
             }
         } catch (error) {
             logger.error(`Error occurred while fetching connection: ${JSON.stringify(error)}`);
-            throw util.genericException(error, ExceptionType.ERROR_WHILE_VALIDATION, ExceptionCategory.VALIDATION_ERROR, error.message);
+            throw util.genericException(error, ExceptionType.UNHANDLED_EXCEPTION, ExceptionCategory.VALIDATION_ERROR, error.message);
 
         }
     }

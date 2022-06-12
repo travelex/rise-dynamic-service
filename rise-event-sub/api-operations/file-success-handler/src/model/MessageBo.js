@@ -17,7 +17,7 @@ class MessageBo {
     }
 
     getRulePathsForOperation(){
-        return "stats/"+this.entity+"-"+this.operation
+        return "stats/"+this.entity+"-"+this.operation+"/"
     }
     toString() {
         return JSON.stringify(this.toJson());

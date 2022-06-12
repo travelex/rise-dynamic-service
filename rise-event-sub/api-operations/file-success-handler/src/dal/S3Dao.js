@@ -5,7 +5,7 @@ const path = require('path');
 
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
 const AWS = require('aws-sdk');
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({apiVersion: '2015-03-31', region: 'eu-west-1'});
 
 // let FileConverterHelper = require('./FileConverterHelper');
 
@@ -210,11 +210,11 @@ class S3Dao {
 	async listObjects(bucket, prefix) {
 		try {
 			logger.debug("Start of Listing Files ")
-			
-			let result = await s3.listObjects({
+			let params = {
 				Bucket: bucket,
 				Prefix: prefix
-			}).promise();
+			}
+			let result = await s3.listObjects(params).promise();
 			logger.debug("After Listing files  ")
 			if (result) {
 				logger.debug("Files Listed ="+JSON.stringify(result))
