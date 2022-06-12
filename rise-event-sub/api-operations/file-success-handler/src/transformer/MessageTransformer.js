@@ -7,7 +7,9 @@ const TableDomainName = require('../model/TableDomainName');
 class MessageTransformer {
     static async transformToBo(messageDto) {
         try {
-
+            
+            logger.debug(messageDto.messageDetails)
+            logger.debug("Type Of "+typeof(messageDto.messageDetails))
             let expexted = {
                 correlation_id: messageDto.messageDetails.correlation_id,
                 entity: messageDto.messageDetails.entity,
