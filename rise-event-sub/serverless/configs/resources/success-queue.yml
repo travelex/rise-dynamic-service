@@ -38,9 +38,9 @@ Resources:
         Endpoint: !GetAtt
           - Siddhiraj
           - Arn
-        FilterPolicy:
-          status: [success]
-          interfaceName: [{"anything-but": "cnrscreening"}]
+        # FilterPolicy:
+        #   status: [success]
+        #   interfaceName: [{"anything-but": "cnrscreening"}]
         Protocol: sqs
         RawMessageDelivery: 'false'
 
