@@ -35,8 +35,8 @@ class EmailService {
                 html: "<b>Hello world</b>", // html body,
                 attachments: [
                     {
-                        filename: 'test.txt',
-                        path: '/tmp/test.txt',
+                        filename: 'agreement.pdf',
+                        path: '/tmp/agreement.pdf',
                     },
                 //     {
                 //     filename: 'text.txt',
