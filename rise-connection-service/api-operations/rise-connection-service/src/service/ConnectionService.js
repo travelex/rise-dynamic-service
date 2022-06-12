@@ -40,9 +40,9 @@ class ConnectionService {
 					message: "Connection list fetched",
 					body: {}
 				}
-				data.body.pending = response.Items.filter(data => data.connection_status == 'pending');
-				data.body.approved = response.Items.filter(data => data.connection_status == 'approved');
-				data.body.rejected = response.Items.filter(data => data.connection_status == 'rejected');
+				data.body.pending = response.Items.filter(data => data.connection_status.toLowerCase() == 'pending');
+				data.body.approved = response.Items.filter(data => data.connection_status.toLowerCase() == 'approved');
+				data.body.rejected = response.Items.filter(data => data.connection_status.toLowerCase() == 'rejected');
 				return data;
 			} else {
 				return {
