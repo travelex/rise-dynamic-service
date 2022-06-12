@@ -126,7 +126,7 @@ class WriterDeleteConnectionApiProcessor {
         if (errorArray.length) {
             throw new Error({
                 status: 400,
-                description: "Unable to retrieve the Connection information.",
+                message: "Unable to retrieve the Connection information.",
                 error: errorArray[0]
             })
         }

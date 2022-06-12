@@ -39,7 +39,7 @@ class ConnectionService {
 			} else {
 				return {
 					status: 404,
-					description: "Connection with email_id not found"
+					message: "Connection with email_id not found"
 				};
 			}
 		} catch (error) {
@@ -80,7 +80,7 @@ class ConnectionService {
 			}
 			return {
 				status: 200,
-				description: `Connection ${response}`
+				message: `Connection ${response}`
 			};
 
 		} catch (error) {
@@ -108,7 +108,7 @@ class ConnectionService {
 						console.log("relevant records found for deletion");
 						console.log(data.Items[0]);
 						updateQueryParams = this.getDeleteQueryParams(data.Items[0]);
-						console.log("updateQueryParams:: ",updateQueryParams);
+						console.log("updateQueryParams:: ", updateQueryParams);
 						let result = await dynamoDao.deleteRecords(updateQueryParams);
 						console.log(result);
 					}
@@ -116,7 +116,7 @@ class ConnectionService {
 			}
 			return {
 				status: 200,
-				description: `Connection ${response}`
+				message: `Connection ${response}`
 			};
 		} catch (error) {
 			logger.error(`Error occured while fetching records for connection: ${JSON.stringify(error)}`);
@@ -128,6 +128,7 @@ class ConnectionService {
 		let queryObject;
 		console.log("params", params);
 		if (params.status && params.type == "both") {
+			console.log("inside status and type both");
 			queryObject = {
 				TableName: TABLE_NAME,
 				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type) and #connection_status = :status",
@@ -138,11 +139,26 @@ class ConnectionService {
 				},
 				ExpressionAttributeValues: {
 					":email_id": params.email_id,
-					":type": params.type,
+					":type": "ment",
 					":status": params.status
 				}
 			};
-		} else if(params.status){
+		} else if (!params.status && params.type == "both") {
+			console.log("inside type both");
+			queryObject = {
+				TableName: TABLE_NAME,
+				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
+				ExpressionAttributeNames: {
+					"#email_id": "email_id",
+					"#user_type": "user_type"
+				},
+				ExpressionAttributeValues: {
+					":email_id": params.email_id,
+					":type": "ment"
+				}
+			};
+		} else if (params.status) {
+			console.log("inside status");
 			queryObject = {
 				TableName: TABLE_NAME,
 				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type) and #connection_status = :status",
@@ -158,6 +174,7 @@ class ConnectionService {
 				}
 			};
 		} else {
+			console.log("inside else");
 			queryObject = {
 				TableName: TABLE_NAME,
 				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
