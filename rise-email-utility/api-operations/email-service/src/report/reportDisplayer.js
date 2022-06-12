@@ -41,10 +41,12 @@ module.exports = function(err, reportName, testing) {
     if (reportName.indexOf("/") === -1) {
         reportNameDir = process.cwd() + "/" + reportName;
         console.log(` 43 path : ${reportName}`);
+        console.log(` 43 reportNameDir : ${reportNameDir}`);
     } else {
         reportNameDir = reportName;
         reportName = reportName.substring(reportName.lastIndexOf("/")+1);
         console.log(` 47 path : ${reportName}`);
+        console.log(` 47 reportNameDir : ${reportNameDir}`);
     }
     const reportNoExt = reportName.replace(".pdf", "");
     console.log(` 50 path : ${reportNoExt}`);
