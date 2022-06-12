@@ -34,7 +34,16 @@ class StatsService {
                 let fileContent = await S3Service.getObjectData(bucketName,fileName)
                 fileContent = fileContent.toString("utf-8")
                 logger.debug("File Content = "+fileContent)
+                const currentPath = __dirname;
+				logger.debug(`current path :: ${currentPath}`);
+				const childNodeModulePath = currentPath.substring(0, currentPath.lastIndexOf('src')) + 'node_modules';
+				logger.debug(`Child Node Module Path :: ${childNodeModulePath}`);
+				const opts = { prependPaths: [childNodeModulePath], logFilter: () => false };
+				let ruleObject = await reqFromMem.requireFromString(fileContent, __dirname + `/${filePath}`, opts);
                 
+				logger.debug('Evaluating  rule');
+
+				logger.debug('Apply  rule');
             }
         } catch (error) {
             logger.error(`Error occurred while fetching connection: ${JSON.stringify(error)}`);
