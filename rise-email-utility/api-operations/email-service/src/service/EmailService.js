@@ -26,7 +26,7 @@ class EmailService {
                 from: 'mentorshipapp.dev2@travelex.com', // sender address
                 to: `${message.data.mentor_email_id}, ${message.data.mentee_email_id}`,  //"bharat.kendre@travelex.com, prabhat.kumar@travelex.com", // list of receivers
                 subject: "LeadX Mentorship Agreement", // Subject line
-                html: `<p>Hi ${params.mentor.split(' ')[0]},${params.mentee.split(' ')[0]},</p><p>Please find attached LeadX Mentor Mentee agreement document.</p><p><b>Team LeadX.<b></p>`, // html body,
+                html: `<p>Hi ${params.mentor.split(' ')[0]},  ${params.mentee.split(' ')[0]},</p><p>Please find attached LeadX Mentor Mentee agreement document.</p><p><b>Team LeadX.<b></p>`, // html body,
                 attachments: [
                     {
                         filename: 'mentor_mentee_agreement.pdf',
