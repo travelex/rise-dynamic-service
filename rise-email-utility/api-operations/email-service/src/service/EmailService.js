@@ -27,10 +27,10 @@ class EmailService {
             const info = await transporter.sendMail({
 
                 from: 'Middleware-nonprod@travelex.com', // sender address
-                to: "bharat.kendre@travelex.com", // list of receivers
+                to: "bharat.kendre@travelex.com, prabhat.kumar@travelex.com", // list of receivers
                 subject: "LeadX Mentorship Agreement", // Subject line
                 text: "Hello world", // plain text body
-                html: "<b>Hello world</b>", // html body,
+                html: "<p>Hi Mentor/Mentee</p><br><p>Please find attached LeadX Mentor Mentee agreement.</p>", // html body,
                 attachments: [
                     {
                         filename: 'mentor_mentee_agreement.pdf',
