@@ -7,41 +7,37 @@ const fs = require('fs');
 
 class EmailService {
 
-    static async sendEmail(event) {
-        
+    static async sendEmail(event, message) {
+
         try {
             console.log('sending email to mentor and mentee')
             let params = {
-
-                "mentor": `amar@travelex.com`,
-            
-                "mentee": `juned@travelex.com`
-            
+                "mentor": EmailService.getFullName(message.data.menter_email_id),
+                "mentee": EmailService.getFullName(message.data.mentee_email_id)
             }
             agreement.repo(params)
 
             fs.writeFileSync('/tmp/test.txt', 'Test DATA')
             fs.readdirSync('/tmp').forEach(file => {
                 console.log(`file names  : ${file}`);
-              });
-              
-            const transporter =await EmailService.getTransport();
+            });
+
+            const transporter = await EmailService.getTransport();
             const info = await transporter.sendMail({
 
                 from: 'Middleware-nonprod@travelex.com', // sender address
-                to: "nikita.pawar@travelex.com", // list of receivers
+                to: "bharat.kendre@travelex.com", // list of receivers
                 subject: "LeadX Mentorship Agreement", // Subject line
                 text: "Hello world", // plain text body
                 html: "<b>Hello world</b>", // html body,
                 attachments: [
                     {
-                        filename: 'agreement.pdf',
+                        filename: 'mentor_mentee_agreement.pdf',
                         path: '/tmp/agreement.pdf',
                     }
-            ]
+                ]
             });
             logger.debug("Message sent: %s", info.messageId);
-            // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
             // Preview only available when sending through an Ethereal account
             console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
@@ -78,6 +74,14 @@ class EmailService {
         // });
 
         return transporter
+    }
+
+    static getFullName(email) {
+        const namePart = email.split('@')[0];
+        let [firstName, lastName] = namePart.split('.')
+        firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+        lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
+        return `${firstName} ${lastName}`
     }
 
 }
