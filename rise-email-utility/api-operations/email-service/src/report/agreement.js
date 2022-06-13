@@ -19,11 +19,12 @@ async function repo(params) {
 
     const options = {
         image: imgLoc,
-        subject:
-            `  
+    subject1 : 
+    `             
     
-    Mentoring Agreement 
- 
+    Mentoring Agreement `,
+    subject:
+    `
     We, (Mentor full name) ${mentee}. 
     And (Mentee full name) ${mentor} 
     voluntarily commit to the Global Travelex Mentoring Program (Rise) for the 9-month duration.`
@@ -64,6 +65,9 @@ async function repo(params) {
     const header = function (rpt, data) {
 
         rpt.image(imgLoc, { width: 200 });
+        if (options.subject1) {
+            rpt.print(options.subject1,  { fontBold: true});
+        }
         if (options.subject) {
             rpt.print(options.subject);
         }
