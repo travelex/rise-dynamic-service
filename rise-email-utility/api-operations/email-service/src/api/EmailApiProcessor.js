@@ -10,10 +10,10 @@ class EmailApiProcessor {
         try {
             const body = JSON.parse(event.Records[0].body)
             const message = JSON.parse(body.Message)
-            const operation = message.operation;
+            const entity = message.entity;
             const status = message.data.status;
             const date_time = message.date_time_iso.split('T')[0];
-            if (operation == 'connection' && status == 'approved') {
+            if (entity == 'connection' && status == 'approved') {
                 await EmailService.sendEmail(event, message)
             } else {
                 return { message: 'Invaid operation' }
