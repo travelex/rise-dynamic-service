@@ -1,6 +1,5 @@
 const winstonWrapper = require('winston-wrapper');
-const logger = winstonWrapper.getLogger('FileSuccessHandlerApiProcessor');
-const utils = require('../utils/Utils');
+const logger = winstonWrapper.getLogger('EmailApiProcessor');
 const EmailService = require('../service/EmailService')
 
 
@@ -12,18 +11,18 @@ class EmailApiProcessor {
             const message = JSON.parse(body.Message)
             const entity = message.entity;
             const status = message.data.status;
-            const date_time = message.date_time_iso.split('T')[0];
-            if (entity == 'connection' && status == 'approved') {
-                await EmailService.sendEmail(event, message)
-            } else {
-                return { message: 'Invaid operation' }
-            }
 
+            if (entity == 'connection' && status == 'approved') {
+                await EmailService.sendEmail(event, message);
+            } else {
+                logger.debug(`Email will not be sent for entity: ${entity} and status: ${status}`)
+            }
+            return { status: 'success' }
         } catch (error) {
             logger.error(error)
+            return { status: 'success' };
         }
     }
 }
 
-new EmailApiProcessor().process({}, {})
 module.exports = EmailApiProcessor;
