@@ -17,7 +17,7 @@ class EmailService {
                 "mentee": EmailService.getFullName(message.data.mentee_email_id)
             }
             agreement.repo(params)
-
+            
             fs.writeFileSync('/tmp/test.txt', 'Test DATA')
             fs.readdirSync('/tmp').forEach(file => {
                 console.log(`file names  : ${file}`);
@@ -30,7 +30,7 @@ class EmailService {
                 to: "bharat.kendre@travelex.com, prabhat.kumar@travelex.com", // list of receivers
                 subject: "LeadX Mentorship Agreement", // Subject line
                 text: "Hello world", // plain text body
-                html: "<p>Hi Mentor/Mentee</p><br><p>Please find attached LeadX Mentor Mentee agreement.</p>", // html body,
+                html: `<p>Hi ${params.mentor.split(' ')[0]}/${params.mentee.split(' ')[0]},</p><p>Please find attached LeadX Mentor Mentee agreement.</p><p>Thanks</p><p>LeadX.</p>`, // html body,
                 attachments: [
                     {
                         filename: 'mentor_mentee_agreement.pdf',
