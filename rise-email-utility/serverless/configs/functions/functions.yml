@@ -1,0 +1,17 @@
+- process:
+    name: ${self:provider.stage}-${self:service}
+    description: File Success Handler
+    handler: src/handlers/${self:provider.name}/email-handler.handler
+    reservedConcurrency: 30
+    timeout: 60
+    package:
+      include:
+        - src/handlers/${self:provider.name}/email-handler.js
+        - node_modules/email-service/**
+    events:
+    # - http:
+    #     path: /email/test
+    #     method: get
+    - sqs:
+        arn: arn:aws:sqs:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:${opt:stage}-${self:custom.queueName}
+        batchSize: 10
