@@ -437,7 +437,7 @@ class ConnectionService {
 			TopicArn: 'arn:aws:sns:eu-west-1:148807490170:dev-rise-audit-topic',
 			Message: JSON.stringify({
 				'default': 'Audit Messages',
-				'sqs': payload
+				'sqs': JSON.stringify(payload)
 			}),
 			MessageAttributes: {
 				'status': {
