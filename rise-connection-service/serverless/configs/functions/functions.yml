@@ -28,6 +28,10 @@
             - Access-Control-Request-Headers
             - Access-Control-Request-Method
             - Access-Control-Allow-Origin
+        authorizer:
+          type: CUSTOM
+          authorizerId:
+            'Fn::ImportValue': mentorship-auth-ui-${opt:stage}-authorizer
     - http:
         path: connection/{type}/{email_id}
         method: put
@@ -48,6 +52,10 @@
             - Access-Control-Request-Headers
             - Access-Control-Request-Method
             - Access-Control-Allow-Origin
+        authorizer:
+          type: CUSTOM
+          authorizerId:
+            'Fn::ImportValue': mentorship-auth-ui-${opt:stage}-authorizer
     - http:
         path: connection/{type}/{email_id}
         method: delete
@@ -68,8 +76,12 @@
             - Access-Control-Request-Headers
             - Access-Control-Request-Method
             - Access-Control-Allow-Origin
+        authorizer:
+          type: CUSTOM
+          authorizerId:
+            'Fn::ImportValue': mentorship-auth-ui-${opt:stage}-authorizer
 
-# RISE:
+# RISE: 
 #   name: ${self:provider.stage}-rise-connection-service
 #   description: rise ${self:provider.stage} 
 #   handler: src/handlers/${self:provider.name}/rise-connection-service-handler.rise

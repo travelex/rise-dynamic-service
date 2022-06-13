@@ -419,7 +419,7 @@ class ConnectionService {
 		}
 	}
 
-	publishSNSService(status) {
+	publishSNSService(params, status) {
 		let payload = {
 			correlation_id: "",
 			entity: "connection",
@@ -433,11 +433,11 @@ class ConnectionService {
 		};
 		// let messageAttributes = this.createMessageAttribues(payload);
 
-		let params = {
+		let newParams = {
 			TopicArn: 'arn:aws:sns:eu-west-1:148807490170:dev-rise-audit-topic',
 			Message: JSON.stringify({
 				'default': 'Audit Messages',
-				'sqs': payload
+				'sqs': JSON.stringify(payload)
 			}),
 			MessageAttributes: {
 				'entity': {
@@ -456,11 +456,11 @@ class ConnectionService {
 		try {
 			new AWS.SNS({
 				apiVersion: '2010-03-31'
-			}).publish(params, (err, success) => {
+			}).publish(newParams, (err, success) => {
 				if (err) {
 					console.error(err);
 				} else {
-					console.log(`Message ${params.Message} sent to the topic ${params.TopicArn}`);
+					console.log(`Message ${newParams.Message} sent to the topic ${newParams.TopicArn}`);
 				}
 			});
 		} catch (err) {
