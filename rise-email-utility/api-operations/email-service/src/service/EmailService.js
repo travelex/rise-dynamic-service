@@ -11,8 +11,9 @@ class EmailService {
 
         try {
             console.log('sending email to mentor and mentee')
+            logger.debug(`message Data : ${JSON.stringify(message)}`);
             let params = {
-                "mentor": EmailService.getFullName(message.data.menter_email_id),
+                "mentor": EmailService.getFullName(message.data.mentor_email_id),
                 "mentee": EmailService.getFullName(message.data.mentee_email_id)
             }
             agreement.repo(params)
