@@ -1,0 +1,70 @@
+service: email-service
+
+plugins:
+  localPath: '/usr/local/lib/node_modules/'
+  modules:
+    - serverless-prune-plugin
+    - ./../../common/serverless/plugins/no-logs-group
+
+custom:
+  fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
+  queueName: rise-email-queue
+  # tableName: object-processed-metadata-${opt:stage, self:provider.stage}
+  # stagingTableName: staging-data-${opt:stage, self:provider.stage}
+  prune:
+    automatic: true
+    number: 1
+
+provider:
+  name: aws
+  runtime: ${self:custom.fromTerraform.node_runtime}
+  memorySize: 1024
+  stage: ${opt:stage}
+  region: ${self:custom.fromTerraform.region}
+  stackName: sls-${self:service}-${opt:stage, self:provider.stage}-stack
+  stackTags: ${self:custom.fromTerraform.common_tags}
+  tags: ${self:custom.fromTerraform.common_tags}
+  deploymentBucket: tvx-mentorship-deployment-dev
+  iam:
+    role: ${self:custom.fromTerraform.mentorship_lambda_iam}  
+  
+  apiGateway:
+    restApiId: ${self:custom.fromTerraform.mentorship_rest_api_id}
+    restApiRootResourceId: ${self:custom.fromTerraform.mentorship_rest_api_root_resource_id}  
+  vpc:
+    securityGroupIds:
+      - ${self:custom.fromTerraform.mentorship_sg}
+    subnetIds:
+      - ${self:custom.fromTerraform.subnet_private_0}
+      - ${self:custom.fromTerraform.subnet_private_1}
+  logs:
+    restApi: "${self:custom.fromTerraform.mentorship_rest_api_id}"
+    frameworkLambda: false
+  environment:
+    ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:DeleteMessage*
+        - sqs:Receive*
+        - sqs:SendMessage*
+        - sqs:Get*
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "arn:aws:sqs:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:${opt:stage}-${self:custom.queueName}"
+        # - "arn:aws:dynamodb:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:table/${self:custom.tableName}"
+        # - "arn:aws:dynamodb:${self:custom.fromTerraform.region, 'eu-west-1'}:${self:custom.fromTerraform.aws_account_id, '0'}:table/*"
+
+functions:
+  ${file(./configs/functions/functions.yml)}
+
+resources:
+  ${file(./configs/resources/success-queue.yml)}
+  # ${file(./configs/resources/log-group-and-subscription.yml)}
+  # ${file(./configs/resources/object-processed-metadata-table.yml)}
