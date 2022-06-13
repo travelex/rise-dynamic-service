@@ -26,20 +26,20 @@ class EmailService {
               });
               
             const transporter =await EmailService.getTransport();
-            // const info = await transporter.sendMail({
+            const info = await transporter.sendMail({
 
-            //     from: 'Middleware-nonprod@travelex.com', // sender address
-            //     to: "juned.khan@travelex.com", // list of receivers
-            //     subject: "LeadX Mentorship Agreement", // Subject line
-            //     text: "Hello world", // plain text body
-            //     html: "<b>Hello world</b>", // html body,
-            //     attachments: [
-            //         {
-            //             filename: 'agreement.pdf',
-            //             path: '/tmp/agreement.pdf',
-            //         }
-            // ]
-            // });
+                from: 'Middleware-nonprod@travelex.com', // sender address
+                to: "nikita.pawar@travelex.com", // list of receivers
+                subject: "LeadX Mentorship Agreement", // Subject line
+                text: "Hello world", // plain text body
+                html: "<b>Hello world</b>", // html body,
+                attachments: [
+                    {
+                        filename: 'agreement.pdf',
+                        path: '/tmp/agreement.pdf',
+                    }
+            ]
+            });
             logger.debug("Message sent: %s", info.messageId);
             // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
