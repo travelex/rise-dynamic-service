@@ -5,6 +5,8 @@ const reqFromMem = require('require-from-memory');
 const util = require('../utils/Utils')
 const ExceptionType = require('../model/ExceptionType');
 const ExceptionCategory = require('../model/ExceptionCategory');
+var aws = require('aws-sdk');
+let docClient = new aws.DynamoDB.DocumentClient();
 class StatsService {
 
     /**
@@ -40,10 +42,15 @@ class StatsService {
 				logger.debug(`Child Node Module Path :: ${childNodeModulePath}`);
 				const opts = { prependPaths: [childNodeModulePath], logFilter: () => false };
 				let ruleObject = await reqFromMem.requireFromString(fileContent, __dirname + `/${filePath}`, opts);
-                
-				logger.debug('Evaluating  rule');
+				logger.debug('Rule Required from memory');
 
-				logger.debug('Apply  rule');
+				logger.debug(' Pre Applying rule');
+                await ruleObject.preProcess(requestBo, docClient, opts)
+                logger.info(' Pre process Applied');
+                await ruleObject.process(requestBo, docClient, opts)
+                logger.info('Process Applied');
+                await ruleObject.postProcess(requestBo, docClient, opts)
+                logger.info('Post Process Applied');
             }
         } catch (error) {
             logger.error(`Error occurred while fetching connection: ${JSON.stringify(error)}`);
