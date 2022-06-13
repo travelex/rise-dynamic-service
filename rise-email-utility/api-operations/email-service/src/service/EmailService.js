@@ -48,7 +48,7 @@ class EmailService {
             port: 587,
             secure: false, // true for 465, false for other ports
             auth: {
-                user: 'mentorshippapp-dev@travelex.com', 
+                user: 'mentorshipapp-dev@travelex.com', 
                 pass: 'Travelex@123',
             },
         });
