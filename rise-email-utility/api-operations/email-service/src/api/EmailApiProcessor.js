@@ -19,6 +19,7 @@ class EmailApiProcessor {
             }
             return { status: 'success' }
         } catch (error) {
+            
             logger.error(error)
             return { status: 'success' };
         }
