@@ -10,7 +10,7 @@ async function repo(params) {
     console.log(`mentor: ${mentor}`);
     console.log(`mentor: ${mentee}`);
     // Cache today's date
-    const Current_Date = new Date().toDateString();
+    const Current_Date = params.date_time;
 
     // Interesting Data Structure, but we can still use it...
 
