@@ -23,7 +23,7 @@ class EmailService {
             const transporter = await EmailService.getTransport();
 
             const info = await transporter.sendMail({
-                from: 'Middleware-nonprod@travelex.com', // sender address
+                from: 'mentorshipapp.dev2@travelex.com', // sender address
                 to: `${message.data.mentor_email_id}, ${message.data.mentee_email_id}`,  //"bharat.kendre@travelex.com, prabhat.kumar@travelex.com", // list of receivers
                 subject: "LeadX Mentorship Agreement", // Subject line
                 html: `<p>Hi ${params.mentor.split(' ')[0]}/${params.mentee.split(' ')[0]},</p><p>Please find attached LeadX Mentor Mentee agreement document.</p><p><b>Team LeadX.<b></p>`, // html body,
@@ -48,8 +48,8 @@ class EmailService {
             port: 587,
             secure: false, // true for 465, false for other ports
             auth: {
-                user: 'Middleware-nonprod@travelex.com', 
-                pass: 'KFJcq3bQ2:3#S+Jk_{}~p]}#$',
+                user: 'mentorshipapp.dev2@travelex.com', 
+                pass: 'Travelex@1234',
             },
         });
 
