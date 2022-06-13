@@ -81,7 +81,7 @@
           authorizerId:
             'Fn::ImportValue': mentorship-auth-ui-${opt:stage}-authorizer
 
-# RISE:
+# RISE: 
 #   name: ${self:provider.stage}-rise-connection-service
 #   description: rise ${self:provider.stage} 
 #   handler: src/handlers/${self:provider.name}/rise-connection-service-handler.rise
