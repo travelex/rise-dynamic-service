@@ -3,12 +3,9 @@ var fs = require('fs');
 var displayReport = require('./reportDisplayer');
 const path = require('path');
 async function repo(params) {
-    console.log(JSON.stringify(params))
     let mentor = params.mentor;
     let mentee = params.mentee;
 
-    console.log(`mentor: ${mentor}`);
-    console.log(`mentor: ${mentee}`);
     // Cache today's date
     const Current_Date = params.date_time;
 
@@ -25,8 +22,8 @@ async function repo(params) {
     Mentoring Agreement `,
     subject:
     `
-    We, (Mentor full name) ${mentee}. 
-    And (Mentee full name) ${mentor} 
+    We, (Mentor full name) ${mentor}. 
+    And (Mentee full name) ${mentee} 
     voluntarily commit to the Global Travelex Mentoring Program (Rise) for the 9-month duration.`
         ,
         data: [{
@@ -104,7 +101,6 @@ async function repo(params) {
         .pageFooter(footer)
         .data(options.data);
 
-    console.log(rpt)
     // Debug output is always nice (Optional, to help you see the structure)
     if (typeof process.env.TESTING === "undefined") { rpt.printStructure(); }
 
@@ -118,7 +114,6 @@ async function repo(params) {
         } else {
             console.log(`Creating buffer`)
             let pdf = displayReport(err, name, testing);
-            console.log(pdf)
         }
     });
 }
