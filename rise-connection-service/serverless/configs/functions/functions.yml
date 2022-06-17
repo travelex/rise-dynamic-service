@@ -76,10 +76,10 @@
             - Access-Control-Request-Headers
             - Access-Control-Request-Method
             - Access-Control-Allow-Origin
-        authorizer:
-          type: CUSTOM
-          authorizerId:
-            'Fn::ImportValue': mentorship-auth-ui-${opt:stage}-authorizer
+        # authorizer:
+        #   type: CUSTOM
+        #   authorizerId:
+        #     'Fn::ImportValue': mentorship-auth-ui-${opt:stage}-authorizer
 
 # RISE: 
 #   name: ${self:provider.stage}-rise-connection-service
