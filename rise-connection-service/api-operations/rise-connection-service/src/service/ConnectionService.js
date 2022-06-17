@@ -420,11 +420,13 @@ class ConnectionService {
 	}
 
 	publishSNSService(params, status) {
+		let date = new Date();
+		let newDate = date.toISOString();
 		let payload = {
 			correlation_id: "",
 			entity: "connection",
 			operation: "insert",
-			date_time_iso: "",
+			date_time_iso: newDate,
 			data: {
 				mentor_email_id: params.mentor_email_id,
 				mentee_email_id: params.mentee_email_id,
