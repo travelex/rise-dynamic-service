@@ -36,8 +36,8 @@ provider:
   deploymentBucket:
     name: 'dev-ui-mentorship-tvx-test-cloud'
   apiGateway:
-    restApiId: ${self:custom.fromTerraform.mentorship_rest_api_id}
-    restApiRootResourceId: ${self:custom.fromTerraform.mentorship_rest_api_root_resource_id}
+    restApiId: ${self:custom.fromTerraform.mentorship_rest_api_id_private}
+    restApiRootResourceId: ${self:custom.fromTerraform.mentorship_rest_api_root_resource_id_private}
   environment: ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
   #logs:
     #restApi: "${self:custom.fromTerraform.private_api_gateway_logs_enabled}"

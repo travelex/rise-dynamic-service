@@ -32,8 +32,8 @@ provider:
     role: ${self:custom.fromTerraform.mentorship_lambda_iam}  
   
   apiGateway:
-    restApiId: ${self:custom.fromTerraform.mentorship_rest_api_id}
-    restApiRootResourceId: ${self:custom.fromTerraform.mentorship_rest_api_root_resource_id}  
+    restApiId: ${self:custom.fromTerraform.mentorship_rest_api_id_private}
+    restApiRootResourceId: ${self:custom.fromTerraform.mentorship_rest_api_root_resource_id_private}  
   vpc:
     securityGroupIds:
       - ${self:custom.fromTerraform.mentorship_sg}
@@ -41,7 +41,7 @@ provider:
       - ${self:custom.fromTerraform.subnet_private_0}
       - ${self:custom.fromTerraform.subnet_private_1}
   logs:
-    restApi: "${self:custom.fromTerraform.mentorship_rest_api_id}"
+    restApi: "${self:custom.fromTerraform.mentorship_rest_api_id_private}"
     frameworkLambda: false
   environment:
     ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
