@@ -347,3 +347,13 @@ workflows:
                 - develop
                 - master
                 - feature/dit
+      - lambda-job:
+          name: rise-email-utility
+          requires:
+            - s3-download
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+                - feature/dit
