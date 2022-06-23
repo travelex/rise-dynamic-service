@@ -3,11 +3,11 @@ var AWS = require('aws-sdk');
 
 const path = require('path');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
-const dynamicDao = require('../dal/DynamicDao');
+// const dynamicDao = require('../dal/DynamicDao');
 const dynamoDao = require('../dal/DynamoDao');
 const ExceptionType = require('../model/ExceptionType');
 const ExceptionCategory = require('../model/ExceptionCategory');
-const reqFromMem = require('require-from-memory');
+// const reqFromMem = require('require-from-memory');
 const TABLE_NAME = process.env.TABLE_NAME;
 
 process
@@ -33,15 +33,15 @@ class ConnectionService {
 		try {
 			console.log(params);
 			let queryParams = this.getFetchRecordsParams(params);
-			console.log(queryParams);
+			console.log("getConnectionInfo queryParams: ", queryParams);
 			let response = await dynamoDao.getRecords(queryParams);
-			console.log("response", response);
+			console.log("getConnectionInfo response", response);
 			if (response.Items && response.Items.length > 0) {
 				let data = {
 					status: 200,
 					message: "Connection list fetched",
 					body: {}
-				}
+				};
 				data.body.pending = response.Items.filter(data => data.connection_status.toLowerCase() == 'pending');
 				data.body.approved = response.Items.filter(data => data.connection_status.toLowerCase() == 'approved');
 				data.body.rejected = response.Items.filter(data => data.connection_status.toLowerCase() == 'rejected');
@@ -66,12 +66,12 @@ class ConnectionService {
 			if (params.create_if_not_exist == 'true') {
 				console.log("Trying to insert");
 				let dataInsertPostCheck = true;
-				checkBeforeInsertParams = this.getQueryParams(params)
+				checkBeforeInsertParams = this.getQueryParams(params);
 				console.log("checkBeforeInsertParams", JSON.stringify(checkBeforeInsertParams));
 				if (checkBeforeInsertParams && checkBeforeInsertParams.length) {
 					for (let object = 0; object < checkBeforeInsertParams.length; object++) {
 						let data = await dynamoDao.getRecords(checkBeforeInsertParams[object]);
-						console.log(JSON.stringify(data));
+						console.log("data ", JSON.stringify(data));
 						if (data.Items && data.Items.length) {
 							dataInsertPostCheck = false;
 						}
@@ -79,11 +79,11 @@ class ConnectionService {
 				}
 				if (dataInsertPostCheck == true) {
 					fetchQueryParams = this.getInsertRecordsParams(params, body);
-					console.log(JSON.stringify(fetchQueryParams));
+					console.log("fetchQueryParams:", JSON.stringify(fetchQueryParams));
 					await dynamoDao.putRecords(fetchQueryParams);
 					console.log("Data Inserted");
 					response = "request sent";
-					status = "pending"
+					status = "pending";
 				} else {
 					return {
 						status: 200,
@@ -97,10 +97,10 @@ class ConnectionService {
 				if (fetchQueryParams && fetchQueryParams.length) {
 					for (let object = 0; object < fetchQueryParams.length; object++) {
 						let data = await dynamoDao.getRecords(fetchQueryParams[object]);
-						console.log(JSON.stringify(data));
+						console.log("data: ", JSON.stringify(data));
 						if (data.Items && data.Items.length) {
 							console.log("relevant records found for update");
-							console.log(data.Items[0]);
+							console.log("data.Items[0]:", data.Items[0]);
 							updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
 							let result = await dynamoDao.updateRecords(updateQueryParams);
 							console.log(result);
@@ -114,7 +114,7 @@ class ConnectionService {
 				console.log("Sending notification via SNS");
 				this.publishSNSService(params, status);
 			} catch (error) {
-				logger.error(error)
+				logger.error(error);
 			}
 			return {
 				status: 200,
@@ -141,10 +141,10 @@ class ConnectionService {
 			if (fetchQueryParams && fetchQueryParams.length) {
 				for (let object = 0; object < fetchQueryParams.length; object++) {
 					let data = await dynamoDao.getRecords(fetchQueryParams[object]);
-					console.log(JSON.stringify(data));
+					console.log("getRecords: ", JSON.stringify(data));
 					if (data.Items && data.Items.length) {
 						console.log("relevant records found for deletion");
-						console.log(data.Items[0]);
+						console.log("relevant records: ", data.Items[0]);
 						updateQueryParams = this.getDeleteQueryParams(data.Items[0]);
 						console.log("updateQueryParams:: ", updateQueryParams);
 						let result = await dynamoDao.deleteRecords(updateQueryParams);
@@ -156,7 +156,7 @@ class ConnectionService {
 				console.log("Sending notification via SNS");
 				this.publishSNSService(params, "deleted");
 			} catch (error) {
-				logger.error(error)
+				logger.error(error);
 			}
 			return {
 				status: 200,
@@ -292,11 +292,11 @@ class ConnectionService {
 					}
 				}
 			}
-		]
+		];
 		console.log(`RequestItems: ${JSON.stringify(RequestItems)}`);
 		let queryParams = {
 			RequestItems: RequestItems
-		}
+		};
 		console.log(`queryParams.RequestItems: ${queryParams.RequestItems}`);
 		console.log(`queryParams.RequestItems: ${JSON.stringify(queryParams.RequestItems)}`);
 
@@ -355,13 +355,13 @@ class ConnectionService {
 			}
 		};
 
-		console.log("queryParams", queryParams);
+		console.log(" getDeleteQueryParams queryParams", queryParams);
 		return queryParams;
 	}
 
 	getQueryParams(params) {
-		let mentee = params.mentee_email_id
-		let mentor = params.mentor_email_id
+		let mentee = params.mentee_email_id;
+		let mentor = params.mentor_email_id;
 		let queryParams = [{
 			TableName: TABLE_NAME,
 			KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
@@ -385,7 +385,7 @@ class ConnectionService {
 				":email_id": params.mentee_email_id,
 				":type": `mentor-${mentor}`
 			}
-		}]
+		}];
 		return queryParams;
 	}
 
