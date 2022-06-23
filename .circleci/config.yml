@@ -323,7 +323,8 @@ workflows:
               only:
                 - develop
                 - master
-                - feature/dit
+                # - feature/dit
+                - /feature\/.*/
       #- sts_dmz
 
       # - lambda-job:
