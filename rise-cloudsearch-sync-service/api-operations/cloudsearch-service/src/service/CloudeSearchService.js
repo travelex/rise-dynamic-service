@@ -46,10 +46,11 @@ class CloudeSearchService {
                     ]
                 )
             };
-            await cloudSearchDomain.uploadDocuments(params).promise();
+            const addResponse = await cloudSearchDomain.uploadDocuments(params).promise();
+            logger.info(`addResponse: ${JSON.stringify(addResponse)}`);
             return { status: 'added' }
         } catch (error) {
-            console.error('Error occurred while adding document to cloud search. DocumentId :- ' + documentId);
+            logger.error('Error occurred while adding document to cloud search. DocumentId :- ' + documentId);
             throw error;
         }
     }
@@ -67,7 +68,8 @@ class CloudeSearchService {
                     ]
                 )
             };
-            await cloudSearchDomain.uploadDocuments(params).promise();
+            const deleteResponse = await cloudSearchDomain.uploadDocuments(params).promise();
+            logger.info(`deleteResponse: ${JSON.stringify(deleteResponse)}`);
             return { status: 'deleted' }
         } catch (error) {
             logger.error('Error occurred while deleting document from cloud search. DocumentId :- ' + documentId);
