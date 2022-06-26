@@ -22,7 +22,7 @@ class CloudeSearchService {
         }
         // delete existing document
         await CloudeSearchService.removeDocument(updatedProfile.email_id);
-
+        await new Promise(resolve => setTimeout(resolve, 1000));
         // add new document
         await CloudeSearchService.addDocument(updatedProfile);
 
