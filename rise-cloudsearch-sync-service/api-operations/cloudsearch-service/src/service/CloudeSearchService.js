@@ -3,6 +3,7 @@ const logger = winstonWrapper.getLogger('CloudeSearchService');
 const AWS = require('aws-sdk');
 AWS.config.update({ region: 'eu-west-1' });
 const CloudSearchUtility = require('../utils/CloudSearchUtility')
+const Utils = require('../utils/Utils');
 
 const cloudSearchDomain = new AWS.CloudSearchDomain({
     endpoint: 'doc-userprofile-tktgdgxjn6xs7sbtsxjiic3the.eu-west-1.cloudsearch.amazonaws.com',
@@ -22,7 +23,7 @@ class CloudeSearchService {
         }
         // delete existing document
         await CloudeSearchService.removeDocument(updatedProfile.email_id);
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await Utils.sleep(100);
         // add new document
         await CloudeSearchService.addDocument(updatedProfile);
 

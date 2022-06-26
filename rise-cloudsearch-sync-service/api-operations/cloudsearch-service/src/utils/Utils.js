@@ -29,6 +29,10 @@ class Utils {
             return object;
         }
 	}
+
+	static async sleep(delay){
+		return new Promise(resolve => setTimeout(resolve, delay))
+	}
 }
 
 module.exports = Utils;
