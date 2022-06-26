@@ -11,7 +11,7 @@ class CloudeSearchApiProcessor {
             logger.info('Started executing CloudeSearchApiProcessor');
 
             const operation = event.Records[0].eventName;
-            const itemDetail = event.Records[0].dynamodb[0];
+            const itemDetail = Array.isArray(event.Records[0].dynamodb) ? event.Records[0].dynamodb[0] : event.Records[0].dynamodb
 
             let response;
             if (operation === 'INSERT') {
