@@ -23,7 +23,7 @@ class CloudeSearchService {
         }
         // delete existing document
         await CloudeSearchService.removeDocument(updatedProfile.email_id);
-        await Utils.sleep(100);
+        await Utils.sleep(200);
         // add new document
         await CloudeSearchService.addDocument(updatedProfile);
 
