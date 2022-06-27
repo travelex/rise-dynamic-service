@@ -7,6 +7,9 @@ class CloudSearchUtility {
         try {
             const profile = covertor.itemToData(image);
 
+            if(!profile.mentor){
+                throw new Error('Mentor details are not available');
+            }
             // Extract cloud search specific fields
             const email_id = profile.email_id;
             let name = profile.name ?? {};
