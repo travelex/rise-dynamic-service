@@ -25,7 +25,7 @@ class CloudeSearchService {
         await CloudeSearchService.removeDocument(updatedProfile.email_id);
 
         // Adding delay between remove and add operation
-        await Utils.sleep(600);
+        await Utils.sleep(1000);
         // add new document
         await CloudeSearchService.addDocument(updatedProfile);
 
