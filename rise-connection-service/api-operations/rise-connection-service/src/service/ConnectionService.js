@@ -72,9 +72,16 @@ class ConnectionService {
 					for (let object = 0; object < checkBeforeInsertParams.length; object++) {
 						let data = await dynamoDao.getRecords(checkBeforeInsertParams[object]);
 						console.log("data ", JSON.stringify(data));
-						console.log("data.Items[0].is_deleted ", data.Items[0].is_deleted);
-						if (data.Items && data.Items.length && data.Items[0].is_deleted == 0) {
-							dataInsertPostCheck = false;
+						// console.log("data.Items[0].is_deleted ", data.Items[0].is_deleted);
+						// if (data.Items && data.Items.length && data.Items[0].is_deleted == 0) {
+						if (data.Items && data.Items.length) {
+							let recordsToInsert = data.Items.filter((record) => {
+								return record.is_deleted == 0;
+							});
+							console.log("relevant records found for Insert", recordsToInsert);
+							if(recordsToInsert.length > 0){
+								dataInsertPostCheck = false;
+							}
 						}
 					}
 				}
@@ -100,11 +107,22 @@ class ConnectionService {
 						let data = await dynamoDao.getRecords(fetchQueryParams[object]);
 						console.log("data: ", JSON.stringify(data));
 						if (data.Items && data.Items.length) {
-							console.log("relevant records found for update");
-							console.log("data.Items[0]:", data.Items[0]);
-							updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
-							let result = await dynamoDao.updateRecords(updateQueryParams);
-							console.log(result);
+							let recordsToUpdate = data.Items.filter((record) => {
+								return record.is_deleted == 0;
+							});
+							console.log("relevant records found for update", recordsToUpdate);
+							// console.log("count:", object);
+							// console.log("data.Items[object]:", data.Items[object]);
+							// // updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
+							// updateQueryParams = this.getUpdateRecordsParams(data.Items[object], body);
+							// let result = await dynamoDao.updateRecords(updateQueryParams);
+							// console.log("putConnection result: ",result);
+
+							for (let record of recordsToUpdate) {
+								updateQueryParams = this.getUpdateRecordsParams(record, body);
+								let result = await dynamoDao.updateRecords(updateQueryParams);
+								console.log("putConnection result, data updated: ", result);
+							}
 						}
 					}
 				}
@@ -142,21 +160,39 @@ class ConnectionService {
 			if (fetchQueryParams && fetchQueryParams.length) {
 				for (let object = 0; object < fetchQueryParams.length; object++) {
 					let data = await dynamoDao.getRecords(fetchQueryParams[object]);
-					console.log("getRecords: ", JSON.stringify(data));
+					console.log("Data: ", JSON.stringify(data));
 					if (data.Items && data.Items.length) {
-						if(data.Items[0].is_deleted == 0){
-							console.log("relevant records found for deletion");
-							console.log("relevant records: ", data.Items[0]);
-							updateQueryParams = this.getDeleteQueryParams(data.Items[0]);
-							console.log("updateQueryParams:: ", updateQueryParams);
-							let result = await dynamoDao.deleteRecords(updateQueryParams);
-							console.log(result);
-						} else {
-							return {
-								status: 200,
-								message: `Connection already deleted`
-							};
-						}	
+
+						for (const record of data.Items){
+							if (record.is_deleted == 0) {
+								console.log("relevant records found for deletion");
+								console.log("relevant records: ", record);
+								updateQueryParams = this.getDeleteQueryParams(record);
+								console.log("updateQueryParams:: ", updateQueryParams);
+								let result = await dynamoDao.deleteRecords(updateQueryParams);
+								console.log("Delete connection ",result);
+							} else {
+								return {
+									status: 200,
+									message: `Connection already deleted`
+								};
+							}
+						}
+
+					
+						// if (data.Items[0].is_deleted == 0) {
+						// 	console.log("relevant records found for deletion");
+						// 	console.log("relevant records: ", data.Items[0]);
+						// 	updateQueryParams = this.getDeleteQueryParams(data.Items[0]);
+						// 	console.log("updateQueryParams:: ", updateQueryParams);
+						// 	let result = await dynamoDao.deleteRecords(updateQueryParams);
+						// 	console.log(result);
+						// } else {
+						// 	return {
+						// 		status: 200,
+						// 		message: `Connection already deleted`
+						// 	};
+						// }
 					}
 				}
 			}
