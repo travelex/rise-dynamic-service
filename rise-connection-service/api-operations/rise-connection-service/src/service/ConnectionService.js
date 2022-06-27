@@ -343,7 +343,7 @@ class ConnectionService {
 	getDeleteQueryParams(params) {
 		let date = new Date();
 		let newDate = date.toISOString();
-
+		console.log("newDate", newDate);
 		let queryParams = {
 			TableName: TABLE_NAME,
 			Key: {
