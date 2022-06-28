@@ -431,7 +431,7 @@ class ConnectionService {
 		let queryParams = {
 			TableName: TABLE_NAME,
 			KeyConditionExpression: "begins_with(#user_type, :type)",
-			FilterExpression: "#connection_status != :status and #is_deleted = :isDeleted",
+			FilterExpression: "#connection_status <> :status and #is_deleted = :isDeleted",
 			ExpressionAttributeNames: {
 				"#user_type": "user_type",
 				"#connection_status": "connection_status",
@@ -452,7 +452,7 @@ class ConnectionService {
 		let queryParams = {
 			TableName: TABLE_NAME,
 			KeyConditionExpression: "begins_with(#user_type, :type)",
-			FilterExpression: "#connection_status != :status and #is_deleted = :isDeleted",
+			FilterExpression: "#connection_status <> :status and #is_deleted = :isDeleted",
 			ExpressionAttributeNames: {
 				"#user_type": "user_type",
 				"#connection_status": "connection_status",
