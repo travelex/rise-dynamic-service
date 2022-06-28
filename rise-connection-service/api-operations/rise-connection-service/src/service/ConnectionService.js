@@ -64,6 +64,16 @@ class ConnectionService {
 			let fetchQueryParams, updateQueryParams, checkBeforeInsertParams, response;
 			console.log("params.create_if_not_exist", params.create_if_not_exist);
 			if (params.create_if_not_exist == 'true') {
+				// to check wether mentor already has 2 mentee
+				let noOfMenteeParams = this.getNoOfMenteeParams(params);
+				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
+				console.log("Mentee");
+				console.log(noOfMentee);
+				// to check wether mentee has any connection 
+				let noOfMentorParams = this.getNoOfMentorParams(params);
+				let noOfMentor = await dynamoDao.getRecords(noOfMentorParams);
+				console.log("Mentors");
+				console.log(noOfMentor);
 				console.log("Trying to insert");
 				let dataInsertPostCheck = true;
 				checkBeforeInsertParams = this.getQueryParams(params);
@@ -162,7 +172,7 @@ class ConnectionService {
 						console.log("relevant records found for deletion", recordsToDelete);
 
 						if (recordsToDelete.length > 0) {
-							for (const record of recordsToDelete){
+							for (const record of recordsToDelete) {
 								updateQueryParams = this.getDeleteQueryParams(record);
 								console.log("updateQueryParams:: ", updateQueryParams);
 								let result = await dynamoDao.deleteRecords(updateQueryParams);
@@ -416,9 +426,46 @@ class ConnectionService {
 		return queryParams;
 	}
 
+	getNoOfMenteeParams(params) {
+		let mentor = params.mentor_email_id;
+		let queryParams = {
+			TableName: TABLE_NAME,
+			KeyConditionExpression: "begins_with(#user_type, :type)",
+			FilterExpression: "#connection_status != :status and #is_deleted = :isDeleted",
+			ExpressionAttributeNames: {
+				"#user_type": "user_type",
+				"#connection_status": "connection_status",
+				"#is_deleted": "is_deleted"
+			},
+			ExpressionAttributeValues: {
+				":type": `mentor-${mentor}`,
+				":status": "Rejected",
+				"isDeleted": 0
+			}
+		}
+		return queryParams;
+	}
 
 
-
+	getNoOfMentorParams(params) {
+		let mentee = params.mentee_email_id;
+		let queryParams = {
+			TableName: TABLE_NAME,
+			KeyConditionExpression: "begins_with(#user_type, :type)",
+			FilterExpression: "#connection_status != :status and #is_deleted = :isDeleted",
+			ExpressionAttributeNames: {
+				"#user_type": "user_type",
+				"#connection_status": "connection_status",
+				"#is_deleted": "is_deleted"
+			},
+			ExpressionAttributeValues: {
+				":type": `mentee-${mentee}`,
+				":status": "Rejected",
+				"isDeleted": 0
+			}
+		}
+		return queryParams;
+	}
 
 	createMessageAttribues(attributes) {
 		let attributeNames, msgAttribute = {};
