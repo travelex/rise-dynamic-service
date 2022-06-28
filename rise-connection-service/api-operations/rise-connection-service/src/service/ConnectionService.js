@@ -69,11 +69,23 @@ class ConnectionService {
 				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
 				console.log("Mentee");
 				console.log(noOfMentee);
+				if(noOfMentee.Count >= 2){
+					return {
+						status: 200,
+						message: `Mentor is already booked`
+					};
+				}
 				// to check wether mentee has any connection 
 				let noOfMentorParams = this.getNoOfMentorParams(params);
 				let noOfMentor = await dynamoDao.getRecords(noOfMentorParams);
 				console.log("Mentors");
 				console.log(noOfMentor);
+				if(noOfMentor.Count >= 1){
+					return {
+						status: 200,
+						message: `You already have a connection with a mentor`
+					};
+				}
 				console.log("Trying to insert");
 				let dataInsertPostCheck = true;
 				checkBeforeInsertParams = this.getQueryParams(params);
@@ -431,7 +443,7 @@ class ConnectionService {
 		let queryParams = {
 			TableName: TABLE_NAME,
 			KeyConditionExpression: "#email_id = :email_id",
-			FilterExpression: "#connection_status <> :status and #is_deleted = :isDeleted and #category = :category",
+			FilterExpression: "#connection_status = :status and #is_deleted = :isDeleted and #category = :category",
 			ExpressionAttributeNames: {
 				"#email_id": "email_id",
 				"#connection_status": "connection_status",
@@ -440,7 +452,7 @@ class ConnectionService {
 			},
 			ExpressionAttributeValues: {
 				":email_id": mentor,
-				":status": "Rejected",
+				":status": "approved",
 				":isDeleted": 0,
 				":category": "mentor"
 			}
@@ -454,7 +466,7 @@ class ConnectionService {
 		let queryParams = {
 			TableName: TABLE_NAME,
 			KeyConditionExpression: "#email_id = :email_id",
-			FilterExpression: "#connection_status <> :status and #is_deleted = :isDeleted and #category = :category",
+			FilterExpression: "#connection_status = :status and #is_deleted = :isDeleted and #category = :category",
 			ExpressionAttributeNames: {
 				"#email_id": "email_id",
 				"#connection_status": "connection_status",
@@ -463,7 +475,7 @@ class ConnectionService {
 			},
 			ExpressionAttributeValues: {
 				":email_id": mentee,
-				":status": "Rejected",
+				":status": "approved",
 				":isDeleted": 0,
 				":category": "mentee"
 			}
