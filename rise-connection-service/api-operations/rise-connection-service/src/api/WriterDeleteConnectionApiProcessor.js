@@ -115,9 +115,9 @@ class WriterDeleteConnectionApiProcessor {
      */
      getParams(event) {
         const { pathParameters, queryStringParameters } = event;
-        console.log('path', path);
-        console.log('pathParameters', pathParameters);
-        console.log('queryStringParameters', queryStringParameters);
+        // console.log('path', path);
+        console.log('pathParameters', JSON.stringify(pathParameters));
+        console.log('queryStringParameters', JSON.stringify(queryStringParameters));
         let errorArray = [];
         let params = {
             "mentee_email_id": pathParameters.type ? pathParameters.type : errorArray.push["Invalid parameters"],

@@ -1,14 +1,9 @@
 
 const path = require('path');
-//const LruCache = require("lru-cache");
 const winston_wrapper = require('winston-wrapper');
-//const apiProcessor = require('rise-service').apiProcessor;
 const logger = winston_wrapper.getLogger(path.basename(__filename))
 
 const PostApiProcessor = require('rise-service').PostApiProcessor;
-// const GetApiProcessor = require('rise-service').GetApiProcessor;
-// const PutApiProcessor = require('rise-service').PutApiProcessor;
-// const DeleteApiProcessor = require('rise-service').DeleteApiProcessor;
 
 const GetApiProcessor = require('rise-service').GetConnectionApiProcessor;
 const PutApiProcessor = require('rise-service').PutConnectionApiProcessor;
@@ -21,8 +16,6 @@ const apiProcessors = {
     delete: DeleteApiProcessor
 }
 
-//const options = { maxAge: process.env.CacheTTL * 60 * 60 }
-//const cacheObj = new LruCache(options);
 const cacheObj = null;
 
 module.exports.rise = function (event, context, callback) {
