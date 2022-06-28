@@ -302,7 +302,7 @@ jobs:
             ls -la /home/circleci/project
             ls -la /home/circleci/project/common/serverless
             pwd
-            cd ${CIRCLE_STAGE}
+            cd ${CIRCLE_JOB}
             pwd
             make build test deploy
       - setup_remote_docker:
