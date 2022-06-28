@@ -6,7 +6,8 @@ const CloudSearchUtility = require('../utils/CloudSearchUtility')
 const Utils = require('../utils/Utils');
 
 const cloudSearchDomain = new AWS.CloudSearchDomain({
-    endpoint: 'doc-userprofile-tktgdgxjn6xs7sbtsxjiic3the.eu-west-1.cloudsearch.amazonaws.com',
+    // endpoint: 'doc-userprofile-tktgdgxjn6xs7sbtsxjiic3the.eu-west-1.cloudsearch.amazonaws.com',
+    endpoint : process.env.CLOUD_SEARCH_DOCUMENT_ENDPOINT,
     apiVersion: '2013-01-01'
 });
 

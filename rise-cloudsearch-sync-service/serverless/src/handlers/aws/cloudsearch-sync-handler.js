@@ -28,7 +28,7 @@ async function test(event, context) {
 }
 
 //Remove
-// test(event.removeEvent).then(logger.info).catch(logger.info)
+test(event.removeEvent).then(logger.info).catch(logger.info)
 
 //Add
 // test(event.insertEvent).then(logger.info).catch(logger.info)
