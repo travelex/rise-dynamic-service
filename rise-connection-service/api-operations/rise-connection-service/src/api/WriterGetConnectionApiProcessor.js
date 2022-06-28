@@ -56,7 +56,7 @@ class WriterGetConnectionApiProcessor {
                 try {
                     logger.info('Dynamic service request received');
                     console.log('Event Received', JSON.stringify(event));
-                    
+
                     let params = this.getParams(event);
                     const response = await connectionService.getConnectionInfo(params);
 
@@ -115,21 +115,21 @@ class WriterGetConnectionApiProcessor {
      */
     getParams(event) {
         const { pathParameters, queryStringParameters } = event;
-        console.log(`path ${path}`);
-        console.log(`pathParameters ${pathParameters}`);
-        console.log('queryStringParameters', queryStringParameters);
+        // console.log('path', path);
+        console.log('pathParameters', JSON.stringify(pathParameters));
+        console.log('queryStringParameters', JSON.stringify(queryStringParameters));
         let errorArray = [];
         let params = {
             "email_id": pathParameters.email_id ? pathParameters.email_id : errorArray.push["Invalid parameters"],
             "type": pathParameters.type ? pathParameters.type : errorArray.push["Invalid parameters"],
             "status": (queryStringParameters && queryStringParameters.status) ? queryStringParameters.status : ''
-        }
+        };
         if (errorArray.length) {
             throw new Error({
                 status: 400,
                 message: "Unable to retrieve the Connection information.",
                 error: errorArray[0]
-            })
+            });
         }
         return params;
     }

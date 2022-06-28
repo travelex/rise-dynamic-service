@@ -323,7 +323,8 @@ workflows:
               only:
                 - develop
                 - master
-                - feature/dit
+                # - feature/dit
+                - /feature\/.*/
       #- sts_dmz
 
       # - lambda-job:
@@ -346,7 +347,8 @@ workflows:
               only:
                 - develop
                 - master
-                - feature/dit
+                # - feature/dit
+                - /feature\/.*/
       - lambda-job:
           name: rise-email-utility
           requires:
