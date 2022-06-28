@@ -64,16 +64,16 @@ class ConnectionService {
 			let fetchQueryParams, updateQueryParams, checkBeforeInsertParams, response;
 			console.log("params.create_if_not_exist", params.create_if_not_exist);
 			if (params.create_if_not_exist == 'true') {
-				// to check wether mentor already has 2 mentee
-				let noOfMenteeParams = this.getNoOfMenteeParams(params);
-				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
-				console.log("Mentee");
-				console.log(noOfMentee);
-				// to check wether mentee has any connection 
-				let noOfMentorParams = this.getNoOfMentorParams(params);
-				let noOfMentor = await dynamoDao.getRecords(noOfMentorParams);
-				console.log("Mentors");
-				console.log(noOfMentor);
+				// // to check wether mentor already has 2 mentee
+				// let noOfMenteeParams = this.getNoOfMenteeParams(params);
+				// let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
+				// console.log("Mentee");
+				// console.log(noOfMentee);
+				// // to check wether mentee has any connection 
+				// let noOfMentorParams = this.getNoOfMentorParams(params);
+				// let noOfMentor = await dynamoDao.getRecords(noOfMentorParams);
+				// console.log("Mentors");
+				// console.log(noOfMentor);
 				console.log("Trying to insert");
 				let dataInsertPostCheck = true;
 				checkBeforeInsertParams = this.getQueryParams(params);
