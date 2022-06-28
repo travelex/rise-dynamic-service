@@ -54,7 +54,7 @@ class CloudeSearchService {
             logger.info(`addResponse: ${JSON.stringify(addResponse)}`);
             return { status: 'added' }
         } catch (error) {
-            logger.error('Error occurred while adding document to cloud search. DocumentId :- ' + documentId);
+            logger.error('Error occurred while adding document to cloud search. DocumentId :- ' + updatedProfile.email_id);
             throw error;
         }
     }
