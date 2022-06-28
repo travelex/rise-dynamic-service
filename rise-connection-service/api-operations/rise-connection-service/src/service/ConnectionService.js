@@ -440,7 +440,7 @@ class ConnectionService {
 			ExpressionAttributeValues: {
 				":type": `mentor-${mentor}`,
 				":status": "Rejected",
-				"isDeleted": 0
+				":isDeleted": 0
 			}
 		}
 		return queryParams;
@@ -461,7 +461,7 @@ class ConnectionService {
 			ExpressionAttributeValues: {
 				":type": `mentee-${mentee}`,
 				":status": "Rejected",
-				"isDeleted": 0
+				":isDeleted": 0
 			}
 		}
 		return queryParams;
