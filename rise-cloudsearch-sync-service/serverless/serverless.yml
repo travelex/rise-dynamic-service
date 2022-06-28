@@ -47,7 +47,7 @@ provider:
         - dynamodb:GetShardIterator
         - dynamodb:ListStreams
       Resource:
-        - "arn:aws:dynamodb:eu-west-1:148807490170:table/userprofile"
+        - "arn:aws:dynamodb:eu-west-1:148807490170:table/userprofile-${opt:stage, self:provider.stage}"
 
 functions:
   ${file(./configs/functions/functions.yml)}
