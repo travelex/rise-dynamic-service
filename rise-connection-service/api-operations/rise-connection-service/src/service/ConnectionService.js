@@ -64,16 +64,16 @@ class ConnectionService {
 			let fetchQueryParams, updateQueryParams, checkBeforeInsertParams, response;
 			console.log("params.create_if_not_exist", params.create_if_not_exist);
 			if (params.create_if_not_exist == 'true') {
-				// // to check wether mentor already has 2 mentee
-				// let noOfMenteeParams = this.getNoOfMenteeParams(params);
-				// let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
-				// console.log("Mentee");
-				// console.log(noOfMentee);
-				// // to check wether mentee has any connection 
-				// let noOfMentorParams = this.getNoOfMentorParams(params);
-				// let noOfMentor = await dynamoDao.getRecords(noOfMentorParams);
-				// console.log("Mentors");
-				// console.log(noOfMentor);
+				// to check wether mentor already has 2 mentee
+				let noOfMenteeParams = this.getNoOfMenteeParams(params);
+				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
+				console.log("Mentee");
+				console.log(noOfMentee);
+				// to check wether mentee has any connection 
+				let noOfMentorParams = this.getNoOfMentorParams(params);
+				let noOfMentor = await dynamoDao.getRecords(noOfMentorParams);
+				console.log("Mentors");
+				console.log(noOfMentor);
 				console.log("Trying to insert");
 				let dataInsertPostCheck = true;
 				checkBeforeInsertParams = this.getQueryParams(params);
@@ -430,17 +430,19 @@ class ConnectionService {
 		let mentor = params.mentor_email_id;
 		let queryParams = {
 			TableName: TABLE_NAME,
-			KeyConditionExpression: "begins_with(#user_type, :type)",
-			FilterExpression: "#connection_status <> :status and #is_deleted = :isDeleted",
+			KeyConditionExpression: "#email_id = :email_id",
+			FilterExpression: "#connection_status <> :status and #is_deleted = :isDeleted and #category = :category",
 			ExpressionAttributeNames: {
-				"#user_type": "user_type",
+				"#email_id": "email_id",
 				"#connection_status": "connection_status",
-				"#is_deleted": "is_deleted"
+				"#is_deleted": "is_deleted",
+				"#category": "category"
 			},
 			ExpressionAttributeValues: {
-				":type": `mentor-${mentor}`,
+				":email_id": mentor,
 				":status": "Rejected",
-				":isDeleted": 0
+				":isDeleted": 0,
+				":category": "mentor"
 			}
 		}
 		return queryParams;
@@ -451,17 +453,19 @@ class ConnectionService {
 		let mentee = params.mentee_email_id;
 		let queryParams = {
 			TableName: TABLE_NAME,
-			KeyConditionExpression: "begins_with(#user_type, :type)",
-			FilterExpression: "#connection_status <> :status and #is_deleted = :isDeleted",
+			KeyConditionExpression: "#email_id = :email_id",
+			FilterExpression: "#connection_status <> :status and #is_deleted = :isDeleted and #category = :category",
 			ExpressionAttributeNames: {
-				"#user_type": "user_type",
+				"#email_id": "email_id",
 				"#connection_status": "connection_status",
-				"#is_deleted": "is_deleted"
+				"#is_deleted": "is_deleted",
+				"#category": "category"
 			},
 			ExpressionAttributeValues: {
-				":type": `mentee-${mentee}`,
+				":email_id": mentee,
 				":status": "Rejected",
-				":isDeleted": 0
+				":isDeleted": 0,
+				":category": "mentee"
 			}
 		}
 		return queryParams;
@@ -531,7 +535,7 @@ class ConnectionService {
 				if (err) {
 					console.error(err);
 				} else {
-					console.log(`Message ${newParams.Message} sent to the topic ${newParams.TopicArn}`);
+					console.log(`Message ${ newParams.Message } sent to the topic ${ newParams.TopicArn } `);
 				}
 			});
 		} catch (err) {
@@ -568,7 +572,7 @@ class ConnectionService {
 
 	// 	publishTextPromise.then(
 	// 		function (data) {
-	// 			console.log(`Message ${params.Message} sent to the topic ${params.TopicArn}`);
+	// 			console.log(`Message ${ params.Message } sent to the topic ${ params.TopicArn } `);
 	// 			console.log("MessageID is " + data.MessageId);
 	// 		}).catch(
 	// 			function (err) {
