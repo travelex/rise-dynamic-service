@@ -1,9 +1,10 @@
-const AWS = require('aws-sdk');
 const nodemailer = require('nodemailer')
 const path = require('path');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
 const agreement = require('../report/agreement')
-const fs = require('fs');
+const SecretManagerClient = require('../dao/SecretManagerClient');
+const sftpUserName = process.env.SFTP_USER_NAME;
+const sftpUserPassword = process.env.SFTP_PASSWORD;
 
 class EmailService {
 
@@ -43,6 +44,7 @@ class EmailService {
 
     static async getTransport() {
 
+        await SecretManagerClient.getSecretFromProvider([sftpUserName, sftpUserPassword])
         const transporter = nodemailer.createTransport({
             host: "smtp.office365.com",
             port: 587,
