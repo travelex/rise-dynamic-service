@@ -99,7 +99,7 @@ class DynamoDao {
 
     async getItem(queryParams){
         try {
-            return await docClient.getItem(queryParams).promise();
+            return await docClient.get(queryParams).promise();
         } catch (error) {
             logger.error(`Exception occurred while fetching records :: , ${error}`);
             throw error;
