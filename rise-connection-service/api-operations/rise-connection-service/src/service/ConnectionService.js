@@ -117,7 +117,7 @@ class ConnectionService {
 				console.log("Trying to update");
 				let fetchDetailsOfMentor = this.getFetchDetailsOfMentor(params);
 				console.log("fetchDetailsOfMentor", fetchDetailsOfMentor);
-				let mentorDetails = dynamoDao.getRecords(fetchDetailsOfMentor);
+				let mentorDetails = dynamoDao.getItem(fetchDetailsOfMentor);
 				console.log("mentorDetails:", JSON.stringify(mentorDetails));
 				let userStatus;
 				if (mentorDetails.Items && mentorDetails.Items.length) {
@@ -571,12 +571,10 @@ class ConnectionService {
 		let mentor = params.mentor_email_id;
 		let queryParams = {
 			TableName: USER_TABLE,
-			KeyConditionExpression: "#email_id = :email_id",
-			ExpressionAttributeNames: {
-				"#email_id": "email_id"
-			},
-			ExpressionAttributeValues: {
-				":email_id": mentor
+			Key:{
+				"email_id" :{
+					S: mentor
+				} 
 			}
 		}
 		return queryParams;
