@@ -12,11 +12,11 @@ class SecretManagerClient {
             Names: ssmKeys,
             WithDecryption: true
         }).promise();
-        
-        logger.debug('response : ' + JSON.stringify(response));
+
+        // logger.debug('response : ' + JSON.stringify(response));
         const ssmValues = {};
         response.Parameters.forEach(item => ssmValues[item.Name] = item.Value);
-        logger.debug('ssmValues : ' + JSON.stringify(ssmValues));
+        // logger.debug('ssmValues : ' + JSON.stringify(ssmValues));
         return ssmValues;
     }
 }
