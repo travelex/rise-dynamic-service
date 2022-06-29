@@ -117,7 +117,7 @@ class ConnectionService {
 				console.log("Trying to update");
 				let fetchDetailsOfMentor = this.getFetchDetailsOfMentor(params);
 				console.log("fetchDetailsOfMentor", fetchDetailsOfMentor);
-				let mentorDetails = dynamoDao.getItem(fetchDetailsOfMentor);
+				let mentorDetails = await dynamoDao.getItem(fetchDetailsOfMentor);
 				console.log("mentorDetails:", JSON.stringify(mentorDetails));
 				let userStatus;
 				if (mentorDetails.Items && mentorDetails.Items.length) {
