@@ -11,7 +11,8 @@ class SecretManagerClient {
         const response = await ssm.getParameters({
             Names: ssmKeys,
             WithDecryption: true
-        }).promise();[].forEach
+        }).promise();
+        
         logger.debug('response : ' + JSON.stringify(response));
         const ssmValues = {};
         response.Parameters.forEach(item => ssmValues[item.Name] = item.Value);
