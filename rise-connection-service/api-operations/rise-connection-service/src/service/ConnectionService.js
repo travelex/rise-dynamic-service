@@ -120,7 +120,7 @@ class ConnectionService {
 				let mentorDetails = dynamoDao.getRecords(fetchDetailsOfMentor);
 				console.log("mentorDetails:", JSON.stringify(mentorDetails));
 				let userStatus;
-				if (mentorDetails.Items.length) {
+				if (mentorDetails.Items && mentorDetails.Items.length) {
 					userStatus = mentorDetails.Items[0].status
 				} else {
 					return {
@@ -571,7 +571,10 @@ class ConnectionService {
 		let mentor = params.mentor_email_id;
 		let queryParams = {
 			TableName: USER_TABLE,
-			KeyConditionExpression: "email_id = :email_id",
+			KeyConditionExpression: "#email_id = :email_id",
+			ExpressionAttributeNames: {
+				"#email_id": "email_id"
+			},
 			ExpressionAttributeValues: {
 				":email_id": mentor
 			}
