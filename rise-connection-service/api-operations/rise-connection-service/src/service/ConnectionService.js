@@ -572,9 +572,7 @@ class ConnectionService {
 		let queryParams = {
 			TableName: USER_TABLE,
 			Key:{
-				"email_id" :{
-					S: mentor
-				} 
+				"email_id" : mentor
 			}
 		}
 		return queryParams;
