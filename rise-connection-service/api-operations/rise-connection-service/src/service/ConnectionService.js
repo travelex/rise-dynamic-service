@@ -340,7 +340,7 @@ class ConnectionService {
 			queryObject = {
 				TableName: TABLE_NAME,
 				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
-				FilterExpression: "#is_deleted = :isDeleted and #is_deleted = :isDeleted",
+				FilterExpression: "#is_deleted = :isDeleted",
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
 					"#user_type": "user_type",
