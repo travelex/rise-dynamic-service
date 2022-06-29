@@ -120,8 +120,8 @@ class ConnectionService {
 				let mentorDetails = await dynamoDao.getItem(fetchDetailsOfMentor);
 				console.log("mentorDetails:", JSON.stringify(mentorDetails));
 				let userStatus;
-				if (mentorDetails.Items && mentorDetails.Items.length) {
-					userStatus = mentorDetails.Items[0].status
+				if (mentorDetails.Item && mentorDetails.Item.length) {
+					userStatus = mentorDetails.Item[0].mentor?.status
 				} else {
 					return {
 						status: 200,
@@ -177,10 +177,10 @@ class ConnectionService {
 		try {
 			let response, fetchQueryParams, deleteQueryParams;
 			let fetchDetailsOfMentor = this.getFetchDetailsOfMentor(params);
-			let mentorDetails = dynamoDao.getRecords(fetchDetailsOfMentor);
+			let mentorDetails = dynamoDao.getItem(fetchDetailsOfMentor);
 			let userStatus;
-			if (mentorDetails.Items.length) {
-				userStatus = mentorDetails.Items[0].status
+			if (mentorDetails.Item && mentorDetails.Item.length) {
+				userStatus = mentorDetails.Item[0].mentor?.status
 			} else {
 				return {
 					status: 200,
