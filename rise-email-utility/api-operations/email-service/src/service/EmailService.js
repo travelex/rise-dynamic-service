@@ -44,14 +44,14 @@ class EmailService {
 
     static async getTransport() {
 
-        await SecretManagerClient.getSecretFromProvider([sftpUserName, sftpUserPassword])
+        const ssmValues =  await SecretManagerClient.getSecretFromProvider([sftpUserName, sftpUserPassword])
         const transporter = nodemailer.createTransport({
-            host: "smtp.office365.com",
-            port: 587,
+            host: process.env.SFTP_HOST,
+            port: Number(process.env.SFTP_PORT) ?? 587,
             secure: false, // true for 465, false for other ports
             auth: {
-                user: 'Middleware-nonprod@travelex.com', 
-                pass: 'KFJcq3bQ2:3#S+Jk_{}~p]}#$',
+                user: ssmValues[sftpUserName], 
+                pass: ssmValues[sftpUserPassword],
             },
         });
 
