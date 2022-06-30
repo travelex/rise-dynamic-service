@@ -154,7 +154,7 @@ class ConnectionService {
 	async updateRequest(queryParams, body, params, userStatus) {
 		console.log("userStatus:: ", userStatus);
 		console.log("status:::", body.status);
-		if (body.status = "accepted") {
+		if (body.status == "accepted") {
 			if (userStatus == "BOOKED") {
 				return "Unable to perform action, This user is already booked";
 			} else if (userStatus == "NOT_AVAILABLE") {
@@ -173,7 +173,7 @@ class ConnectionService {
 				return "Connection accepted";
 			}
 		}
-		if (body.status = "cancelled") {
+		if (body.status == "cancelled") {
 			if (userStatus == "DISABLED") {
 				return "Unable to perform action, This user is temporarily disabled";
 			} else {
