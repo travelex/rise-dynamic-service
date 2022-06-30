@@ -193,7 +193,7 @@ class ConnectionService {
 			console.log("Deleting connection");
 			let response, fetchQueryParams;
 			let fetchDetailsOfMentor = this.getFetchDetailsOfMentor(params);
-			let mentorDetails = dynamoDao.getItem(fetchDetailsOfMentor);
+			let mentorDetails = await dynamoDao.getItem(fetchDetailsOfMentor);
 			let userStatus;
 			if (mentorDetails.Item) {
 				console.log("Inside *****");;
