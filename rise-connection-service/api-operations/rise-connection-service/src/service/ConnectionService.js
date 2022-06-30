@@ -258,7 +258,6 @@ class ConnectionService {
 
 	async deleteRequest(queryParams, body, params, userStatus) {
 		console.log("userStatus:: ", userStatus);
-		console.log("status:::", body.status);
 		if (userStatus == "DISABLED") {
 			return "Unable to perform action, This user is temporarily disabled";
 		} else {
@@ -270,7 +269,7 @@ class ConnectionService {
 			if (noOfMentee.Count < 2) {
 				await this.updateUserStatus(params, "OPEN")
 			}
-			return "Connection cancelled"
+			return "Connection deleted"
 
 		}
 	}
@@ -495,7 +494,7 @@ class ConnectionService {
 		let newDate = date.toISOString();
 		let queryParams;
 		console.log("newDate", newDate);
-		if (body.reason_of_deletion) {
+		if (body && body.reason_of_deletion) {
 			queryParams = {
 				TableName: TABLE_NAME,
 				Key: {
