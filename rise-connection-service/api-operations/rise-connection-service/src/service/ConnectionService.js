@@ -131,7 +131,7 @@ class ConnectionService {
 				fetchQueryParams = this.getQueryParams(params);
 				console.log("fetchQueryParams", JSON.stringify(fetchQueryParams));
 				if (userStatus) {
-					response = await this.updateRequest(fetchQueryParams, body, userStatus);
+					response = await this.updateRequest(fetchQueryParams, body, params, userStatus);
 				}
 
 				// if (fetchQueryParams && fetchQueryParams.length) {
@@ -173,7 +173,7 @@ class ConnectionService {
 		}
 	}
 
-	async updateRequest(queryParams, body, userStatus) {
+	async updateRequest(queryParams, body, params, userStatus) {
 		console.log("userStatus:: ", userStatus);
 		console.log("status:::", body.status);
 		if (body.status = "accepted") {
@@ -184,7 +184,7 @@ class ConnectionService {
 			} else if (userStatus == "DISABLED") {
 				return "Unable to perform action, This user is temporarily disabled";
 			} else if (userStatus == "OPEN") {
-				await this.approveConnection(queryParams, body)
+				await this.approveConnection(queryParams, body, params)
 			}
 		}
 		if (body.status = "cancelled") {
@@ -255,7 +255,7 @@ class ConnectionService {
 		}
 	}
 
-	async approveConnection(queryParams, body) {
+	async approveConnection(queryParams, body, params) {
 		try {
 			let updateQueryParams
 			if (queryParams && queryParams.length) {
@@ -266,8 +266,8 @@ class ConnectionService {
 						console.log("relevant records found for update");
 						console.log(data.Items[0]);
 						updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
-						let result = await dynamoDao.updateRecords(updateQueryParams);
-						console.log(result);
+						await dynamoDao.updateRecords(updateQueryParams);
+						console.log("connection record approved");
 					}
 				}
 				//update status of mentor
@@ -278,6 +278,7 @@ class ConnectionService {
 					console.log("UPDating user profile status");
 					let updateUserStatusParams = this.getUpdateUserStatusParams(params, "BOOKED");
 					await dynamoDao.updateRecords(updateUserStatusParams);
+					 console.log("userProfile updated");
 				}
 				return "Connection accepted"
 			}
