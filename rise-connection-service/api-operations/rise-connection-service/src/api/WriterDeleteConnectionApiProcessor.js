@@ -58,7 +58,7 @@ class WriterDeleteConnectionApiProcessor {
                     console.log('Event Received', JSON.stringify(event));
 
                     let params = this.getParams(event);
-                    let body = JSON.parse(event.body);
+                    let body = JSON.parse(event.body) 
                     console.log("body:", body);
                     const response = await connectionService.deleteConnection(params, body);
 

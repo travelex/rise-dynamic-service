@@ -190,6 +190,7 @@ class ConnectionService {
 	 */
 	async deleteConnection(params, body) {
 		try {
+			console.log("Deleting connection");
 			let response, fetchQueryParams;
 			let fetchDetailsOfMentor = this.getFetchDetailsOfMentor(params);
 			let mentorDetails = dynamoDao.getItem(fetchDetailsOfMentor);
@@ -197,6 +198,7 @@ class ConnectionService {
 			if (mentorDetails.Item) {
 				console.log("Inside *****");;
 				userStatus = mentorDetails.Item.mentor?.mentoring_status
+				console.log(userStatus);
 			} else {
 				return {
 					status: 200,
@@ -307,15 +309,15 @@ class ConnectionService {
 		}
 	}
 
-	async deleteConnection(params, body, userStatus) {
-		if (userStatus == "DISABLED") {
-			return "Unable to perform action, This user is temporarily disabled";
-		} else {
-			let updateQueryParams = this.getUpdateRecordsParams(params, body);
-			await dynamoDao.updateRecords(updateQueryParams);
-			return "Connection rejected"
-		}
-	}
+	// async deleteConnection(params, body, userStatus) {
+	// 	if (userStatus == "DISABLED") {
+	// 		return "Unable to perform action, This user is temporarily disabled";
+	// 	} else {
+	// 		let updateQueryParams = this.getUpdateRecordsParams(params, body);
+	// 		await dynamoDao.updateRecords(updateQueryParams);
+	// 		return "Connection rejected"
+	// 	}
+	// }
 
 
 	getFetchRecordsParams(params) {
