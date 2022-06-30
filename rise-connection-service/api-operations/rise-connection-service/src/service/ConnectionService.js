@@ -185,6 +185,7 @@ class ConnectionService {
 				return "Unable to perform action, This user is temporarily disabled";
 			} else if (userStatus == "OPEN") {
 				await this.approveConnection(queryParams, body, params)
+				return "Connection accepted"
 			}
 		}
 		if (body.status = "cancelled") {
@@ -280,7 +281,6 @@ class ConnectionService {
 					await dynamoDao.updateRecords(updateUserStatusParams);
 					 console.log("userProfile updated");
 				}
-				return "Connection accepted"
 			}
 
 		} catch (error) {
