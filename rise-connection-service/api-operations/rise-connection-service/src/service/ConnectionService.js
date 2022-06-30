@@ -134,26 +134,26 @@ class ConnectionService {
 					response = await this.updateRequest(fetchQueryParams, body, userStatus);
 				}
 
-				if (fetchQueryParams && fetchQueryParams.length) {
-					for (let object = 0; object < fetchQueryParams.length; object++) {
-						let data = await dynamoDao.getRecords(fetchQueryParams[object]);
-						console.log("data: ", JSON.stringify(data));
-						if (data.Items && data.Items.length) {
-							console.log("relevant records found for update");
-							console.log(data.Items[0]);
-							if (body.status == "accepted") {
-								console.log("approving the request");
-								response = await this.approveConnection(data.Items[0], body, userStatus);
-								console.log("request approved");
-							} else if (body.status == "cancelled") {
-								response = await this.rejectConnection(data.Items[0], body, userStatus)
-							}
-							// updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
-							// let result = await dynamoDao.updateRecords(updateQueryParams);
-							// console.log(result);
-						}
-					}
-				}
+				// if (fetchQueryParams && fetchQueryParams.length) {
+				// 	for (let object = 0; object < fetchQueryParams.length; object++) {
+				// 		let data = await dynamoDao.getRecords(fetchQueryParams[object]);
+				// 		console.log("data: ", JSON.stringify(data));
+				// 		if (data.Items && data.Items.length) {
+				// 			console.log("relevant records found for update");
+				// 			console.log(data.Items[0]);
+				// 			if (body.status == "accepted") {
+				// 				console.log("approving the request");
+				// 				response = await this.approveConnection(data.Items[0], body, userStatus);
+				// 				console.log("request approved");
+				// 			} else if (body.status == "cancelled") {
+				// 				response = await this.rejectConnection(data.Items[0], body, userStatus)
+				// 			}
+				// 			// updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
+				// 			// let result = await dynamoDao.updateRecords(updateQueryParams);
+				// 			// console.log(result);
+				// 		}
+				// 	}
+				// }
 				status = body.status;
 			}
 			try {
@@ -173,7 +173,7 @@ class ConnectionService {
 		}
 	}
 
-	updateRequest(queryParams, body, userStatus) {
+	async updateRequest(queryParams, body, userStatus) {
 		console.log("userStatus:: ", userStatus);
 		console.log("status:::", body.status);
 		if (body.status = "accepted") {
