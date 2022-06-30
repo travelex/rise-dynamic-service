@@ -121,7 +121,7 @@ class ConnectionService {
 				console.log("mentorDetails:", JSON.stringify(mentorDetails));
 				let userStatus;
 				if (mentorDetails.Item) {
-					userStatus = mentorDetails.Item.mentor?.status
+					userStatus = mentorDetails.Item.mentor?.mentoring_status
 				} else {
 					return {
 						status: 200,
@@ -206,7 +206,7 @@ class ConnectionService {
 			let userStatus;
 			if (mentorDetails.Item) {
 				console.log("Inside *****");;
-				userStatus = mentorDetails.Item.mentor?.status
+				userStatus = mentorDetails.Item.mentor?.mentoring_status
 			} else {
 				return {
 					status: 200,
