@@ -130,6 +130,10 @@ class ConnectionService {
 				}
 				fetchQueryParams = this.getQueryParams(params);
 				console.log("fetchQueryParams", JSON.stringify(fetchQueryParams));
+				if (userStatus) {
+					response = await this.updateRequest(fetchQueryParams, body, userStatus);
+				}
+
 				if (fetchQueryParams && fetchQueryParams.length) {
 					for (let object = 0; object < fetchQueryParams.length; object++) {
 						let data = await dynamoDao.getRecords(fetchQueryParams[object]);
@@ -169,6 +173,24 @@ class ConnectionService {
 		}
 	}
 
+	updateRequest(queryParams, body, userStatus) {
+		console.log("userStatus:: ", userStatus);
+		console.log("status:::", body.status);
+		if (body.status = "accepted") {
+			if (userStatus == "BOOKED") {
+				return "Unable to perform action, This user is already booked";
+			} else if (userStatus == "NOT_AVAILABLE") {
+				return "Unable to perform action, This user is temporarily unavailable";
+			} else if (userStatus == "DISABLED") {
+				return "Unable to perform action, This user is temporarily disabled";
+			} else if (userStatus == "OPEN") {
+				await this.approveConnection(queryParams, body)
+			}
+		}
+		if (body.status = "cancelled") {
+
+		}
+	}
 
 	/**
 	 * 
@@ -233,29 +255,33 @@ class ConnectionService {
 		}
 	}
 
-	async approveConnection(params, body, userStatus) {
+	async approveConnection(queryParams, body) {
 		try {
-			console.log(userStatus);
-			if (userStatus == "BOOKED") {
-				return "Unable to perform action, This user is already booked";
-			} else if (userStatus == "NOT_AVAILABLE") {
-				return "Unable to perform action, This user is temporarily unavailable";
-			} else if (userStatus == "DISABLED") {
-				return "Unable to perform action, This user is temporarily disabled";
-
-			} else if (userStatus == "OPEN") {
-				// update status of connection
-				let updateQueryParams = this.getUpdateRecordsParams(params, body);
-				await dynamoDao.updateRecords(updateQueryParams);
+			let updateQueryParams
+			if (queryParams && queryParams.length) {
+				for (let object = 0; object < queryParams.length; object++) {
+					let data = await dynamoDao.getRecords(queryParams[object]);
+					console.log("data: ", JSON.stringify(data));
+					if (data.Items && data.Items.length) {
+						console.log("relevant records found for update");
+						console.log(data.Items[0]);
+						updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
+						let result = await dynamoDao.updateRecords(updateQueryParams);
+						console.log(result);
+					}
+				}
 				//update status of mentor
 				let noOfMenteeParams = this.getNoOfMenteeParams(params);
 				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
+				console.log("noOfMentee::", noOfMentee);
 				if (noOfMentee.Count == 2) {
+					console.log("UPDating user profile status");
 					let updateUserStatusParams = this.getUpdateUserStatusParams(params, "BOOKED");
 					await dynamoDao.updateRecords(updateUserStatusParams);
 				}
 				return "Connection accepted"
 			}
+
 		} catch (error) {
 			logger.error(`Error occurred while updating connection: ${JSON.stringify(error)}`);
 			throw error;
@@ -575,8 +601,8 @@ class ConnectionService {
 		let mentor = params.mentor_email_id;
 		let queryParams = {
 			TableName: USER_TABLE,
-			Key:{
-				"email_id" : mentor
+			Key: {
+				"email_id": mentor
 			}
 		}
 		return queryParams;
@@ -589,7 +615,7 @@ class ConnectionService {
 			Key: {
 				email_id: mentor
 			},
-			UpdateExpression: "set status = :status",
+			UpdateExpression: "set mentor.status = :status",
 			ExpressionAttributeValues: {
 				':status': status
 			}
