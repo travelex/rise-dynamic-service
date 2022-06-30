@@ -61,8 +61,7 @@ class ConnectionService {
 
 	async putConnection(params, body) {
 		try {
-			let status;
-			let fetchQueryParams, updateQueryParams, checkBeforeInsertParams, response;
+			let fetchQueryParams,  checkBeforeInsertParams, response, status;
 			console.log("params.create_if_not_exist", params.create_if_not_exist);
 			if (params.create_if_not_exist == 'true') {
 				// to check wether mentor already has 2 mentee
@@ -133,27 +132,6 @@ class ConnectionService {
 				if (userStatus) {
 					response = await this.updateRequest(fetchQueryParams, body, params, userStatus);
 				}
-
-				// if (fetchQueryParams && fetchQueryParams.length) {
-				// 	for (let object = 0; object < fetchQueryParams.length; object++) {
-				// 		let data = await dynamoDao.getRecords(fetchQueryParams[object]);
-				// 		console.log("data: ", JSON.stringify(data));
-				// 		if (data.Items && data.Items.length) {
-				// 			console.log("relevant records found for update");
-				// 			console.log(data.Items[0]);
-				// 			if (body.status == "accepted") {
-				// 				console.log("approving the request");
-				// 				response = await this.approveConnection(data.Items[0], body, userStatus);
-				// 				console.log("request approved");
-				// 			} else if (body.status == "cancelled") {
-				// 				response = await this.rejectConnection(data.Items[0], body, userStatus)
-				// 			}
-				// 			// updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
-				// 			// let result = await dynamoDao.updateRecords(updateQueryParams);
-				// 			// console.log(result);
-				// 		}
-				// 	}
-				// }
 				status = body.status;
 			}
 			try {
@@ -184,12 +162,24 @@ class ConnectionService {
 			} else if (userStatus == "DISABLED") {
 				return "Unable to perform action, This user is temporarily disabled";
 			} else if (userStatus == "OPEN") {
-				await this.approveConnection(queryParams, body, params)
-				return "Connection accepted"
+				await this.updateConnection(queryParams, body, "update");
+				// updating user profile
+				let noOfMenteeParams = this.getNoOfMenteeParams(params);
+				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
+				console.log("noOfMentee::", noOfMentee);
+				if (noOfMentee.Count == 2) {
+					await this.updateUserStatus(params, "BOOKED")
+				}
+				return "Connection accepted";
 			}
 		}
 		if (body.status = "cancelled") {
-
+			if (userStatus == "DISABLED") {
+				return "Unable to perform action, This user is temporarily disabled";
+			} else {
+				await this.updateConnection(queryParams, body, "update")
+				return "Connection cancelled"
+			}
 		}
 	}
 
@@ -198,9 +188,9 @@ class ConnectionService {
 	 * @param {*} params 
 	 * @param {*} preProcessorRules 
 	 */
-	async deleteConnection(params) {
+	async deleteConnection(params, body) {
 		try {
-			let response, fetchQueryParams, deleteQueryParams;
+			let response, fetchQueryParams;
 			let fetchDetailsOfMentor = this.getFetchDetailsOfMentor(params);
 			let mentorDetails = dynamoDao.getItem(fetchDetailsOfMentor);
 			let userStatus;
@@ -215,31 +205,39 @@ class ConnectionService {
 			}
 			fetchQueryParams = this.getQueryParams(params);
 			console.log("fetchQueryParams", JSON.stringify(fetchQueryParams));
-			if (fetchQueryParams && fetchQueryParams.length) {
-				for (let object = 0; object < fetchQueryParams.length; object++) {
-					let data = await dynamoDao.getRecords(fetchQueryParams[object]);
-					console.log("Data: ", JSON.stringify(data));
-					if (data.Items && data.Items.length) {
-						console.log("relevant records found for deletion");
-						console.log(data.Items[0]);
-						if (userStatus == "DISABLED") {
-							response = "Unable to perform action, This user is temporarily disabled";
-						} else {
-							deleteQueryParams = this.getDeleteQueryParams(data.Items[0]);
-							console.log("deleteQueryParams:: ", deleteQueryParams);
-							await dynamoDao.deleteRecords(deleteQueryParams);
-							//update status of mentor
-							let noOfMenteeParams = this.getNoOfMenteeParams(params);
-							let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
-							if (noOfMentee.Count < 2) {
-								let updateUserStatusParams = this.getUpdateUserStatusParams(params, "OPEN");
-								await dynamoDao.updateRecords(updateUserStatusParams);
-							}
-							response = "Connection Deleted";
-						}
-					}
-				}
+			if (userStatus) {
+				response = await this.deleteRequest(fetchQueryParams, body, params, userStatus);
 			}
+			// status = body.status;
+
+
+			// fetchQueryParams = this.getQueryParams(params);
+			// console.log("fetchQueryParams", JSON.stringify(fetchQueryParams));
+			// if (fetchQueryParams && fetchQueryParams.length) {
+			// 	for (let object = 0; object < fetchQueryParams.length; object++) {
+			// 		let data = await dynamoDao.getRecords(fetchQueryParams[object]);
+			// 		console.log("Data: ", JSON.stringify(data));
+			// 		if (data.Items && data.Items.length) {
+			// 			console.log("relevant records found for deletion");
+			// 			console.log(data.Items[0]);
+			// 			if (userStatus == "DISABLED") {
+			// 				response = "Unable to perform action, This user is temporarily disabled";
+			// 			} else {
+			// 				deleteQueryParams = this.getDeleteQueryParams(data.Items[0]);
+			// 				console.log("deleteQueryParams:: ", deleteQueryParams);
+			// 				await dynamoDao.deleteRecords(deleteQueryParams);
+			// 				//update status of mentor
+			// 				let noOfMenteeParams = this.getNoOfMenteeParams(params);
+			// 				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
+			// 				if (noOfMentee.Count < 2) {
+			// 					let updateUserStatusParams = this.getUpdateUserStatusParams(params, "OPEN");
+			// 					await dynamoDao.updateRecords(updateUserStatusParams);
+			// 				}
+			// 				response = "Connection Deleted";
+			// 			}
+			// 		}
+			// 	}
+			// }
 			try {
 				console.log("Sending notification via SNS");
 				this.publishSNSService(params, "deleted");
@@ -256,47 +254,56 @@ class ConnectionService {
 		}
 	}
 
-	async approveConnection(queryParams, body, params) {
-		try {
-			let updateQueryParams
-			if (queryParams && queryParams.length) {
-				for (let object = 0; object < queryParams.length; object++) {
-					let data = await dynamoDao.getRecords(queryParams[object]);
-					console.log("data: ", JSON.stringify(data));
-					if (data.Items && data.Items.length) {
-						console.log("relevant records found for update");
-						console.log(data.Items[0]);
-						updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
-						await dynamoDao.updateRecords(updateQueryParams);
-						console.log("connection record approved");
-					}
-				}
-				//update status of mentor
-				let noOfMenteeParams = this.getNoOfMenteeParams(params);
-				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
-				console.log("noOfMentee::", noOfMentee);
-				if (noOfMentee.Count == 2) {
-					console.log("UPDating user profile status");
-					let updateUserStatusParams = this.getUpdateUserStatusParams(params, "BOOKED");
-					console.log(updateUserStatusParams);
-					await dynamoDao.updateRecords(updateUserStatusParams);
-					 console.log("userProfile updated");
-				}
+	async deleteRequest(queryParams, body, params, userStatus) {
+		console.log("userStatus:: ", userStatus);
+		console.log("status:::", body.status);
+		if (userStatus == "DISABLED") {
+			return "Unable to perform action, This user is temporarily disabled";
+		} else {
+			await this.updateConnection(queryParams, body, "delete");
+			//updating user profile
+			let noOfMenteeParams = this.getNoOfMenteeParams(params);
+			let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
+			console.log("noOfMentee::", noOfMentee);
+			if (noOfMentee.Count < 2) {
+				await this.updateUserStatus(params, "OPEN")
 			}
+			return "Connection cancelled"
 
+		}
+	}
+
+	async updateUserStatus(params, mentoring_status) {
+		try {
+			console.log("UPDating user profile status");
+			let updateUserStatusParams = this.getUpdateUserStatusParams(params, mentoring_status);
+			console.log(updateUserStatusParams);
+			await dynamoDao.updateRecords(updateUserStatusParams);
+			console.log("userProfile updated");
 		} catch (error) {
 			logger.error(`Error occurred while updating connection: ${JSON.stringify(error)}`);
 			throw error;
 		}
 	}
 
-	async rejectConnection(params, body, userStatus) {
-		if (userStatus == "DISABLED") {
-			return "Unable to perform action, This user is temporarily disabled";
-		} else {
-			let updateQueryParams = this.getUpdateRecordsParams(params, body);
-			await dynamoDao.updateRecords(updateQueryParams);
-			return "Connection rejected"
+	async updateConnection(queryParams, body, request) {
+		let updateQueryParams;
+		if (queryParams && queryParams.length) {
+			for (let object = 0; object < queryParams.length; object++) {
+				let data = await dynamoDao.getRecords(queryParams[object]);
+				console.log("data: ", JSON.stringify(data));
+				if (data.Items && data.Items.length) {
+					console.log("relevant records found for update");
+					console.log(data.Items[0]);
+					if (request == "delete") {
+						updateQueryParams = this.getDeleteQueryParams(data.Items[0], body)
+					} else {
+						updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
+					}
+					await dynamoDao.updateRecords(updateQueryParams);
+					console.log("connection record updated");
+				}
+			}
 		}
 	}
 
@@ -481,7 +488,7 @@ class ConnectionService {
 		return queryParams;
 	}
 
-	getDeleteQueryParams(params) {
+	getDeleteQueryParams(params, body) {
 		let date = new Date();
 		let newDate = date.toISOString();
 		let queryParams;
