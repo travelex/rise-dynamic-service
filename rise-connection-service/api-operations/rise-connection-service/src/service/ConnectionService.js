@@ -278,6 +278,7 @@ class ConnectionService {
 				if (noOfMentee.Count == 2) {
 					console.log("UPDating user profile status");
 					let updateUserStatusParams = this.getUpdateUserStatusParams(params, "BOOKED");
+					console.log(updateUserStatusParams);
 					await dynamoDao.updateRecords(updateUserStatusParams);
 					 console.log("userProfile updated");
 				}
@@ -616,7 +617,7 @@ class ConnectionService {
 			Key: {
 				email_id: mentor
 			},
-			UpdateExpression: "set mentor.status = :status",
+			UpdateExpression: "set mentor.mentoring_status = :status",
 			ExpressionAttributeValues: {
 				':status': status
 			}
