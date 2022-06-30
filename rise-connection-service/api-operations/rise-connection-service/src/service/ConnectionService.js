@@ -44,7 +44,7 @@ class ConnectionService {
 					body: {}
 				};
 				data.body.pending = response.Items.filter(data => data.connection_status.toLowerCase() == 'pending');
-				data.body.approved = response.Items.filter(data => data.connection_status.toLowerCase() == 'approved');
+				data.body.accepted = response.Items.filter(data => data.connection_status.toLowerCase() == 'accepted');
 				data.body.cancelled = response.Items.filter(data => data.connection_status.toLowerCase() == 'cancelled');
 				return data;
 			} else {
@@ -137,7 +137,7 @@ class ConnectionService {
 						if (data.Items && data.Items.length) {
 							console.log("relevant records found for update");
 							console.log(data.Items[0]);
-							if (body.status == "approved") {
+							if (body.status == "accepted") {
 								response = await this.approveConnection(data.Items[0], body, userStatus);
 							} else if (body.status == "cancelled") {
 								response = await this.rejectConnection(data.Items[0], body, userStatus)
@@ -251,7 +251,7 @@ class ConnectionService {
 					let updateUserStatusParams = this.getUpdateUserStatusParams(params, "BOOKED");
 					await dynamoDao.updateRecords(updateUserStatusParams);
 				}
-				return "Connection approved"
+				return "Connection accepted"
 			}
 		} catch (error) {
 			logger.error(`Error occurred while updating connection: ${JSON.stringify(error)}`);
@@ -537,7 +537,7 @@ class ConnectionService {
 			},
 			ExpressionAttributeValues: {
 				":email_id": mentor,
-				":status": "approved",
+				":status": "accepted",
 				":isDeleted": 0,
 				":category": "mentor"
 			}
