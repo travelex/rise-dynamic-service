@@ -138,13 +138,15 @@ class ConnectionService {
 							console.log("relevant records found for update");
 							console.log(data.Items[0]);
 							if (body.status == "accepted") {
+								console.log("approving the request");
 								response = await this.approveConnection(data.Items[0], body, userStatus);
+								console.log("request approved");
 							} else if (body.status == "cancelled") {
 								response = await this.rejectConnection(data.Items[0], body, userStatus)
 							}
-							updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
-							let result = await dynamoDao.updateRecords(updateQueryParams);
-							console.log(result);
+							// updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
+							// let result = await dynamoDao.updateRecords(updateQueryParams);
+							// console.log(result);
 						}
 					}
 				}
@@ -233,6 +235,7 @@ class ConnectionService {
 
 	async approveConnection(params, body, userStatus) {
 		try {
+			console.log(userStatus);
 			if (userStatus == "BOOKED") {
 				return "Unable to perform action, This user is already booked";
 			} else if (userStatus == "NOT_AVAILABLE") {
