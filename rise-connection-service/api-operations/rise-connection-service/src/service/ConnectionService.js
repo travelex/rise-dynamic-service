@@ -43,9 +43,9 @@ class ConnectionService {
 					message: "Connection list fetched",
 					body: {}
 				};
-				data.body.pending = response.Items.filter(data => data.connection_status.toLowerCase() == 'pending');
-				data.body.accepted = response.Items.filter(data => data.connection_status.toLowerCase() == 'accepted');
-				data.body.cancelled = response.Items.filter(data => data.connection_status.toLowerCase() == 'cancelled');
+				data.body.pending = response.Items.filter(data => data.status.toLowerCase() == 'pending');
+				data.body.accepted = response.Items.filter(data => data.status.toLowerCase() == 'accepted');
+				data.body.cancelled = response.Items.filter(data => data.status.toLowerCase() == 'cancelled');
 				return data;
 			} else {
 				return {
@@ -120,7 +120,7 @@ class ConnectionService {
 				console.log("mentorDetails:", JSON.stringify(mentorDetails));
 				let userStatus;
 				if (mentorDetails.Item) {
-					userStatus = mentorDetails.Item.mentor?.mentoring_status
+					userStatus = mentorDetails.Item.mentor?.status
 				} else {
 					return {
 						status: 200,
@@ -202,7 +202,7 @@ class ConnectionService {
 			let userStatus;
 			if (mentorDetails.Item) {
 				console.log("Inside *****");;
-				userStatus = mentorDetails.Item.mentor?.mentoring_status
+				userStatus = mentorDetails.Item.mentor?.status
 				console.log(userStatus);
 			} else {
 				return {
@@ -279,10 +279,10 @@ class ConnectionService {
 		}
 	}
 
-	async updateUserStatus(params, mentoring_status) {
+	async updateUserStatus(params, status) {
 		try {
 			console.log("UPDating user profile status");
-			let updateUserStatusParams = this.getUpdateUserStatusParams(params, mentoring_status);
+			let updateUserStatusParams = this.getUpdateUserStatusParams(params, status);
 			console.log(updateUserStatusParams);
 			await dynamoDao.updateRecords(updateUserStatusParams);
 			console.log("userProfile updated");
@@ -338,7 +338,7 @@ class ConnectionService {
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
 					"#user_type": "user_type",
-					"#connection_status": "connection_status",
+					"#connection_status": "status",
 					"#is_deleted": "is_deleted"
 				},
 				ExpressionAttributeValues: {
@@ -374,7 +374,7 @@ class ConnectionService {
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
 					"#user_type": "user_type",
-					"#connection_status": "connection_status",
+					"#connection_status": "status",
 					"#is_deleted": "is_deleted"
 				},
 				ExpressionAttributeValues: {
@@ -422,7 +422,7 @@ class ConnectionService {
 						"email_id": params.mentee_email_id,
 						"user_type": `mentor-${params.mentor_email_id}-${guid}`,
 						"category": "mentee",
-						"connection_status": body.status,
+						"status": body.status,
 						"remark": body.remarks,
 						"updation_datetime_iso": insertDate,
 						"start_datetime_iso": insertDate,
@@ -438,7 +438,7 @@ class ConnectionService {
 						"email_id": params.mentor_email_id,
 						"user_type": `mentee-${params.mentee_email_id}-${guid}`,
 						"category": "mentor",
-						"connection_status": body.status,
+						"status": body.status,
 						"remark": body.remarks,
 						"updation_datetime_iso": insertDate,
 						"start_datetime_iso": insertDate,
@@ -471,7 +471,10 @@ class ConnectionService {
 					email_id: params.email_id,
 					user_type: params.user_type
 				},
-				UpdateExpression: "set connection_status = :status, reason_to_cancel = :reason_to_cancel, updation_datetime_iso = :newDate",
+				UpdateExpression: "set #connection_status = :status, reason_to_cancel = :reason_to_cancel, updation_datetime_iso = :newDate",
+				ExpressionAttributeNames:{
+					"#connection_status":"status"
+				},
 				ExpressionAttributeValues: {
 					':status': body.status,
 					':reason_to_cancel': body.reason_to_cancel,
@@ -485,7 +488,10 @@ class ConnectionService {
 					email_id: params.email_id,
 					user_type: params.user_type
 				},
-				UpdateExpression: "set connection_status = :status, updation_datetime_iso = :newDate",
+				UpdateExpression: "set #connection_status = :status, updation_datetime_iso = :newDate",
+				ExpressionAttributeNames:{
+					"#connection_status":"status"
+				},
 				ExpressionAttributeValues: {
 					':status': body.status,
 					':newDate': newDate
@@ -577,7 +583,7 @@ class ConnectionService {
 			FilterExpression: "#connection_status = :status and #is_deleted = :isDeleted and #category = :category",
 			ExpressionAttributeNames: {
 				"#email_id": "email_id",
-				"#connection_status": "connection_status",
+				"#connection_status": "status",
 				"#is_deleted": "is_deleted",
 				"#category": "category"
 			},
@@ -600,7 +606,7 @@ class ConnectionService {
 			FilterExpression: "#connection_status <> :status and #is_deleted = :isDeleted and #category = :category",
 			ExpressionAttributeNames: {
 				"#email_id": "email_id",
-				"#connection_status": "connection_status",
+				"#connection_status": "status",
 				"#is_deleted": "is_deleted",
 				"#category": "category"
 			},
@@ -632,7 +638,10 @@ class ConnectionService {
 			Key: {
 				email_id: mentor
 			},
-			UpdateExpression: "set mentor.mentoring_status = :status",
+			UpdateExpression: "set #mentoring_status = :status",
+			ExpressionAttributeNames: {
+				"#mentoring_status": "mentor.status"
+			},
 			ExpressionAttributeValues: {
 				':status': status
 			}
