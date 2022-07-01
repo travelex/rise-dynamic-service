@@ -638,12 +638,12 @@ class ConnectionService {
 			Key: {
 				email_id: mentor
 			},
-			UpdateExpression: "set #mentoring_status = :status",
+			UpdateExpression: "set #mentoring_status = :mentor_status",
 			ExpressionAttributeNames: {
 				"#mentoring_status": "mentor.status"
 			},
 			ExpressionAttributeValues: {
-				':status': status
+				':mentor_status': status
 			}
 		}
 		return queryParams
