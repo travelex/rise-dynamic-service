@@ -61,7 +61,7 @@ class ConnectionService {
 
 	async putConnection(params, body) {
 		try {
-			let fetchQueryParams,  checkBeforeInsertParams, response, status;
+			let fetchQueryParams, checkBeforeInsertParams, response, status;
 			console.log("params.create_if_not_exist", params.create_if_not_exist);
 			if (params.create_if_not_exist == 'true') {
 				// to check wether mentor already has 2 mentee
@@ -131,6 +131,11 @@ class ConnectionService {
 				console.log("fetchQueryParams", JSON.stringify(fetchQueryParams));
 				if (userStatus) {
 					response = await this.updateRequest(fetchQueryParams, body, params, userStatus);
+				} else {
+					return {
+						status: 200,
+						message: `No Mentor status found in userProfile table`
+					};
 				}
 				status = body.status;
 			}
@@ -303,6 +308,8 @@ class ConnectionService {
 					}
 					await dynamoDao.updateRecords(updateQueryParams);
 					console.log("connection record updated");
+				} else {
+					throw "No connection found"
 				}
 			}
 		}
@@ -457,17 +464,17 @@ class ConnectionService {
 		let queryParams;
 		let date = new Date();
 		let newDate = date.toISOString();
-		if (body.reason_of_rejection) {
+		if (body.reason_to_cancel) {
 			queryParams = {
 				TableName: TABLE_NAME,
 				Key: {
 					email_id: params.email_id,
 					user_type: params.user_type
 				},
-				UpdateExpression: "set connection_status = :status, rejection_reason = :reason_of_rejection, updation_datetime_iso = :newDate",
+				UpdateExpression: "set connection_status = :status, reason_to_cancel = :reason_to_cancel, updation_datetime_iso = :newDate",
 				ExpressionAttributeValues: {
 					':status': body.status,
-					':reason_of_rejection': body.reason_of_rejection,
+					':reason_to_cancel': body.reason_to_cancel,
 					':newDate': newDate
 				}
 			};
@@ -494,17 +501,17 @@ class ConnectionService {
 		let newDate = date.toISOString();
 		let queryParams;
 		console.log("newDate", newDate);
-		if (body && body.reason_of_deletion) {
+		if (body && body.reason_to_delete) {
 			queryParams = {
 				TableName: TABLE_NAME,
 				Key: {
 					email_id: params.email_id,
 					user_type: params.user_type
 				},
-				UpdateExpression: "set is_deleted = :isDeleted, deletion_reason = :reason_of_deletion, updation_datetime_iso = :newDate",
+				UpdateExpression: "set is_deleted = :isDeleted, reason_to_delete = :reason_to_delete, updation_datetime_iso = :newDate",
 				ExpressionAttributeValues: {
 					':isDeleted': 1,
-					':reason_of_deletion': body.reason_of_deletion,
+					':reason_to_delete': body. reason_to_delete,
 					':newDate': newDate
 				}
 			};
