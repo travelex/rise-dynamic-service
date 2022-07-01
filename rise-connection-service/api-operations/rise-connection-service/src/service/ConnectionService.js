@@ -517,7 +517,7 @@ class ConnectionService {
 				UpdateExpression: "set is_deleted = :isDeleted, reason_to_delete = :reason_to_delete, updation_datetime_iso = :newDate",
 				ExpressionAttributeValues: {
 					':isDeleted': 1,
-					':reason_to_delete': body. reason_to_delete,
+					':reason_to_delete': body.reason_to_delete,
 					':newDate': newDate
 				}
 			};
@@ -641,7 +641,7 @@ class ConnectionService {
 			UpdateExpression: "set #mentor.#status = :status",
 			ExpressionAttributeNames: {
 				"#mentor": "mentor",
-				"#status":"status"
+				"#status": "status"
 			},
 			ExpressionAttributeValues: {
 				':status': status
