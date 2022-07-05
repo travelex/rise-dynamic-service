@@ -32,9 +32,9 @@ module.exports.rise = function (event, context, callback) {
                     statusCode: 200,
                     headers: {
                         "Content-Type" : "application/json",
-                        // "Access-Control-Allow-Headers" : "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,code,code_verfier,applicationid",
+                        "Access-Control-Allow-Headers" : "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,code,code_verfier,applicationid",
                         "Access-Control-Allow-Headers" : "*",
-                        "Access-Control-Allow-Methods" : "OPTIONS,POST,GET",
+                        "Access-Control-Allow-Methods" : "OPTIONS,POST,GET,PUT",
                         "Access-Control-Allow-Credentials" : false,
                         "Access-Control-Allow-Origin" : "*",
                         "X-Requested-With" : "*"
@@ -42,7 +42,7 @@ module.exports.rise = function (event, context, callback) {
                     body: JSON.stringify(body)
                 })
             }).catch(error => {
-                logger.error("Exception caught ", error);
+                logger.error("Exception caught ", error)
                 callback(null, {
                     statusCode: error.httpStatusCode || 500,
                     body: JSON.stringify({
@@ -51,9 +51,9 @@ module.exports.rise = function (event, context, callback) {
                     }),
                     headers: {
                         "Content-Type" : "application/json",
-                        // "Access-Control-Allow-Headers" : "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,code,code_verfier,applicationid",
+                        "Access-Control-Allow-Headers" : "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,code,code_verfier,applicationid",
                         "Access-Control-Allow-Headers" : "*",
-                        "Access-Control-Allow-Methods" : "OPTIONS,POST,GET",
+                        "Access-Control-Allow-Methods" : "OPTIONS,POST,GET.PUT",
                         "Access-Control-Allow-Credentials" : false,
                         "Access-Control-Allow-Origin" : "*",
                         "X-Requested-With" : "*"
