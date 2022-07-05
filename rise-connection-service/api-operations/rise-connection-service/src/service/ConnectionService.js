@@ -9,6 +9,7 @@ const ExceptionType = require('../model/ExceptionType');
 const ExceptionCategory = require('../model/ExceptionCategory');
 // const reqFromMem = require('require-from-memory');
 const TABLE_NAME = process.env.TABLE_NAME;
+const USER_TABLE = process.env.USER_PROFILE_TABLE_NAME;
 
 process
 	.on('UnhandledPromiseRejectionWarning', (ex) => {
@@ -42,9 +43,9 @@ class ConnectionService {
 					message: "Connection list fetched",
 					body: {}
 				};
-				data.body.pending = response.Items.filter(data => data.connection_status.toLowerCase() == 'pending');
-				data.body.approved = response.Items.filter(data => data.connection_status.toLowerCase() == 'approved');
-				data.body.rejected = response.Items.filter(data => data.connection_status.toLowerCase() == 'rejected');
+				data.body.pending = response.Items.filter(data => data.status.toLowerCase() == 'pending');
+				data.body.accepted = response.Items.filter(data => data.status.toLowerCase() == 'accepted');
+				data.body.cancelled = response.Items.filter(data => data.status.toLowerCase() == 'cancelled');
 				return data;
 			} else {
 				return {
@@ -60,10 +61,31 @@ class ConnectionService {
 
 	async putConnection(params, body) {
 		try {
-			let status;
-			let fetchQueryParams, updateQueryParams, checkBeforeInsertParams, response;
+			let fetchQueryParams, checkBeforeInsertParams, response, status;
 			console.log("params.create_if_not_exist", params.create_if_not_exist);
 			if (params.create_if_not_exist == 'true') {
+				// to check wether mentor already has 2 mentee
+				let noOfMenteeParams = this.getNoOfMenteeParams(params);
+				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
+				console.log("Mentee");
+				console.log(noOfMentee);
+				if (noOfMentee.Count >= 2) {
+					return {
+						status: 200,
+						message: `Mentor is already booked`
+					};
+				}
+				// to check wether mentee has any connection 
+				let noOfMentorParams = this.getNoOfMentorParams(params);
+				let noOfMentor = await dynamoDao.getRecords(noOfMentorParams);
+				console.log("Mentors");
+				console.log(noOfMentor);
+				if (noOfMentor.Count >= 1) {
+					return {
+						status: 200,
+						message: `You already have a connection with a mentor`
+					};
+				}
 				console.log("Trying to insert");
 				let dataInsertPostCheck = true;
 				checkBeforeInsertParams = this.getQueryParams(params);
@@ -73,13 +95,7 @@ class ConnectionService {
 						let data = await dynamoDao.getRecords(checkBeforeInsertParams[object]);
 						console.log("data ", JSON.stringify(data));
 						if (data.Items && data.Items.length) {
-							const existingRecords = data.Items.filter((record) => {
-								return record.is_deleted == 0;
-							});
-							console.log("Existing records found while Inserting", existingRecords);
-							if (existingRecords.length > 0) {
-								dataInsertPostCheck = false;
-							}
+							dataInsertPostCheck = false;
 						}
 					}
 				}
@@ -88,7 +104,7 @@ class ConnectionService {
 					console.log("fetchQueryParams:", JSON.stringify(fetchQueryParams));
 					await dynamoDao.putRecords(fetchQueryParams);
 					console.log("Data Inserted");
-					response = "request sent";
+					response = "Connection request sent";
 					status = "pending";
 				} else {
 					return {
@@ -98,27 +114,29 @@ class ConnectionService {
 				}
 			} else {
 				console.log("Trying to update");
+				let fetchDetailsOfMentor = this.getFetchDetailsOfMentor(params);
+				console.log("fetchDetailsOfMentor", fetchDetailsOfMentor);
+				let mentorDetails = await dynamoDao.getItem(fetchDetailsOfMentor);
+				console.log("mentorDetails:", JSON.stringify(mentorDetails));
+				let userStatus;
+				if (mentorDetails.Item) {
+					userStatus = mentorDetails.Item.mentor?.status
+				} else {
+					return {
+						status: 200,
+						message: `No Mentor found in userProfile table`
+					};
+				}
 				fetchQueryParams = this.getQueryParams(params);
 				console.log("fetchQueryParams", JSON.stringify(fetchQueryParams));
-				if (fetchQueryParams && fetchQueryParams.length) {
-					for (let object = 0; object < fetchQueryParams.length; object++) {
-						let data = await dynamoDao.getRecords(fetchQueryParams[object]);
-						console.log("data: ", JSON.stringify(data));
-						if (data.Items && data.Items.length) {
-							const recordsToUpdate = data.Items.filter((record) => {
-								return record.is_deleted == 0;
-							});
-							console.log("relevant records found for update", recordsToUpdate);
-
-							for (const record of recordsToUpdate) {
-								updateQueryParams = this.getUpdateRecordsParams(record, body);
-								const result = await dynamoDao.updateRecords(updateQueryParams);
-								console.log("putConnection result, data updated: ", result);
-							}
-						}
-					}
+				if (userStatus) {
+					response = await this.updateRequest(fetchQueryParams, body, params, userStatus);
+				} else {
+					return {
+						status: 200,
+						message: `No Mentor status found in userProfile table`
+					};
 				}
-				response = `${body.status}`;
 				status = body.status;
 			}
 			try {
@@ -129,7 +147,7 @@ class ConnectionService {
 			}
 			return {
 				status: 200,
-				message: `Connection ${response}`
+				message: `${response}`
 			};
 
 		} catch (error) {
@@ -138,45 +156,95 @@ class ConnectionService {
 		}
 	}
 
+	async updateRequest(queryParams, body, params, userStatus) {
+		console.log("userStatus:: ", userStatus);
+		console.log("status:::", body.status);
+		if (body.status == "accepted") {
+			if (userStatus == "BOOKED") {
+				return "Unable to perform action, This user is already booked";
+			} else if (userStatus == "NOT_AVAILABLE") {
+				return "Unable to perform action, This user is temporarily unavailable";
+			} else if (userStatus == "DISABLED") {
+				return "Unable to perform action, This user is temporarily disabled";
+			} else if (userStatus == "OPEN") {
+				await this.updateConnection(queryParams, body, "update");
+				// updating user profile
+				let noOfMenteeParams = this.getNoOfMenteeParams(params);
+				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
+				console.log("noOfMentee::", noOfMentee);
+				if (noOfMentee.Count == 2) {
+					await this.updateUserStatus(params, "BOOKED")
+				}
+				return "Connection accepted";
+			}
+		}
+		if (body.status == "cancelled") {
+			if (userStatus == "DISABLED") {
+				return "Unable to perform action, This user is temporarily disabled";
+			} else {
+				await this.updateConnection(queryParams, body, "update")
+				return "Connection cancelled"
+			}
+		}
+	}
 
 	/**
 	 * 
 	 * @param {*} params 
 	 * @param {*} preProcessorRules 
 	 */
-	async deleteConnection(params) {
+	async deleteConnection(params, body) {
 		try {
-			let response = "deleted", fetchQueryParams, updateQueryParams;
+			console.log("Deleting connection");
+			let response, fetchQueryParams;
+			let fetchDetailsOfMentor = this.getFetchDetailsOfMentor(params);
+			let mentorDetails = await dynamoDao.getItem(fetchDetailsOfMentor);
+			let userStatus;
+			if (mentorDetails.Item) {
+				console.log("Inside *****");;
+				userStatus = mentorDetails.Item.mentor?.status
+				console.log(userStatus);
+			} else {
+				return {
+					status: 200,
+					message: `No Mentor found in userProfile table`
+				};
+			}
 			fetchQueryParams = this.getQueryParams(params);
 			console.log("fetchQueryParams", JSON.stringify(fetchQueryParams));
-			if (fetchQueryParams && fetchQueryParams.length) {
-				for (let object = 0; object < fetchQueryParams.length; object++) {
-					let data = await dynamoDao.getRecords(fetchQueryParams[object]);
-					console.log("Data: ", JSON.stringify(data));
-					if (data.Items && data.Items.length) {
-
-						const recordsToDelete = data.Items.filter((record) => {
-							return record.is_deleted == 0;
-						});
-
-						console.log("relevant records found for deletion", recordsToDelete);
-
-						if (recordsToDelete.length > 0) {
-							for (const record of recordsToDelete){
-								updateQueryParams = this.getDeleteQueryParams(record);
-								console.log("updateQueryParams:: ", updateQueryParams);
-								let result = await dynamoDao.deleteRecords(updateQueryParams);
-								console.log("Delete connection ", result);
-							}
-						} else {
-							return {
-								status: 200,
-								message: `Connection already deleted`
-							};
-						}
-					}
-				}
+			if (userStatus) {
+				response = await this.deleteRequest(fetchQueryParams, body, params, userStatus);
 			}
+			// status = body.status;
+
+
+			// fetchQueryParams = this.getQueryParams(params);
+			// console.log("fetchQueryParams", JSON.stringify(fetchQueryParams));
+			// if (fetchQueryParams && fetchQueryParams.length) {
+			// 	for (let object = 0; object < fetchQueryParams.length; object++) {
+			// 		let data = await dynamoDao.getRecords(fetchQueryParams[object]);
+			// 		console.log("Data: ", JSON.stringify(data));
+			// 		if (data.Items && data.Items.length) {
+			// 			console.log("relevant records found for deletion");
+			// 			console.log(data.Items[0]);
+			// 			if (userStatus == "DISABLED") {
+			// 				response = "Unable to perform action, This user is temporarily disabled";
+			// 			} else {
+			// 				deleteQueryParams = this.getDeleteQueryParams(data.Items[0]);
+			// 				console.log("deleteQueryParams:: ", deleteQueryParams);
+			// 				await dynamoDao.deleteRecords(deleteQueryParams);
+			// 				//update status of mentor
+			// 				let noOfMenteeParams = this.getNoOfMenteeParams(params);
+			// 				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
+			// 				if (noOfMentee.Count < 2) {
+			// 					let updateUserStatusParams = this.getUpdateUserStatusParams(params, "OPEN");
+			// 					await dynamoDao.updateRecords(updateUserStatusParams);
+			// 				}
+			// 				response = "Connection Deleted";
+			// 			}
+			// 		}
+			// 	}
+			// }
 			try {
 				console.log("Sending notification via SNS");
 				this.publishSNSService(params, "deleted");
@@ -185,7 +253,7 @@ class ConnectionService {
 			}
 			return {
 				status: 200,
-				message: `Connection ${response}`
+				message: `${response}`
 			};
 		} catch (error) {
 			logger.error(`Error occurred while deleting connection: ${JSON.stringify(error)}`);
@@ -193,6 +261,69 @@ class ConnectionService {
 		}
 	}
 
+	async deleteRequest(queryParams, body, params, userStatus) {
+		console.log("userStatus:: ", userStatus);
+		if (userStatus == "DISABLED") {
+			return "Unable to perform action, This user is temporarily disabled";
+		} else {
+			await this.updateConnection(queryParams, body, "delete");
+			//updating user profile
+			let noOfMenteeParams = this.getNoOfMenteeParams(params);
+			let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
+			console.log("noOfMentee::", noOfMentee);
+			if (noOfMentee.Count < 2) {
+				await this.updateUserStatus(params, "OPEN")
+			}
+			return "Connection deleted"
+
+		}
+	}
+
+	async updateUserStatus(params, status) {
+		try {
+			console.log("UPDating user profile status");
+			let updateUserStatusParams = this.getUpdateUserStatusParams(params, status);
+			console.log(updateUserStatusParams);
+			await dynamoDao.updateRecords(updateUserStatusParams);
+			console.log("userProfile updated");
+		} catch (error) {
+			logger.error(`Error occurred while updating connection: ${JSON.stringify(error)}`);
+			throw error;
+		}
+	}
+
+	async updateConnection(queryParams, body, request) {
+		let updateQueryParams;
+		if (queryParams && queryParams.length) {
+			for (let object = 0; object < queryParams.length; object++) {
+				let data = await dynamoDao.getRecords(queryParams[object]);
+				console.log("data: ", JSON.stringify(data));
+				if (data.Items && data.Items.length) {
+					console.log("relevant records found for update");
+					console.log(data.Items[0]);
+					if (request == "delete") {
+						updateQueryParams = this.getDeleteQueryParams(data.Items[0], body)
+					} else {
+						updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
+					}
+					await dynamoDao.updateRecords(updateQueryParams);
+					console.log("connection record updated");
+				} else {
+					throw "No connection found"
+				}
+			}
+		}
+	}
+
+	// async deleteConnection(params, body, userStatus) {
+	// 	if (userStatus == "DISABLED") {
+	// 		return "Unable to perform action, This user is temporarily disabled";
+	// 	} else {
+	// 		let updateQueryParams = this.getUpdateRecordsParams(params, body);
+	// 		await dynamoDao.updateRecords(updateQueryParams);
+	// 		return "Connection rejected"
+	// 	}
+	// }
 
 
 	getFetchRecordsParams(params) {
@@ -207,7 +338,7 @@ class ConnectionService {
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
 					"#user_type": "user_type",
-					"#connection_status": "connection_status",
+					"#connection_status": "status",
 					"#is_deleted": "is_deleted"
 				},
 				ExpressionAttributeValues: {
@@ -243,7 +374,7 @@ class ConnectionService {
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
 					"#user_type": "user_type",
-					"#connection_status": "connection_status",
+					"#connection_status": "status",
 					"#is_deleted": "is_deleted"
 				},
 				ExpressionAttributeValues: {
@@ -258,7 +389,7 @@ class ConnectionService {
 			queryObject = {
 				TableName: TABLE_NAME,
 				KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
-				FilterExpression: "#is_deleted = :isDeleted and #is_deleted = :isDeleted",
+				FilterExpression: "#is_deleted = :isDeleted",
 				ExpressionAttributeNames: {
 					"#email_id": "email_id",
 					"#user_type": "user_type",
@@ -291,7 +422,7 @@ class ConnectionService {
 						"email_id": params.mentee_email_id,
 						"user_type": `mentor-${params.mentor_email_id}-${guid}`,
 						"category": "mentee",
-						"connection_status": body.status,
+						"status": body.status,
 						"remark": body.remarks,
 						"updation_datetime_iso": insertDate,
 						"start_datetime_iso": insertDate,
@@ -307,7 +438,7 @@ class ConnectionService {
 						"email_id": params.mentor_email_id,
 						"user_type": `mentee-${params.mentee_email_id}-${guid}`,
 						"category": "mentor",
-						"connection_status": body.status,
+						"status": body.status,
 						"remark": body.remarks,
 						"updation_datetime_iso": insertDate,
 						"start_datetime_iso": insertDate,
@@ -333,17 +464,20 @@ class ConnectionService {
 		let queryParams;
 		let date = new Date();
 		let newDate = date.toISOString();
-		if (body.remarks) {
+		if (body.reason_to_cancel) {
 			queryParams = {
 				TableName: TABLE_NAME,
 				Key: {
 					email_id: params.email_id,
 					user_type: params.user_type
 				},
-				UpdateExpression: "set connection_status = :status, remark = :remark, updation_datetime_iso = :newDate",
+				UpdateExpression: "set #connection_status = :status, reason_to_cancel = :reason_to_cancel, updation_datetime_iso = :newDate",
+				ExpressionAttributeNames:{
+					"#connection_status":"status"
+				},
 				ExpressionAttributeValues: {
 					':status': body.status,
-					':remark': body.remarks,
+					':reason_to_cancel': body.reason_to_cancel,
 					':newDate': newDate
 				}
 			};
@@ -354,7 +488,10 @@ class ConnectionService {
 					email_id: params.email_id,
 					user_type: params.user_type
 				},
-				UpdateExpression: "set connection_status = :status, updation_datetime_iso = :newDate",
+				UpdateExpression: "set #connection_status = :status, updation_datetime_iso = :newDate",
+				ExpressionAttributeNames:{
+					"#connection_status":"status"
+				},
 				ExpressionAttributeValues: {
 					':status': body.status,
 					':newDate': newDate
@@ -365,23 +502,39 @@ class ConnectionService {
 		return queryParams;
 	}
 
-	getDeleteQueryParams(params) {
+	getDeleteQueryParams(params, body) {
 		let date = new Date();
 		let newDate = date.toISOString();
+		let queryParams;
 		console.log("newDate", newDate);
-		let queryParams = {
-			TableName: TABLE_NAME,
-			Key: {
-				email_id: params.email_id,
-				user_type: params.user_type
-			},
-			UpdateExpression: "set is_deleted = :isDeleted, updation_datetime_iso = :newDate",
-			ExpressionAttributeValues: {
-				':isDeleted': 1,
-				':newDate': newDate
-			}
-		};
-
+		if (body && body.reason_to_delete) {
+			queryParams = {
+				TableName: TABLE_NAME,
+				Key: {
+					email_id: params.email_id,
+					user_type: params.user_type
+				},
+				UpdateExpression: "set is_deleted = :isDeleted, reason_to_delete = :reason_to_delete, updation_datetime_iso = :newDate",
+				ExpressionAttributeValues: {
+					':isDeleted': 1,
+					':reason_to_delete': body.reason_to_delete,
+					':newDate': newDate
+				}
+			};
+		} else {
+			queryParams = {
+				TableName: TABLE_NAME,
+				Key: {
+					email_id: params.email_id,
+					user_type: params.user_type
+				},
+				UpdateExpression: "set is_deleted = :isDeleted, updation_datetime_iso = :newDate",
+				ExpressionAttributeValues: {
+					':isDeleted': 1,
+					':newDate': newDate
+				}
+			};
+		}
 		console.log(" getDeleteQueryParams queryParams", queryParams);
 		return queryParams;
 	}
@@ -392,33 +545,110 @@ class ConnectionService {
 		let queryParams = [{
 			TableName: TABLE_NAME,
 			KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
+			FilterExpression: "#is_deleted = :isDeleted",
 			ExpressionAttributeNames: {
 				"#email_id": "email_id",
-				"#user_type": "user_type"
+				"#user_type": "user_type",
+				"#is_deleted": "is_deleted"
 			},
 			ExpressionAttributeValues: {
 				":email_id": params.mentor_email_id,
-				":type": `mentee-${mentee}`
+				":type": `mentee-${mentee}`,
+				":isDeleted": 0
 			}
 		},
 		{
 			TableName: TABLE_NAME,
 			KeyConditionExpression: "#email_id = :email_id and begins_with(#user_type, :type)",
+			FilterExpression: "#is_deleted = :isDeleted",
 			ExpressionAttributeNames: {
 				"#email_id": "email_id",
-				"#user_type": "user_type"
+				"#user_type": "user_type",
+				"#is_deleted": "is_deleted"
 			},
 			ExpressionAttributeValues: {
 				":email_id": params.mentee_email_id,
-				":type": `mentor-${mentor}`
+				":type": `mentor-${mentor}`,
+				":isDeleted": 0
 			}
 		}];
 		return queryParams;
 	}
 
+	getNoOfMenteeParams(params) {
+		let mentor = params.mentor_email_id;
+		let queryParams = {
+			TableName: TABLE_NAME,
+			KeyConditionExpression: "#email_id = :email_id",
+			FilterExpression: "#connection_status = :status and #is_deleted = :isDeleted and #category = :category",
+			ExpressionAttributeNames: {
+				"#email_id": "email_id",
+				"#connection_status": "status",
+				"#is_deleted": "is_deleted",
+				"#category": "category"
+			},
+			ExpressionAttributeValues: {
+				":email_id": mentor,
+				":status": "accepted",
+				":isDeleted": 0,
+				":category": "mentor"
+			}
+		}
+		return queryParams;
+	}
 
 
+	getNoOfMentorParams(params) {
+		let mentee = params.mentee_email_id;
+		let queryParams = {
+			TableName: TABLE_NAME,
+			KeyConditionExpression: "#email_id = :email_id",
+			FilterExpression: "#connection_status <> :status and #is_deleted = :isDeleted and #category = :category",
+			ExpressionAttributeNames: {
+				"#email_id": "email_id",
+				"#connection_status": "status",
+				"#is_deleted": "is_deleted",
+				"#category": "category"
+			},
+			ExpressionAttributeValues: {
+				":email_id": mentee,
+				":status": "cancelled",
+				":isDeleted": 0,
+				":category": "mentee"
+			}
+		}
+		return queryParams;
+	}
 
+	getFetchDetailsOfMentor(params) {
+		let mentor = params.mentor_email_id;
+		let queryParams = {
+			TableName: USER_TABLE,
+			Key: {
+				"email_id": mentor
+			}
+		}
+		return queryParams;
+	}
+
+	getUpdateUserStatusParams(params, status) {
+		let mentor = params.mentor_email_id;
+		let queryParams = {
+			TableName: USER_TABLE,
+			Key: {
+				email_id: mentor
+			},
+			UpdateExpression: "set #mentor.#status = :status",
+			ExpressionAttributeNames: {
+				"#mentor": "mentor",
+				"#status": "status"
+			},
+			ExpressionAttributeValues: {
+				':status': status
+			}
+		}
+		return queryParams
+	}
 
 	createMessageAttribues(attributes) {
 		let attributeNames, msgAttribute = {};
@@ -446,6 +676,8 @@ class ConnectionService {
 		}
 	}
 
+
+
 	publishSNSService(params, status) {
 		let date = new Date();
 		let newDate = date.toISOString();
@@ -472,6 +704,10 @@ class ConnectionService {
 				'status': {
 					'DataType': 'String',
 					'StringValue': 'success'
+				},
+				'entity': {
+					'DataType': 'String',
+					'StringValue': 'connection'
 				}
 			},
 			MessageStructure: 'json'
@@ -484,7 +720,7 @@ class ConnectionService {
 				if (err) {
 					console.error(err);
 				} else {
-					console.log(`Message ${newParams.Message} sent to the topic ${newParams.TopicArn}`);
+					console.log(`Message ${newParams.Message} sent to the topic ${newParams.TopicArn} `);
 				}
 			});
 		} catch (err) {
@@ -521,7 +757,7 @@ class ConnectionService {
 
 	// 	publishTextPromise.then(
 	// 		function (data) {
-	// 			console.log(`Message ${params.Message} sent to the topic ${params.TopicArn}`);
+	// 			console.log(`Message ${ params.Message } sent to the topic ${ params.TopicArn } `);
 	// 			console.log("MessageID is " + data.MessageId);
 	// 		}).catch(
 	// 			function (err) {
