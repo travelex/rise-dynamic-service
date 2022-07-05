@@ -302,7 +302,7 @@ jobs:
             ls -la /home/circleci/project
             ls -la /home/circleci/project/common/serverless
             pwd
-            cd /home/circleci/project/rise-email-utility
+            cd ${CIRCLE_JOB}
             pwd
             make build test deploy
       - setup_remote_docker:
@@ -338,17 +338,17 @@ workflows:
       #           - master
       #           - feature/dit
 
-      # - lambda-job:
-      #     name: rise-connection-service
-      #     requires:
-      #       - s3-download
-      #     filters:
-      #       branches:
-      #         only:
-      #           - develop
-      #           - master
-      #           # - feature/dit
-      #           - /feature\/.*/
+      - lambda-job:
+          name: rise-connection-service
+          requires:
+            - s3-download
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+                # - feature/dit
+                - /feature\/.*/
       - lambda-job:
           name: rise-email-utility
           requires:
@@ -359,13 +359,13 @@ workflows:
                 - develop
                 - master
                 - feature/dit
-      # - lambda-job:
-      #     name: rise-cloudsearch-sync-service
-      #     requires:
-      #       - s3-download
-      #     filters:
-      #       branches:
-      #         only:
-      #           - develop
-      #           - master
-      #           - feature/dit
+      - lambda-job:
+          name: rise-cloudsearch-sync-service
+          requires:
+            - s3-download
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+                - feature/dit

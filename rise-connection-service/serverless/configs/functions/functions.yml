@@ -13,21 +13,21 @@
         method: get
         cors:
           origin: '*'
-          headers:
-            - Content-Type
-            - X-Amz-Date
-            - Authorization
-            - X-Api-Key
-            - X-Amz-Security-Token
-            - X-Amz-User-Agent
-            - applicationId
-            - applicationid
-            - code
-            - code_verifier
-            - Access-Control-Allow-Headers
-            - Access-Control-Request-Headers
-            - Access-Control-Request-Method
-            - Access-Control-Allow-Origin
+          headers: '*'
+            # - Content-Type
+            # - X-Amz-Date
+            # - Authorization
+            # - X-Api-Key
+            # - X-Amz-Security-Token
+            # - X-Amz-User-Agent
+            # - applicationId
+            # - applicationid
+            # - code
+            # - code_verifier
+            # - Access-Control-Allow-Headers
+            # - Access-Control-Request-Headers
+            # - Access-Control-Request-Method
+            # - Access-Control-Allow-Origin
         authorizer:
           type: CUSTOM
           authorizerId:
@@ -37,21 +37,21 @@
         method: put
         cors:
           origin: '*'
-          headers:
-            - Content-Type
-            - X-Amz-Date
-            - Authorization
-            - X-Api-Key
-            - X-Amz-Security-Token
-            - X-Amz-User-Agent
-            - applicationId
-            - applicationid
-            - code
-            - code_verifier
-            - Access-Control-Allow-Headers
-            - Access-Control-Request-Headers
-            - Access-Control-Request-Method
-            - Access-Control-Allow-Origin
+          headers: '*'
+            # - Content-Type
+            # - X-Amz-Date
+            # - Authorization
+            # - X-Api-Key
+            # - X-Amz-Security-Token
+            # - X-Amz-User-Agent
+            # - applicationId
+            # - applicationid
+            # - code
+            # - code_verifier
+            # - Access-Control-Allow-Headers
+            # - Access-Control-Request-Headers
+            # - Access-Control-Request-Method
+            # - Access-Control-Allow-Origin
         authorizer:
           type: CUSTOM
           authorizerId:
@@ -61,21 +61,21 @@
         method: delete
         cors:
           origin: '*'
-          headers:
-            - Content-Type
-            - X-Amz-Date
-            - Authorization
-            - X-Api-Key
-            - X-Amz-Security-Token
-            - X-Amz-User-Agent
-            - applicationId
-            - applicationid
-            - code
-            - code_verifier
-            - Access-Control-Allow-Headers
-            - Access-Control-Request-Headers
-            - Access-Control-Request-Method
-            - Access-Control-Allow-Origin
+          headers: '*'
+            # - Content-Type
+            # - X-Amz-Date
+            # - Authorization
+            # - X-Api-Key
+            # - X-Amz-Security-Token
+            # - X-Amz-User-Agent
+            # - applicationId
+            # - applicationid
+            # - code
+            # - code_verifier
+            # - Access-Control-Allow-Headers
+            # - Access-Control-Request-Headers
+            # - Access-Control-Request-Method
+            # - Access-Control-Allow-Origin
         authorizer:
           type: CUSTOM
           authorizerId:
