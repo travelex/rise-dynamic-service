@@ -105,10 +105,10 @@ class ConnectionService {
 							return fullName;
 						};
 						let mentorName = getFullName(pendingConnections[0].user_type);
-						console.log('mentorName:', mentorName);
+						// console.log('mentorName:', mentorName);
 						return {
 							status: 200,
-							message: `You already have a connection request with pending status with mentor ${mentorName}`
+							message: `You already have a pending connection request with mentor ${mentorName}`
 						};
 					}
 				}
