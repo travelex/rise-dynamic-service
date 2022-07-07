@@ -91,7 +91,7 @@ class ConnectionService {
 					if (acceptedConnections && acceptedConnections.length > 0) {
 						return {
 							status: 200,
-							message: `You already have a connection with a mentor`
+							message: `You already have a connection with a mentor.`
 						};
 					}
 
@@ -108,7 +108,7 @@ class ConnectionService {
 						// console.log('mentorName:', mentorName);
 						return {
 							status: 200,
-							message: `You already have a pending connection request with mentor ${mentorName}`
+							message: `You already have a pending connection request with mentor ${mentorName}.`
 						};
 					}
 				}
