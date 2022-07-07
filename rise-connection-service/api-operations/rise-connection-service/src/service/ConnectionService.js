@@ -81,10 +81,36 @@ class ConnectionService {
 				console.log("Mentors");
 				console.log(noOfMentor);
 				if (noOfMentor.Count >= 1) {
-					return {
-						status: 200,
-						message: `You already have a connection with a mentor`
-					};
+
+					let acceptedConnections = noOfMentor.Items.filter(record => record.status == 'accepted');
+					let pendingConnections = noOfMentor.Items.filter(record => record.status == 'pending');
+
+					console.log('acceptedConnections', JSON.stringify(acceptedConnections));
+					console.log('pendingConnections', JSON.stringify(pendingConnections));
+
+					if (acceptedConnections && acceptedConnections.length > 0) {
+						return {
+							status: 200,
+							message: `You already have a connection with a mentor.`
+						};
+					}
+
+					if (pendingConnections && pendingConnections.length > 0) {
+
+						function getFullName(user_type) {
+							let fullName = user_type.split('-')[1].split('@')[0];
+							fullName = fullName.split('.').map(e =>
+								e.charAt(0).toUpperCase() + e.slice(1)
+							).join(' ');
+							return fullName;
+						};
+						let mentorName = getFullName(pendingConnections[0].user_type);
+						// console.log('mentorName:', mentorName);
+						return {
+							status: 200,
+							message: `You already have a pending connection request with mentor ${mentorName}.`
+						};
+					}
 				}
 				console.log("Trying to insert");
 				let dataInsertPostCheck = true;
@@ -120,7 +146,7 @@ class ConnectionService {
 				console.log("mentorDetails:", JSON.stringify(mentorDetails));
 				let userStatus;
 				if (mentorDetails.Item) {
-					userStatus = mentorDetails.Item.mentor?.status
+					userStatus = mentorDetails.Item.mentor?.status;
 				} else {
 					return {
 						status: 200,
@@ -173,7 +199,7 @@ class ConnectionService {
 				let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
 				console.log("noOfMentee::", noOfMentee);
 				if (noOfMentee.Count == 2) {
-					await this.updateUserStatus(params, "BOOKED")
+					await this.updateUserStatus(params, "BOOKED");
 				}
 				return "Connection accepted";
 			}
@@ -182,8 +208,8 @@ class ConnectionService {
 			if (userStatus == "DISABLED") {
 				return "Unable to perform action, This user is temporarily disabled";
 			} else {
-				await this.updateConnection(queryParams, body, "update")
-				return "Connection cancelled"
+				await this.updateConnection(queryParams, body, "update");
+				return "Connection cancelled";
 			}
 		}
 	}
@@ -202,7 +228,7 @@ class ConnectionService {
 			let userStatus;
 			if (mentorDetails.Item) {
 				console.log("Inside *****");;
-				userStatus = mentorDetails.Item.mentor?.status
+				userStatus = mentorDetails.Item.mentor?.status;
 				console.log(userStatus);
 			} else {
 				return {
@@ -272,9 +298,9 @@ class ConnectionService {
 			let noOfMentee = await dynamoDao.getRecords(noOfMenteeParams);
 			console.log("noOfMentee::", noOfMentee);
 			if (noOfMentee.Count < 2) {
-				await this.updateUserStatus(params, "OPEN")
+				await this.updateUserStatus(params, "OPEN");
 			}
-			return "Connection deleted"
+			return "Connection deleted";
 
 		}
 	}
@@ -302,14 +328,14 @@ class ConnectionService {
 					console.log("relevant records found for update");
 					console.log(data.Items[0]);
 					if (request == "delete") {
-						updateQueryParams = this.getDeleteQueryParams(data.Items[0], body)
+						updateQueryParams = this.getDeleteQueryParams(data.Items[0], body);
 					} else {
 						updateQueryParams = this.getUpdateRecordsParams(data.Items[0], body);
 					}
 					await dynamoDao.updateRecords(updateQueryParams);
 					console.log("connection record updated");
 				} else {
-					throw "No connection found"
+					throw "No connection found";
 				}
 			}
 		}
@@ -472,8 +498,8 @@ class ConnectionService {
 					user_type: params.user_type
 				},
 				UpdateExpression: "set #connection_status = :status, reason_to_cancel = :reason_to_cancel, updation_datetime_iso = :newDate",
-				ExpressionAttributeNames:{
-					"#connection_status":"status"
+				ExpressionAttributeNames: {
+					"#connection_status": "status"
 				},
 				ExpressionAttributeValues: {
 					':status': body.status,
@@ -489,8 +515,8 @@ class ConnectionService {
 					user_type: params.user_type
 				},
 				UpdateExpression: "set #connection_status = :status, updation_datetime_iso = :newDate",
-				ExpressionAttributeNames:{
-					"#connection_status":"status"
+				ExpressionAttributeNames: {
+					"#connection_status": "status"
 				},
 				ExpressionAttributeValues: {
 					':status': body.status,
@@ -593,7 +619,7 @@ class ConnectionService {
 				":isDeleted": 0,
 				":category": "mentor"
 			}
-		}
+		};
 		return queryParams;
 	}
 
@@ -616,7 +642,7 @@ class ConnectionService {
 				":isDeleted": 0,
 				":category": "mentee"
 			}
-		}
+		};
 		return queryParams;
 	}
 
@@ -627,7 +653,7 @@ class ConnectionService {
 			Key: {
 				"email_id": mentor
 			}
-		}
+		};
 		return queryParams;
 	}
 
@@ -646,8 +672,8 @@ class ConnectionService {
 			ExpressionAttributeValues: {
 				':status': status
 			}
-		}
-		return queryParams
+		};
+		return queryParams;
 	}
 
 	createMessageAttribues(attributes) {
