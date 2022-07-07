@@ -81,10 +81,28 @@ class ConnectionService {
 				console.log("Mentors");
 				console.log(noOfMentor);
 				if (noOfMentor.Count >= 1) {
-					return {
-						status: 200,
-						message: `You already have a connection with a mentor`
-					};
+
+					let acceptedConnections = noOfMentor.Items.filter(record=>record.status == 'accepted')
+					let pendingConnections = noOfMentor.Items.filter(record=>record.status == 'pending')
+
+					console.log('acceptedConnections',JSON.stringify(acceptedConnections));
+					console.log('pendingConnections',JSON.stringify(pendingConnections))
+
+					if(acceptedConnections && acceptedConnections.length > 0 ){
+						return {
+							status: 200,
+							message: `You already have a connection with a mentor`
+						};
+					} 
+
+					if(pendingConnections && pendingConnections.length > 0){
+						let mentorName = pendingConnections[0].user_type.split('-')[1].split('@')[0].replace('.', ' ');
+						console.log('mentorName:',mentorName);
+						return {
+							status: 200,
+							message: `You already have a connection request with pending status with mentor ${mentorName}`
+						};
+					}
 				}
 				console.log("Trying to insert");
 				let dataInsertPostCheck = true;
