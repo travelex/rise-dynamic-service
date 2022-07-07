@@ -12,7 +12,7 @@ class EmailApiProcessor {
             const entity = message.entity;
             const status = message.data.status;
 
-            if (entity == 'connection' && status == 'approved') {
+            if (entity == 'connection' && status == 'accepted') {
                 await EmailService.sendEmail(event, message);
             } else {
                 logger.debug(`Email will not be sent for entity: ${entity} and status: ${status}`)
