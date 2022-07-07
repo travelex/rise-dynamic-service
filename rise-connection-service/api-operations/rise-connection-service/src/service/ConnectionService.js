@@ -99,12 +99,12 @@ class ConnectionService {
 
 						function getFullName(user_type) {
 							let fullName = user_type.split('-')[1].split('@')[0];
-							fullName = fullName.split('.').map(e => 
-								 e.charAt(0).toUpperCase() + e.slice(1)
+							fullName = fullName.split('.').map(e =>
+								e.charAt(0).toUpperCase() + e.slice(1)
 							).join(' ');
 							return fullName;
 						};
-						let mentorName = getFullName(pendingConnections[0].user_type.split);
+						let mentorName = getFullName(pendingConnections[0].user_type);
 						console.log('mentorName:', mentorName);
 						return {
 							status: 200,
