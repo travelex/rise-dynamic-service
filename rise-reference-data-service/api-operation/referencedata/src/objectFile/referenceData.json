@@ -1,0 +1,10 @@
+{
+    "jobLevels": {
+        "level-1": ["Executive Director", "Executive Committee Membor", "Non Executive Director"],
+        "level-2":["Commercial Director", "Function Director"],
+        "level-3":["Head Of Department", "Cheif Of Staff"],
+        "level-4":["Divisional Manager", "Senior Manager/Specialist In Department", "Executive Assistance"],
+        "level-5":["Area Manager", "Manager In Department", "Buisness Partner"],
+        "level-6":["Analyst", "travel Service Partner", "Bureau Manager", "Advisor", "Coordinator"]
+    } 
+}

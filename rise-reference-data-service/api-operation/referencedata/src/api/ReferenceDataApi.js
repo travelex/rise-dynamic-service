@@ -1,4 +1,5 @@
-const DynamodbService = require('../service/DynamodbService');
+
+const ReferenceDataService = require('../service/ReferenceDataService');
 const Util = require('../Utils/Util');
 const path = require('path');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
@@ -10,11 +11,19 @@ class ReferenceDataApi {
         try {
             logger.debug(`Received Event:  ${JSON.stringify(event)}`);
             console.log(`Received Event:  ${JSON.stringify(event)}`);
+            let queryParam = undefined;
 
-            const email_id = event.pathParameters?.email_id
-            if (email_id) {
+            if (event.query || event.queryStringParameters) {
+                try {
+                    queryParam = event.query ? JSON.parse(event.query) : JSON.parse(event.queryStringParameters);
+                } catch (ex) {
+                    queryParam = event.query ? event.query : event.queryStringParameters;
+                }
+            }
+            if (queryParam != undefined) {
+                let filename = queryParam.referenceFile
 
-                const response = await DynamodbService.getUserProfile(email_id);
+                const response = await ReferenceDataService.getReferenceData(filename);
 
                 if (response) {
                     return {

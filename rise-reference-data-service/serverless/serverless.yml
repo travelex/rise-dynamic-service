@@ -1,4 +1,4 @@
-service: rise-userprofile-service
+service: rise-reference-data-service
 
 frameworkVersion: ^2.50.0
 
@@ -11,8 +11,6 @@ plugins:
 
 custom:
   fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
-  authenticationTokenTable: rise-authentication-token-${opt:stage}
-  tableName: user-profiles-${opt:stage, self:provider.stage}
   prune:
     automatic: true
     number: 1
@@ -49,11 +47,9 @@ provider:
     ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
 
 functions: 
-  - ${file(./configs/functions/user-profile-get-function.yml)}
-  - ${file(./configs/functions/user-profile-put-function.yml)}
-  - ${file(./configs/functions/user-profile-post-function.yml)}
+  - ${file(./configs/functions/reference-data-function.yml)}
 
 resources:
   - ${file(./configs/resources/api-gateway-rise-resource.yml)}
-  - ${file(./configs/resources/reference-data-function.yml)}
+  - ${file(./configs/resources/log-group-and-subscription.yml)}
 

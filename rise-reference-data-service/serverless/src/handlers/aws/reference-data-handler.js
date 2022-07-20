@@ -1,4 +1,4 @@
-const UserProfileApi = require('reference-data-lambda').apiProcessor;
+const ReferenceDataApi = require('reference-data-lambda').apiProcessor;
 const path = require('path');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
 
@@ -8,7 +8,7 @@ exports.handler = async (event, context) => {
         console.log(`Handler Event : ${JSON.stringify(event)}`);
         const response = await new ReferenceDataApi().process(event);
         console.log(response)
-        logger.debug(`User profile data :- ${JSON.stringify(response)}`);
+        logger.debug(`reference data :- ${JSON.stringify(response)}`);
         return response;
     } catch (error) {
         console.error(error)

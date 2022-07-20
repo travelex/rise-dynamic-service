@@ -1,23 +1,20 @@
 const AWS = require('aws-sdk');
-const documentClient = new AWS.DynamoDB.DocumentClient({ region: 'eu-west-1' });
 const path = require('path');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
+const fs = require('fs')
 
-class DynamodbService {
+class ReferenceDataService {
 
-    static async getUserProfile(email_id) {
-        logger.debug('fetching the user profile document')
+    static async getReferenceData(fileName) {
+        logger.debug('fetching reference data')
+        console.log(fileName);    
         try {
-            let params = {
-                TableName: process.env.USER_PROFILE_TABLE,
-                Key: {
-                    email_id
-                }
-            };
-            const dbResponse = await documentClient.get(params).promise();
-            return dbResponse.Item
+           let data = fs.readFileSync('../objectFile/referenceData.json', 'utf8')
+           console.log(data);
+           return data;
+           
         } catch (err) {
-            logger.error(`Error occurred while fetching the profile :: ${err}`);
+            logger.error(`Error occurred while fetching the reference data :: ${err}`);
             throw err;
         }
     }
@@ -43,4 +40,4 @@ class DynamodbService {
 
 }
 
-module.exports = DynamodbService
+module.exports = ReferenceDataService

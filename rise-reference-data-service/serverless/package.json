@@ -4,7 +4,7 @@
   "description": "reference data",
   "main": "index.js",
   "dependencies": {
-    "user-profile-lambda": "file:../api-operation/referencedata",
+    "reference-data-lambda": "file:../api-operation/referencedata",
     "winston-wrapper": "https://github.com/travelex/winston-wrapper.git#1.0.13"
   },
   "directories": {

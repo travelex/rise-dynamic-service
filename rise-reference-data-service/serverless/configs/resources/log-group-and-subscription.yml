@@ -1,13 +1,8 @@
 Resources:
-  RequestLambdaAuthorizerLogGroup:
+  ReferenceLambdaLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: /aws/lambda/${opt:stage, self:provider.stage}-${self:service}
-      RetentionInDays: ${self:custom.fromTerraform.pe_log_group_retention_period}
-  RequestLambdaAuthorizerPostLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: /aws/lambda/${opt:stage, self:provider.stage}-${self:service}-post
       RetentionInDays: ${self:custom.fromTerraform.pe_log_group_retention_period}
   # RequestLambdaAuthorizerPutLogGroup:
   #   Type: AWS::Logs::LogGroup
