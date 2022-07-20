@@ -1,0 +1,141 @@
+Resources:
+  Authorizer:
+    Type: 'AWS::ApiGateway::Authorizer'
+    DependsOn: ProcessLambdaFunction
+    Properties:
+      AuthorizerResultTtlInSeconds: '0'
+      AuthorizerUri: !Join
+        - ''
+        - - 'arn:aws:apigateway:'
+          - !Ref 'AWS::Region'
+          - ':lambda:path/2015-03-31/functions/'
+          - !GetAtt
+            - ProcessLambdaFunction
+            - Arn
+          - /invocations
+      Type: REQUEST
+      IdentitySource: method.request.header.code,method.request.header.code_verifier
+      Name: ComplianceLambdaAuthorizer
+      RestApiId: ${self:custom.fromTerraform.compliance_rest_api_id}
+
+  AuthPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: !GetAtt ProcessLambdaFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: "apigateway.amazonaws.com"
+      SourceArn: !Join
+        - ''
+        - - 'arn:aws:execute-api:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':'
+          - ${self:custom.fromTerraform.compliance_rest_api_id}
+          - '/authorizers/'
+          - !Ref Authorizer
+
+  ApiGatewayResourceLogout:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      ParentId: ${self:custom.fromTerraform.compliance_rest_api_root_resource_id}
+      PathPart: logout
+      RestApiId: ${self:custom.fromTerraform.compliance_rest_api_id}
+    DependsOn: ProcessLambdaFunction
+
+  ApiGatewayMethodLogoutPost:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      HttpMethod: POST
+      RequestParameters: { }
+      ResourceId: !Ref ApiGatewayResourceLogout
+      RestApiId: ${self:custom.fromTerraform.compliance_rest_api_id}
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Join
+          - ''
+          - - 'arn:'
+            - !Ref 'AWS::Partition'
+            - ':apigateway:'
+            - !Ref 'AWS::Region'
+            - ':lambda:path/2015-03-31/functions/'
+            - !GetAtt
+              - ProcessLambdaFunction
+              - Arn
+            - /invocations
+      MethodResponses: [ ]
+    DependsOn:
+      - ApiGatewayResourceLogout
+
+  CORSOptionsMethod: # Adds cors
+    Type: "AWS::ApiGateway::Method"
+    DependsOn:
+      - ApiGatewayResourceLogout
+    Properties:
+      ResourceId: !Ref ApiGatewayResourceLogout
+      RestApiId: ${self:custom.fromTerraform.compliance_rest_api_id}
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        Type: MOCK
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Cache-Control'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+        PassthroughBehavior: NEVER
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+      MethodResponses:
+        - ResponseModels:
+            application/json: Empty
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+
+
+
+
+  ApiGatewayResourceDeployment:
+    Type: 'AWS::ApiGateway::Deployment'
+    Properties:
+      RestApiId: ${self:custom.fromTerraform.compliance_rest_api_id}
+      StageName: ${opt:stage}
+    DependsOn:
+      - ApiGatewayMethodLogoutPost
+
+  WriterLambdaPermissionApiGateway:
+    Type: 'AWS::Lambda::Permission'
+    DependsOn: ProcessLambdaFunction
+    Properties:
+      FunctionName: !GetAtt
+        - ProcessLambdaFunction
+        - Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join
+        - ''
+        - - 'arn:'
+          - !Ref 'AWS::Partition'
+          - ':execute-api:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':'
+          - ${self:custom.fromTerraform.compliance_rest_api_id}
+          - /*/*
+
+Outputs:
+  AuthorizerExport:
+    Value:
+      Ref: Authorizer
+    Export:
+      Name: mentorship-auth-ui-${opt:stage}-authorizer

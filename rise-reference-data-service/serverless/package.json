@@ -1,0 +1,21 @@
+{
+  "name": "reference-data-service",
+  "version": "1.0.0",
+  "description": "reference data",
+  "main": "index.js",
+  "dependencies": {
+    "user-profile-lambda": "file:../api-operation/referencedata",
+    "winston-wrapper": "https://github.com/travelex/winston-wrapper.git#1.0.13"
+  },
+  "directories": {
+    "lib": "configs"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.871.0",
+    "serverless-plugin-existing-s3": "^2.4.0",
+    "serverless-prune-plugin": "^1.3.2"
+  },
+  "contributors": [],
+  "author": "Bharat Kendre",
+  "license": "[license]"
+}

@@ -1,0 +1,6 @@
+Outputs:
+  ApiGatewayRestApiRiseResourceId:
+    Value:
+      Ref: ApiGatewayResourceRise
+    Export:
+      Name: rise-${opt:stage}-api-gateway-root-id
