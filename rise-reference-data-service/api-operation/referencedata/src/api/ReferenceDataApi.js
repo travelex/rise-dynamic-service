@@ -56,8 +56,10 @@ class ReferenceDataApi {
                     })
                 }
 
+            } else{
+                throw new Error('queryParameter is missing');
             }
-            throw new Error('email Id path param is missing');
+            
 
         } catch (error) {
             console.error(error)
@@ -66,7 +68,5 @@ class ReferenceDataApi {
         }
     }
 }
-
-// new UserProfileApi({}).process().then(console.log)
 
 module.exports = ReferenceDataApi;
