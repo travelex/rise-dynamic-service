@@ -1,0 +1,52 @@
+service: rise-stats-service
+
+frameworkVersion: ^2.50.0
+
+plugins:
+  localPath: "/usr/local/lib/node_modules/"
+  modules:
+    - serverless-prune-plugin
+    - serverless-plugin-existing-s3
+    - ./../../common/serverless/plugins/no-logs-group
+
+custom:
+  fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
+  prune:
+    automatic: true
+    number: 1
+
+provider:
+  name: aws
+  runtime: ${self:custom.fromTerraform.node_runtime}
+  memorySize: 1024
+  stage: ${opt:stage}
+  region: ${self:custom.fromTerraform.region}
+  stackName: sls-${self:service}-${opt:stage, self:provider.stage}-stack
+  stackTags: ${self:custom.fromTerraform.common_tags}
+  tags: ${self:custom.fromTerraform.common_tags}
+  deploymentBucket: ${self:custom.fromTerraform.application_bucketname}
+  iam:
+    role: ${self:custom.fromTerraform.mentorship_lambda_iam}  
+  
+  apiGateway:
+    restApiId: ${self:custom.fromTerraform.mentorship_rest_api_id_private}
+    restApiRootResourceId:
+      'Fn::ImportValue': rise-${opt:stage}-api-gateway-root-id  
+  vpc:
+    securityGroupIds:
+      - ${self:custom.fromTerraform.mentorship_sg}
+    subnetIds:
+      - ${self:custom.fromTerraform.subnet_private_0}
+      - ${self:custom.fromTerraform.subnet_private_1}
+  logs:
+    restApi: "${self:custom.fromTerraform.mentorship_rest_api_id}"
+    frameworkLambda: false
+  environment:
+    ${file(./configs/providers/${self:provider.name}/${opt:stage, self:provider.stage}/env.yml)}
+
+functions: 
+  - ${file(./configs/functions/stats-function.yml)}
+
+resources:
+  - ${file(./configs/resources/log-group-and-subscription.yml)}
+
