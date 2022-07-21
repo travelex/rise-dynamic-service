@@ -7,24 +7,23 @@ class ReferenceDataService {
 
     static async getReferenceData(refdata) {
 
-
         try {
-            logger.debug('fetching reference data');
-
-            const params = { Bucket: 'tvx-mentorship-dev', Key: 'static-data/joblevel.json' };
-            const filedata = await s3.getObject(params).promise();
-            logger.debug(filedata);
-            logger.debug(filedata.toString());
-            return {
-                name: 'bharat'
-            };
-
+            const response = {};
+            const refDataList = refdata.split(',');
+            logger.debug(refDataList);
+            for (let index = 0; index < refDataList.length; index++) {
+                const params = { Bucket: 'tvx-mentorship-' + process.env.BUCKET_NAME, Key: 'static-data/' + refDataList[index] + '.json' };
+                const filedata = await s3.getObject(params).promise();
+                logger.debug(JSON.parse(filedata.Body.toString()));
+                response[refDataList[index]] = JSON.parse(filedata.Body.toString())
+            }
+            logger.debug(response);
+            return response;
         } catch (err) {
-            logger.error(`Error occurred while fetching the reference data :: ${err}`);
+            logger.error('Error while fetching files from s3.')
             throw err;
         }
     }
 
 }
-
 module.exports = ReferenceDataService
