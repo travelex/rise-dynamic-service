@@ -11,7 +11,7 @@ class StatsService {
         try {
             logger.debug('fetching stats')
             let params = {
-                TableName: process.env.STATS_TABLE || 'metadata-stats-dev',
+                TableName: process.env.STATS_TABLE,
                 Key: {
                     entity,
                     operation
