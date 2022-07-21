@@ -12,7 +12,7 @@ class ReferenceDataService {
             const refDataList = refdata.split(',');
             logger.debug(refDataList);
             for (let index = 0; index < refDataList.length; index++) {
-                const params = { Bucket: 'tvx-mentorship-' + process.env.BUCKET_NAME, Key: 'static-data/' + refDataList[index] + '.json' };
+                const params = { Bucket: 'tvx-mentorship-dev', Key: 'static-data/' + refDataList[index] + '.json' };
                 const filedata = await s3.getObject(params).promise();
                 logger.debug(JSON.parse(filedata.Body.toString()));
                 response[refDataList[index]] = JSON.parse(filedata.Body.toString())
