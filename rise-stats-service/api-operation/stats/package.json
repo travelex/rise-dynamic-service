@@ -1,0 +1,35 @@
+{
+    "name": "stats-lambda",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "jest": {
+        "collectCoverageFrom": [
+            "src/**/*.js",
+            "!src/dal/__mocks__/*.js",
+            "!src/dal/*.js",
+            "!src/utils/*.js"
+        ],
+        "coverageThreshold": {
+            "global": {
+                "statements": 0
+            }
+        }
+    },
+    "scripts": {
+        "test": "jest --coverage"
+    },
+    "dependencies": {
+        "package.json": "^2.0.1",
+        "winston-wrapper": "git+ssh://github.com/travelex/winston-wrapper.git#1.0.13"
+    },
+    "license": "ISC",
+    "devDependencies": {
+        "aws-sdk": "2.820.0",
+        "babel-eslint": "^10.1.0",
+        "dotenv": "^8.2.0",
+        "eslint": "^7.1.0",
+        "jest": "24.8.0"
+    },
+    "author": "Nitesh Jha"
+}
