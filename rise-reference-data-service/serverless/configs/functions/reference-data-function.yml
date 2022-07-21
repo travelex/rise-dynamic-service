@@ -9,7 +9,7 @@ process:
 
   events:
   - http:
-      path: /rise/referencedata
+      path: /referencedata
       method: get
       cors:
         origin: '*'

@@ -30,10 +30,8 @@ provider:
   
   apiGateway:
     restApiId: ${self:custom.fromTerraform.mentorship_rest_api_id_private}
-    restApiRootResourceId: 
-      #  Ref: ApiGatewayResourceRise
-      # #  'Fn::ImportValue': mentorship-auth-ui-${opt:stage}-authorizer
-      ${self:custom.fromTerraform.mentorship_rest_api_root_resource_id_private}  
+    restApiRootResourceId:
+      'Fn::ImportValue': rise-${opt:stage}-api-gateway-root-id  
   vpc:
     securityGroupIds:
       - ${self:custom.fromTerraform.mentorship_sg}
@@ -50,6 +48,5 @@ functions:
   - ${file(./configs/functions/reference-data-function.yml)}
 
 resources:
-  - ${file(./configs/resources/api-gateway-rise-resource.yml)}
   - ${file(./configs/resources/log-group-and-subscription.yml)}
 
