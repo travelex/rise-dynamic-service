@@ -55,4 +55,9 @@ class ReferenceDataApi {
     }
 }
 
+// new ReferenceDataApi().process({
+//     queryStringParameters : {
+//         refdata : 'joblevel'
+//     }
+// }).then(console.log).catch(console.log)
 module.exports = ReferenceDataApi;

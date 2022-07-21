@@ -34,30 +34,37 @@ exports.handler = async (event, context) => {
 // async function test(event, context) {
 
 //     try {
-//         const response = await new UserProfileApi().process({});
+//         console.log(`Handler Event : ${JSON.stringify(event)}`);
+//         const response = await new ReferenceDataApi().process(event);
 //         console.log(response)
-//         logger.debug(`User profile data :- ${JSON.stringify(response)}`);
+//         logger.debug(`reference data :- ${JSON.stringify(response)}`);
+//         return response;
 //     } catch (error) {
 //         console.error(error)
 //         logger.error(error);
 //         return {
-//             statusCode : 500,
-//             body : JSON.stringify({
-//                 errorMessage : error.message
+//             statusCode: 500,
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 "Access-Control-Allow-Headers": "*",
+//                 "Access-Control-Allow-Methods": "OPTIONS,GET",
+//                 "Access-Control-Allow-Credentials": false,
+//                 "Access-Control-Allow-Origin": "*",
+//                 "X-Requested-With": "*"
+//             },
+//             body: JSON.stringify({
+//                 errorMessage: error.message
 //             })
 //         }
 //     }
 // }
 
 
-
-function parseElement(element) {
-    try {
-        return JSON.parse(element);
-    } catch (err) {
-        return element;
-    }
-}
+// test({
+//     queryStringParameters : {
+//         refdata : 'joblevel'
+//     }
+// }).then(console.log).catch(console.log)
 
 
 
