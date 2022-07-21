@@ -380,7 +380,7 @@ workflows:
                 - master
                 - feature/dit
       - lambda-job:
-          name: rise-stats-service
+          name: rise-statistics-service
           requires:
             - s3-download
           filters:
