@@ -1,5 +1,5 @@
   Resources:
-    riseConnectionDbTable:
+    riseStatsDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
