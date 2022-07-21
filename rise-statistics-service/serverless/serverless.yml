@@ -1,4 +1,4 @@
-service: rise-stats-service
+service: rise-statistics-service
 
 frameworkVersion: ^2.50.0
 
