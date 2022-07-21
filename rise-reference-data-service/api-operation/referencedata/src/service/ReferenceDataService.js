@@ -20,10 +20,10 @@ class ReferenceDataService {
             logger.debug(response);
             return response;
         } catch (err) {
+            logger.error('Error while fetching files from s3.')
             throw err;
         }
     }
 
 }
-
 module.exports = ReferenceDataService
