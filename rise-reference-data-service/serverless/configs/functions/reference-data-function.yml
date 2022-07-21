@@ -1,0 +1,20 @@
+process:
+  name: ${self:provider.stage}-${self:service}
+  description: Reference Data
+  handler: src/handlers/${self:provider.name}/reference-data-handler.handler
+  timeout: 900
+  include:
+    - src/handlers/${self:provider.name}/reference-data-handler.js
+    - node_modules/user-profile/**
+
+  events:
+  - http:
+      path: /referencedata
+      method: get
+      cors:
+        origin: '*'
+        headers: '*'
+      authorizer:
+        type: CUSTOM
+        authorizerId:
+          'Fn::ImportValue': mentorship-auth-ui-${opt:stage}-authorizer
