@@ -11,6 +11,7 @@ plugins:
 
 custom:
   fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
+  tableName: metadata-stats-test-${opt:stage, self:provider.stage}
   prune:
     automatic: true
     number: 1
@@ -49,4 +50,5 @@ functions:
 
 resources:
   - ${file(./configs/resources/log-group-and-subscription.yml)}
+  - ${file(./configs/resources/stats-table.yml)}
 
