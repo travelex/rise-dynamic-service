@@ -2,7 +2,6 @@ const AWS = require('aws-sdk');
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 const path = require('path');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
-const fs = require('fs')
 
 class ReferenceDataService {
 
@@ -24,9 +23,10 @@ class ReferenceDataService {
           });
           */
 
-           let data = fs.readFileSync('../objectFile/referenceData.json', 'utf8')
-           console.log(data);
-           return data;
+          
+           return {
+               name : 'bharat'
+           };
            
         } catch (err) {
             logger.error(`Error occurred while fetching the reference data :: ${err}`);

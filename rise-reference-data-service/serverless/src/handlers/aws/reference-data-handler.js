@@ -15,6 +15,14 @@ exports.handler = async (event, context) => {
         logger.error(error);
         return {
             statusCode: 500,
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Headers": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,GET",
+                "Access-Control-Allow-Credentials": false,
+                "Access-Control-Allow-Origin": "*",
+                "X-Requested-With": "*"
+            },
             body: JSON.stringify({
                 errorMessage: error.message
             })
