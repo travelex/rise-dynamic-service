@@ -11,7 +11,7 @@ plugins:
 
 custom:
   fromTerraform: ${file(../../common/serverless/sls_terraform_outputs.js)}
-  tableName: metadata-stats-test-${opt:stage, self:provider.stage}
+  tableName: metadata-stats-${opt:stage, self:provider.stage}
   prune:
     automatic: true
     number: 1
