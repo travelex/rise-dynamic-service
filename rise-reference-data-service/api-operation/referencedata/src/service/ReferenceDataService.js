@@ -1,33 +1,24 @@
 const AWS = require('aws-sdk');
-const s3 = new AWS.S3({apiVersion: '2006-03-01'});
+const s3 = new AWS.S3({ apiVersion: '2006-03-01' });
 const path = require('path');
 const logger = require('winston-wrapper').getLogger(path.basename(__filename));
 
 class ReferenceDataService {
 
-    static async getReferenceData(fileName) {
-        logger.debug('fetching reference data')
-        console.log(fileName);
+    static async getReferenceData(refdata) {
+
 
         try {
+            logger.debug('fetching reference data');
 
-         /*   // getting file from s3
-        
-        const params = {Bucket: 'reference-data', Key: fileName};
-        s3.getObject(params, (err, data) => {
-            if (err){
-                logger.error(`error occoured while fetching data from s3 ${err}`)
-            }  
-            logger.debug(`data fetched from s3:: ${JSON.stringify(data)}`);     
-            return data;     
-          });
-          */
+            const params = { Bucket: 'tvx-mentorship-dev', Key: 'static-data/joblevel.json' };
+            const filedata = await s3.getObject(params).promise();
+            logger.debug(filedata);
+            logger.debug(filedata.toString());
+            return {
+                name: 'bharat'
+            };
 
-          
-           return {
-               name : 'bharat'
-           };
-           
         } catch (err) {
             logger.error(`Error occurred while fetching the reference data :: ${err}`);
             throw err;
